@@ -23,11 +23,11 @@ MonoBehaviour:
   engineLevelData:
   - maxSpeed: 40
     minSpeed: 10
-    maxFuel: 100
+    maxFuel: 70
     burnRate: 2
     accel: 1
   - maxSpeed: 60
     minSpeed: 15
-    maxFuel: 110
+    maxFuel: 85
     burnRate: 1.5
     accel: 1.1

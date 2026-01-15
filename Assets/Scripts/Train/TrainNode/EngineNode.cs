@@ -140,8 +140,8 @@ public class EngineNode : TrainNode
         // 클라
         else
         {
-            _currentFuel = (float)stream.ReceiveNext();
             _currentSpeed = (float)stream.ReceiveNext();
+            _currentFuel = (float)stream.ReceiveNext();
 
             // 엔진 정보 갱신
             OnEngineStatChanged?.Invoke(_currentSpeed, _currentFuel, _maxFuel);
