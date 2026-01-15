@@ -166,6 +166,19 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
         Debug.Log($"타겟 카운트 : " + targetCount);
 
+        // 상점에선 누구나 로컬 객체로 스폰
+        if (_isShop == true)
+        {
+            for (int i = 0; i < targetCount; i++)
+            {
+                SpawnTrain((TrainType)types[i], levels[i]);
+            }
+
+            // 상점 로직으로 끝
+            yield break;
+        }
+
+        // -------------- 인게임용 네트워크 로직-----------------
         // 방장
         if (PhotonNetwork.IsMasterClient == true)
         {
@@ -278,6 +291,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 리스트 공간 확보 (2번보다 3번이 먼저 왔을 경우)
         while (_currentTrainNodes.Count <= index)
         {
+            Debug.Log("널 추가");
             _currentTrainNodes.Add(null);
         }
 
@@ -436,7 +450,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         if (_isShop && propertiesThatChanged.ContainsKey(KEY_TRAIN_TYPES))
         {
             // 열차 새로고침
-            //RefreshTrains();
+            RefreshTrain();
         }
     }
     #endregion
