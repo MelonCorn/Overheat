@@ -1,5 +1,6 @@
 using Photon.Pun;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,19 +9,23 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     protected int _maxHp;         // 최대 체력
     protected int _currentHp;     // 현재 체력
 
+    protected TrainNode _prevTrain;   // 앞차
+    protected TrainNode _nextTrain;   // 뒷차
+
     [Header("후방 연결부")]
     [SerializeField] Transform _rearSocket;
 
-    public event Action<int, int> OnHpChanged;
-    public Transform RearSocket => _rearSocket;
 
     // 참조 데이터
     public TrainDataSO Data { get; private set; }
+
+    public event Action<int, int> OnHpChanged;
+    public event Action OnExplode;
+    public Transform RearSocket => _rearSocket;
     public int CurrentHp => _currentHp;
     public int MaxHp => _maxHp;
 
-    protected TrainNode _prevTrain;   // 앞차
-    protected TrainNode _nextTrain;   // 뒷차
+    private bool _isExploding = false;
 
     public virtual void Init(TrainDataSO data, int level)
     {
@@ -102,13 +107,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
             _currentHp = 0;
 
             // 폭발 RPC 발송
-            //photonView.RPC(nameof(ExplodeRPC), RpcTarget.All);
-
-            // 뒷칸도 즉시 연쇄 폭발
-            if (_nextTrain != null)
-            {
-                _nextTrain.TakeDamage(99999);
-            }
+            photonView.RPC(nameof(ExplodeRPC), RpcTarget.All);
         }
 
         // 본인 권한의 SerializeView는 읽기가 안됨
@@ -140,12 +139,65 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
 
     // 열차 파괴 
+    [PunRPC]
+    public void ExplodeRPC()
+    {
+        // 앞차랑 연결 끊기
+        if (_prevTrain != null)
+        {
+            _prevTrain.ConnectNextTrain(null);
+            _prevTrain = null;
+        }
+
+        // 꼬리자르기 (리스트 정리)
+        if (TrainManager.Instance != null)
+        {
+            TrainManager.Instance.CutTail(this);
+        }
+
+        // 폭발
+        Explode();
+    }
+
+    // 호출용 폭발
     public void Explode()
     {
-        // 체력 0 이하면 폭발
+        // 이미 폭발 중이면 무시
+        if (_isExploding) return;
+        
+        _isExploding = true;
+
+        // 폭발 코루틴 시작
+        StartCoroutine(ExplodeCoroutine());
+    }
+
+    IEnumerator ExplodeCoroutine()
+    {
+        Debug.Log($"{name} 쾅!");
+
+        // 연출 딜레이
+        yield return new WaitForSeconds(0.15f);
+
+        // 뒷차 연쇄 작용
+        if (_nextTrain != null)
+        {
+            _nextTrain.Explode();
+        }
+
+        // 나 타고있으면 사망
+        // CheckLocalPlayerHit();
+
         // 내부 아이템 전소
-        // 내부 플레이어 사망
-        // 다음 차에 데미지 99999 줘서 계속 연쇄 폭발
+
+        // UI 파괴
+        OnExplode?.Invoke();
+
+        // 삭제 딜레이
+        yield return new WaitForSeconds(3f);
+
+        // 진짜 사망
+        if (PhotonNetwork.IsMasterClient) PhotonNetwork.Destroy(gameObject);
+        else gameObject.SetActive(false);
     }
 
 

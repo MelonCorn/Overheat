@@ -22,6 +22,8 @@ public class TestNodeUI : MonoBehaviour
 
         // 체력 변화 이벤트 구독
         _targetNode.OnHpChanged += UpdateHPText;
+        // 폭발 이벤트 구독
+        _targetNode.OnExplode += Explode;
 
         // 버튼 설정
         if (PhotonNetwork.IsMasterClient)
@@ -49,12 +51,19 @@ public class TestNodeUI : MonoBehaviour
         _hpText.text = $"{current} / {max}";
     }
 
+    // 폭발
+    private void Explode()
+    {
+        Destroy(gameObject);
+    }
+
     // UI 파괴 시 구독 해제
     private void OnDestroy()
     {
         if (_targetNode != null)
         {
             _targetNode.OnHpChanged -= UpdateHPText;
+            _targetNode.OnExplode -= Explode;
         }
     }
 }
