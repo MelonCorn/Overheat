@@ -42,6 +42,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         // 이름
         gameObject.name = Data.trainName;
 
+        // UI 생성
         if (TestTrainUIManager.Instance != null)
         {
             TestTrainUIManager.Instance.CreateUI(this);
@@ -231,15 +232,10 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         }
         else
         {
-            int receivedHp = (int)stream.ReceiveNext();
-            // 값이 달라졌을 때만 반응
-            if (_currentHp != receivedHp)
-            {
-                _currentHp = receivedHp;
+            _currentHp = (int)stream.ReceiveNext();
 
-                // UI 갱신 알림
-                OnHpChanged?.Invoke(_currentHp, _maxHp);
-            }
+            // UI 갱신 알림
+            OnHpChanged?.Invoke(_currentHp, _maxHp);
         }
     }
 }

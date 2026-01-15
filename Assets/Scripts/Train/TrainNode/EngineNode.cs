@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System;
 using UnityEngine;
 
 public class EngineNode : TrainNode
@@ -6,17 +7,23 @@ public class EngineNode : TrainNode
     [Header("엔진 스탯")]
     private float _maxSpeed;         // 최고 속도
     private float _minSpeed;         // 최저 속도
-    private float _maxfuel;          // 최대 연료
+    private float _maxFuel;          // 최대 연료
     private float _burnRate;         // 초당 연료 소모
+    private float _accel;            // 가속도
 
     // 실시간 변수 (동기화용)
     private float _currentSpeed;     // 현재 속도
     private float _currentFuel;      // 현재 연료
 
     public float CurrentSpeed => _currentSpeed;
+    public float CurrentFuel => _currentFuel;
+    public float MaxFuel => _maxFuel;
+    public float MaxSpeed => _maxSpeed;
 
     // UI 표시용 연료 비율 (0.0 ~ 1.0)
-    public float FuelRatio => _maxfuel > 0 ? _currentFuel / _maxfuel : 0f;
+    public float FuelRatio => _maxFuel > 0 ? _currentFuel / _maxFuel : 0f;
+
+    public event Action<float, float, float> OnEngineStatChanged;
 
     public override void Init(TrainDataSO data, int level)
     {
@@ -46,23 +53,32 @@ public class EngineNode : TrainNode
             _maxSpeed = engineStat.maxSpeed;
             _minSpeed = engineStat.minSpeed;
 
+            // 초기 속도는 최저 속도
+            _currentSpeed = _minSpeed;
+
             // 연료
-            _maxfuel = engineStat.maxfuel;
+            _maxFuel = engineStat.maxFuel;
 
             // 효율
             _burnRate = engineStat.burnRate;
+
+            // 가속도
+            _accel = engineStat.accel;
         }
     }
     private void Update()
     {
         // 방장만
-        if (PhotonNetwork.IsMasterClient) return;
+        if (PhotonNetwork.IsMasterClient == false) return;
 
         // 연료 소모
         BurnFuel();
 
         // 속도 계산
         CalculateSpeed();
+
+        // 엔진 정보 갱신
+        OnEngineStatChanged?.Invoke(_currentSpeed, _currentFuel, _maxFuel);
     }
 
 
@@ -83,11 +99,18 @@ public class EngineNode : TrainNode
     // 연료 비율에 따른 속도 계산
     private void CalculateSpeed()
     {
-        // 비율 계산 (프로퍼티로 계산)
-        float ratio = FuelRatio;
+        // 연료 비율에 따라 목표 속도 설정
+        float targetSpeed = Mathf.Lerp(_minSpeed, _maxSpeed, FuelRatio);
 
-        // 비율 1 : 최고속도, 0 : 최저속도
-        _currentSpeed = Mathf.Lerp(_minSpeed, _maxSpeed, ratio);
+        // 가속도
+        float smoothRate = _accel;
+
+        // 감속할 때는 더 천천히 멈추게
+        if (_currentSpeed > targetSpeed)
+            smoothRate = _accel * 0.3f; // 관성 느낌
+
+        // 
+        _currentSpeed = Mathf.Lerp(_currentSpeed, targetSpeed, smoothRate * Time.deltaTime);
     }
 
     // 연료 추가
@@ -96,8 +119,8 @@ public class EngineNode : TrainNode
     {
         _currentFuel += amount;
 
-        if (_currentFuel > _maxfuel)
-            _currentFuel = _maxfuel;
+        if (_currentFuel > _maxFuel)
+            _currentFuel = _maxFuel;
 
         // 연료 UI 갱신 이벤트 호출
     }
@@ -117,11 +140,11 @@ public class EngineNode : TrainNode
         // 클라
         else
         {
-            float receivedSpeed = (float)stream.ReceiveNext();
-            float receivedFuel = (float)stream.ReceiveNext();
+            _currentFuel = (float)stream.ReceiveNext();
+            _currentSpeed = (float)stream.ReceiveNext();
 
-            _currentFuel = receivedFuel;
-            _currentSpeed = receivedSpeed;
+            // 엔진 정보 갱신
+            OnEngineStatChanged?.Invoke(_currentSpeed, _currentFuel, _maxFuel);
         }
     }
 }
