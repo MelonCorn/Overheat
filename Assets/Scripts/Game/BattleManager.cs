@@ -47,7 +47,6 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
 
         // 열차 매니저 없거나, 준비가 덜되었다면 무시
         if (TrainManager.Instance == null || TrainManager.Instance.IsTrainReady == false) return;
-
         // 거리 계산
         if (PhotonNetwork.IsMasterClient)
         {
@@ -112,5 +111,11 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
         {
             _currentDistance = (float)stream.ReceiveNext();
         }
+    }
+
+
+    public void ClickShop()
+    {
+        PhotonNetwork.LoadLevel("Shop");
     }
 }

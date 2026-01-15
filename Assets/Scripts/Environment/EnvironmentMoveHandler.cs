@@ -5,8 +5,8 @@ using UnityEngine;
 public class EnvironmentMoveHandler : MonoBehaviour
 {
     private PoolableObject _poolable;   // 자신의 풀 관리자
-    private float _speed;               // 이동 속도
-    private float _despawnZ;            // 반납 Z 값
+
+    private EnvironmentSpawner _spawner;// 스포너
 
     private void Awake()
     {
@@ -14,19 +14,18 @@ public class EnvironmentMoveHandler : MonoBehaviour
     }
 
     // 수치 설정
-    public void Setup(float speed, float despawnZ)
+    public void Setup(EnvironmentSpawner spawner)
     {
-        _speed = speed;
-        _despawnZ = despawnZ;
+        _spawner = spawner;
     }
 
     private void Update()
     {
         // 이동
-        transform.Translate(Vector3.back * _speed * Time.deltaTime);
+        transform.Translate(Vector3.back * _spawner.Speed * Time.deltaTime);
 
         // 뒤로 넘어가면 반납
-        if (transform.position.z < _despawnZ)
+        if (transform.position.z < _spawner.DespawnZ)
             _poolable.Release();
     }
 }

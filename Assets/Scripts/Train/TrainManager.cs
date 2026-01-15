@@ -224,29 +224,31 @@ public class TrainManager : MonoBehaviourPunCallbacks
             if (_isShop == true)
             {
                 // 로컬 생성
-                //newTrainNode = Instantiate(trainData.prefab);
-                //
-                //// 상점에서는 PhotonView 필요 없어서 지움
-                //var pv = newTrainNode.GetComponent<PhotonView>();
-                //if(pv) Destroy(pv); 
-                //Train newTrain = new Train { type = type, level = level };
-                //_currentTrains.Add(newTrain);
-                //
-                //// 노드 초기화
-                //newTrainNode.Init(trainData, level);
-                //
-                //// 연결 (Linked List)
-                //if (_currentTrainNodes.Count > 0)
-                //{
-                //    int prevIndex = _currentTrainNodes.Count - 1;
-                //    _currentTrainNodes[prevIndex].ConnectNextTrain(newTrainNode);
-                //}
-                //
-                //// 노드 데이터 등록
-                //_currentTrainNodes.Add(newTrainNode);
-                //
-                //// 위치 정렬
-                //AlignLast();
+                newTrainNode = Instantiate(trainData.prefab);
+                
+                // 상점에서는 PhotonView 필요 없어서 지움
+                var pv = newTrainNode.GetComponent<PhotonView>();
+                if(pv) Destroy(pv); 
+
+                // 프로퍼티 기반 새로운 열차 데이터 생성
+                Train newTrain = new Train { type = type, level = level };
+                _currentTrains.Add(newTrain);
+                
+                // 노드 초기화
+                newTrainNode.Init(trainData, level);
+                
+                // 연결
+                if (_currentTrainNodes.Count > 0)
+                {
+                    int prevIndex = _currentTrainNodes.Count - 1;
+                    _currentTrainNodes[prevIndex].ConnectNextTrain(newTrainNode);
+                }
+                
+                // 노드 데이터 등록
+                _currentTrainNodes.Add(newTrainNode);
+                
+                // 위치 정렬
+                AlignLast();
             }
             else
             {
@@ -498,4 +500,10 @@ public class TrainManager : MonoBehaviourPunCallbacks
         StartCoroutine(SpawnTrainCoroutine());
     }
     #endregion
+
+
+    public void ClickGame()
+    {
+        PhotonNetwork.LoadLevel("Game");
+    }
 }
