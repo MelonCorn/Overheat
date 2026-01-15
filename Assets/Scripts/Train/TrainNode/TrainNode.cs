@@ -163,7 +163,6 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         else
         {
             int receivedHp = (int)stream.ReceiveNext();
-            Debug.Log("로컬 - " + receivedHp);
             // 값이 달라졌을 때만 반응
             if (_currentHp != receivedHp)
             {
