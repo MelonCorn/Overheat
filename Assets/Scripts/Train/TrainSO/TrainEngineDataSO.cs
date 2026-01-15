@@ -1,0 +1,24 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+[System.Serializable]
+public struct EngineLevelData
+{
+    public float maxSpeed;        // 최고 속도
+    public float fuelConsumption; // 연료 효율
+}
+
+[CreateAssetMenu(fileName = "EngineData", menuName = "Train/Engine Data")]
+public class TrainEngineDataSO : TrainDataSO
+{
+    [Header("엔진 레벨 정보")]
+    public List<EngineLevelData> engineLevelData;
+
+    // 레벨에 맞는 기본 스탯 반환
+    public EngineLevelData GetEngineStat(int level)
+    {
+        // 인덱스 : 인풋 (0 ~ 최대 데이터 수)
+        int index = Mathf.Clamp(level - 1, 0, engineLevelData.Count - 1);
+        return engineLevelData[index];
+    }
+}
