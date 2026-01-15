@@ -62,7 +62,19 @@ public class TrainManager : MonoBehaviourPunCallbacks
     // 현재 열차 배치 (스크립트)
     private List<TrainNode> _currentTrainNodes = new List<TrainNode>();
 
-    //private List<>
+    // 엔진 노드
+    public EngineNode MainEngine
+    {
+        get
+        {
+            // 리스트 비어있으면 null
+            if (_currentTrainNodes.Count == 0) return null;
+            // 0번이 없거나(파괴) null이면 null
+            if (_currentTrainNodes[0] == null) return null;
+            // 0번 EngineNode로 형변환해서 리턴
+            return _currentTrainNodes[0] as EngineNode;
+        }
+    }
 
 
     // 열차 준비 상태

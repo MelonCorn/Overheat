@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class TestTrainUIManager : MonoBehaviour
@@ -6,6 +7,11 @@ public class TestTrainUIManager : MonoBehaviour
 
     [SerializeField] GameObject _uiPrefab;
     [SerializeField] Transform _uiContentParent;
+
+    private EngineNode _engine; // 엔진
+
+    [Header("엔진 정보 텍스트")] // 현재 속도, 현재 연료
+    [SerializeField] TextMeshProUGUI _engineInfoText;
 
     private void Awake() => Instance = this;
 
@@ -20,5 +26,10 @@ public class TestTrainUIManager : MonoBehaviour
         {
             ui.Init(node);
         }
+    }
+
+    public void SetEngine(EngineNode engine)
+    {
+        _engine = engine;
     }
 }
