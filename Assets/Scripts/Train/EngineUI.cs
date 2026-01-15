@@ -9,9 +9,26 @@ public class EngineUI : MonoBehaviour
     [SerializeField] private Slider _fuelSlider;         // 연료 게이지
     //[SerializeField] private Image _fuelGaugeImage;   // 연료 바늘?
 
+    [Header("연료 게이지 속도")]
+    [SerializeField] private float _lerpSpeed = 10f;
+
+    private float _currentDisplayedFuel = 0f; // 현재 연료 슬라이더 값
+    private float _targetFuelRatio = 0f;      // 목표 연료 비율
+
     private int _lastChangedSpeed = -1;
 
     private EngineNode _targetEngine;
+    
+    
+    private void Update()
+    {
+        if (_fuelSlider != null)
+        {
+            // 게이지 변화
+            _currentDisplayedFuel = Mathf.Lerp(_currentDisplayedFuel,_targetFuelRatio,Time.deltaTime * _lerpSpeed);
+            _fuelSlider.value = _currentDisplayedFuel;
+        }
+    }
 
     // 엔진 연결
     public void ConnectEngine(EngineNode engine)
@@ -21,37 +38,21 @@ public class EngineUI : MonoBehaviour
         // UI 갱신 이벤트 구독
         _targetEngine.OnEngineStatChanged += UpdateDashboard;
 
-        // 초기값 한 번 세팅 (현재 상태 바로 보여주기 위해)
-        UpdateDashboard(engine.CurrentSpeed, engine.CurrentFuel, engine.MaxFuel);
+        // 속도 텍스트 갱신
+        UpdateSpeedText(engine.CurrentSpeed);
 
-        // (선택) 엔진 UI 켜기
+        // 엔진 UI 켜기
         gameObject.SetActive(true);
     }
 
     // 엔진에서 신호가 오면 UI 갱신
     private void UpdateDashboard(float curSpeed, float curFuel, float maxFuel)
     {
-        // 연료 슬라이더
-        if (_fuelSlider != null)
-        {
-            _fuelSlider.value = (maxFuel > 0) ? (curFuel / maxFuel) : 0;
-        }
+        // 연료 목표치 설정
+        UpdateFuelTarget(curFuel, maxFuel);
 
-        // 속도 텍스트
-        if (_speedText != null)
-        {
-            // 소수점을 버린 정수값
-            int intSpeed = Mathf.RoundToInt(curSpeed);
-
-            // 숫자 바뀔 때만 텍스트 갱신
-            if (_lastChangedSpeed != intSpeed)
-            {
-                _lastChangedSpeed = intSpeed;
-
-                // SetText는 내부적으로 미리 할당된 char[] 배열을 덮어쓰기라고 함
-                _speedText.SetText($"{curSpeed:0} km/h");
-            }
-        }
+        // 텍스트 갱신
+        UpdateSpeedText(curSpeed);
 
         //// 연료용량 바늘 느낌
         //if (_fuelGaugeImage != null)
@@ -60,9 +61,36 @@ public class EngineUI : MonoBehaviour
         //}
     }
 
+    // 연료 목표 업데이트
+    private void UpdateFuelTarget(float curFuel, float maxFuel)
+    {
+        if (maxFuel > 0)
+            _targetFuelRatio = curFuel / maxFuel;
+        else
+            _targetFuelRatio = 0f;
+    }
+
+    // 속도 텍스트 업데이트
+    private void UpdateSpeedText(float curSpeed)
+    {
+        if (_speedText == null) return;
+
+        // 소수점 버린 정수값
+        int intSpeed = Mathf.RoundToInt(curSpeed);
+
+        // 숫자 바뀔 때만 텍스트 갱신
+        if (_lastChangedSpeed != intSpeed)
+        {
+            _lastChangedSpeed = intSpeed;
+
+            // SetText는 내부적으로 미리 할당된 char[] 배열을 덮어쓰기라고 함
+            _speedText.SetText($"{curSpeed:0} km/h");
+        }
+    }
+
     public void ClickAddFuel()
     {
-        _targetEngine.AddFuel(10);
+        _targetEngine.AddFuel(5);
     }
 
     private void OnDestroy()
