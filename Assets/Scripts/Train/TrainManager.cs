@@ -296,6 +296,73 @@ public class TrainManager : MonoBehaviourPunCallbacks
         AlignAll();
     }
 
+    // 방장 꼬리 잘림 확인
+    public void RequestCutTail(TrainNode node)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // 터진 열차 번호 확인
+            int index = _currentTrainNodes.IndexOf(node);
+            if (index != -1)
+            {
+                // 모두에게 index부터 끝까지 꼬리자르기 호출
+                photonView.RPC(nameof(CutTailRPC), RpcTarget.All, index);
+            }
+        }
+    }
+
+    [PunRPC]    // 모두에게 뿌릴 꼬리 잘림 함수
+    public void CutTailRPC(int startIndex)
+    {
+        CutTail(startIndex);
+
+        // 폭발 이펙트나 사운드는 여기서
+    }
+
+
+    // 파괴로 꼬리 잘림
+    public void CutTail(int startIndex)
+    {
+        // 범위 유효 체크
+        if (startIndex < 0 || startIndex >= _currentTrainNodes.Count) return;
+
+        // 잘라낼 열차 수 계산 (전체 길이 - 시작 인덱스)
+        int countToRemove = _currentTrainNodes.Count - startIndex;
+
+        Debug.Log($"{startIndex}번 칸부터 {countToRemove}개 꼬리 자르기 시작!");
+
+        // 실제 네트워크 객체 파괴 (뒤에서부터 파괴하는 게 안전)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // 리스트의 끝에서부터 startIndex까지 역순으로
+            // (RemoveRange 하기 전에 객체부터 지워야 함)
+            for (int i = _currentTrainNodes.Count - 1; i >= startIndex; i--)
+            {
+                TrainNode node = _currentTrainNodes[i];
+                if (node != null)
+                {
+                    // 연결 끊기 (안전장치)
+                    node.Attach(null);
+
+                    // 포톤 파괴
+                    PhotonNetwork.Destroy(node.gameObject);
+                }
+            }
+        }
+
+        // 로컬 리스트에서 데이터 잘라내기
+        _currentTrainNodes.RemoveRange(startIndex, countToRemove);
+        _currentTrains.RemoveRange(startIndex, countToRemove);
+
+        Debug.Log($"꼬리 자르기 완료. 남은 기차 수: {_currentTrainNodes.Count}");
+
+        // 변경된 리스트 룸 프로퍼티 저장
+        if (PhotonNetwork.IsMasterClient)
+        {
+            UpdateRoomProperties();
+        }
+    }
+
     // 전체 리스트 위치 정렬 (인게임용)
     private void AlignAll()
     {

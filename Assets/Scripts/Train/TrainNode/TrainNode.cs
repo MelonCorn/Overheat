@@ -91,10 +91,25 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     // ÇÇÇØ
     public void TakeDamage(int amount)
     {
+        if (_currentHp <= 0) return;
+
         _currentHp -= amount;
 
-        if (_currentHp < 0)
+        // »ç¸Á ÆÇÁ¤
+        if (_currentHp <= 0)
+        {
+            // ±ò²ûÇÏ°Ô 0
             _currentHp = 0;
+
+            // Æø¹ß RPC ¹ß¼Û
+            //photonView.RPC(nameof(ExplodeRPC), RpcTarget.All);
+
+            // µÞÄ­µµ Áï½Ã ¿¬¼â Æø¹ß
+            if (_nextTrain != null)
+            {
+                _nextTrain.TakeDamage(99999);
+            }
+        }
 
         // º»ÀÎ ±ÇÇÑÀÇ SerializeView´Â ÀÐ±â°¡ ¾ÈµÊ
         // ±×·¡¼­ Á÷Á¢ È£Ãâ
@@ -104,6 +119,8 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     // ¼ö¸®
     public void TakeRepair(int amount)
     {
+        if (_currentHp >= _maxHp) return;
+
         _currentHp += amount;
 
         if (_currentHp > _maxHp)
