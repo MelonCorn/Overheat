@@ -652,9 +652,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1396107597}
-        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
-        m_MethodName: ClickShop
+      - m_Target: {fileID: 1820175775}
+        m_TargetAssemblyTypeName: TrainManager, Assembly-CSharp
+        m_MethodName: LoadShop
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

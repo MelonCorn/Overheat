@@ -129,13 +129,10 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
             // 열차 생성 및 동기화 대기 (코루틴 실행)
             yield return StartCoroutine(SpawnTrainCoroutine());
-
-            if (PhotonNetwork.IsMasterClient == false)
-                Debug.Log("열차 동기화 완료");
-
-            IsTrainReady = true;
-            Debug.Log("모든 열차 로딩 완료. 플레이어 스폰 승인");
         }
+
+        IsTrainReady = true;
+        Debug.Log("모든 열차 로딩 완료. 플레이어 스폰 승인");
     }
 
     // 열차 생성 시도
