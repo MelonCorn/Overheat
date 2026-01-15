@@ -97,6 +97,11 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
         _isStageClear = true;
 
         Debug.Log("스테이지 클리어!");
+
+        // 네트워크 열차 객체 싹 지우고 
+        if (TrainManager.Instance != null) TrainManager.Instance.ClearNetworkTrains();
+
+        // 상점으로 이동
         PhotonNetwork.LoadLevel("Shop");
     }
 
@@ -111,11 +116,5 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
         {
             _currentDistance = (float)stream.ReceiveNext();
         }
-    }
-
-
-    public void ClickShop()
-    {
-        PhotonNetwork.LoadLevel("Shop");
     }
 }

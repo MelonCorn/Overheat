@@ -15,7 +15,7 @@ public class PlayerHandler : MonoBehaviourPun
     private void Awake()
     {
         // 로컬 객체일 때
-        if (photonView.IsMine)
+        if (photonView.IsMine == true)
         {
             // 로컬 플레이어 등록
             localPlayer = this;
@@ -31,8 +31,6 @@ public class PlayerHandler : MonoBehaviourPun
             // 끌 것들 끄기 
             DisableRemoteComponents();
         }
-
-        // DontDestroyOnLoad(gameObject); 
     }
 
     private void OnDestroy()

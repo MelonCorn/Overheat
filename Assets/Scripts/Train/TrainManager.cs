@@ -84,7 +84,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         if (_instance == null) _instance = this;
-        else if (_instance != this) Destroy(gameObject);
+        else Destroy(gameObject);
 
         // 리스트를 딕셔너리로 변환
         _trainDict = new Dictionary<TrainType, TrainDataSO>();
@@ -225,28 +225,28 @@ public class TrainManager : MonoBehaviourPunCallbacks
             {
                 // 로컬 생성
                 newTrainNode = Instantiate(trainData.prefab);
-                
+
                 // 상점에서는 PhotonView 필요 없어서 지움
                 var pv = newTrainNode.GetComponent<PhotonView>();
-                if(pv) Destroy(pv); 
+                if (pv) Destroy(pv);
 
                 // 프로퍼티 기반 새로운 열차 데이터 생성
                 Train newTrain = new Train { type = type, level = level };
                 _currentTrains.Add(newTrain);
-                
+
                 // 노드 초기화
                 newTrainNode.Init(trainData, level);
-                
+
                 // 연결
                 if (_currentTrainNodes.Count > 0)
                 {
                     int prevIndex = _currentTrainNodes.Count - 1;
                     _currentTrainNodes[prevIndex].ConnectNextTrain(newTrainNode);
                 }
-                
+
                 // 노드 데이터 등록
                 _currentTrainNodes.Add(newTrainNode);
-                
+
                 // 위치 정렬
                 AlignLast();
             }
@@ -332,6 +332,27 @@ public class TrainManager : MonoBehaviourPunCallbacks
         {
             UpdateRoomProperties();
         }
+    }
+
+
+    // 씬 이동 전 열차 네트워크 객체 싹 정리
+    public void ClearNetworkTrains()
+    {
+        // 방장만
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        foreach (var node in _currentTrainNodes)
+        {
+            if (node != null)   // 혹시 몰라서
+            {
+                PhotonNetwork.Destroy(node.gameObject);
+            }
+        }
+
+        // 리스트 비우기
+        // 안해도 되는데 혹시나 씬 이동 늦어지면 null 뜰 것 같음
+        _currentTrainNodes.Clear();
+        _currentTrains.Clear();
     }
 
     // 전체 리스트 위치 정렬 (인게임용)
@@ -456,6 +477,14 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
 
     #region 상점용
+    public void LoadShop()
+    {
+        // 싹 지우고
+        ClearNetworkTrains();
+        // 상점으로 이동
+        PhotonNetwork.LoadLevel("Shop");
+    }
+
     // Type 열차 추가 (상점용)
     public void RequestAddTrain(TrainType type)
     {
