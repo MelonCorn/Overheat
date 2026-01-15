@@ -13,7 +13,6 @@ public class TestNodeUI : MonoBehaviour
 
     public void Init(TrainNode node)
     {
-        Debug.Log("노드 UI 설정");
         _targetNode = node;
 
         // 텍스트 초기화
