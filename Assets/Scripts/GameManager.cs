@@ -31,27 +31,19 @@ public class GameManager : MonoBehaviourPun, IPunObservable
 
     private void Start()
     {
-        if (PhotonNetwork.IsMasterClient == false) return;
-
         // 씬 변경 시 새로운 GameManager
 
-        // 상점이면 생존일 추가
-        if (IsShop == true)
-            Survive();
+        if (PhotonNetwork.IsMasterClient == true)
+        {
+            // 상점이면
+            if (IsShop == true)
+                // 생존일 추가
+                GameData.SurviveDay++;
+        }
 
         // 텍스트 갱신
-        _goldText.SetText(GameData.Gold.ToString());
-        _SurviveDayText.SetText(GameData.SurviveDay.ToString());
-    }
-
-    // 생존일 추가
-    public void Survive()
-    {
-        // 방장만
-        if (PhotonNetwork.IsMasterClient == false) return;
-
-        // 추가
-        GameData.SurviveDay++;
+        UpdateGoldText();
+        UpdateDayText();
     }
 
     // 골드 추가
@@ -64,11 +56,11 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         GameData.Gold += amount;
 
         // UI 갱신
-        _goldText.SetText(GameData.Gold.ToString());
+        UpdateGoldText();
     }
 
     // 골드 사용 시도
-    public bool TryUseMoney(int amount)
+    public bool TryUseGold(int amount)
     {
         if (PhotonNetwork.IsMasterClient == false) return false;
 
@@ -79,12 +71,21 @@ public class GameManager : MonoBehaviourPun, IPunObservable
             GameData.Gold -= amount;
 
             // UI 갱신
-            _goldText.SetText(GameData.Gold.ToString());
+            UpdateGoldText();
 
             return true;
         }
 
         return false;
+    }
+
+    private void UpdateGoldText()
+    {
+        _goldText.SetText($"{GameData.Gold.ToString("N0")}");
+    }
+    private void UpdateDayText()
+    {
+        _SurviveDayText.SetText($"Day {GameData.SurviveDay.ToString("N0")}");
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -104,7 +105,7 @@ public class GameManager : MonoBehaviourPun, IPunObservable
             {
                 GameData.Gold = receiveGold;
 
-                _goldText.SetText(GameData.Gold.ToString());
+                UpdateGoldText();
             }
 
             // 생존일
@@ -112,7 +113,7 @@ public class GameManager : MonoBehaviourPun, IPunObservable
             {
                 GameData.SurviveDay = receiveDay;
 
-                _SurviveDayText.SetText(GameData.SurviveDay.ToString());
+                UpdateDayText();
             }
         }
     }

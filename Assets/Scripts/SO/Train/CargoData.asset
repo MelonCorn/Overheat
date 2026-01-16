@@ -9,14 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 855371e890be0c3439c443f636547037, type: 3}
+  m_Script: {fileID: 11500000, guid: 2247b4e2f094bf04d824880db01d3271, type: 3}
   m_Name: CargoData
   m_EditorClassIdentifier: Assembly-CSharp::TrainDataSO
+  itemName: Cargo
+  desc: This is Cargo
+  price: 100
+  icon: {fileID: 0}
   type: 2
-  trainName: Cargo
   prefab: {fileID: -3492546527772742875, guid: 809fed2a0f5b063469cc82d96cf22ea4, type: 3}
   levelDatas:
   - maxHP: 100
-    upgradePrice: 50
-  - maxHP: 200
-    upgradePrice: 75
+    upgradePrice: 100
+  - maxHP: 150
+    upgradePrice: 250

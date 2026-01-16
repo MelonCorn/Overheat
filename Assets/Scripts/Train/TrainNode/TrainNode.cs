@@ -17,7 +17,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
 
     // 참조 데이터
-    public TrainDataSO Data { get; private set; }
+    public TrainData Data { get; private set; }
 
     public event Action<int, int> OnHpChanged;
     public event Action OnExplode;
@@ -27,7 +27,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
     private bool _isExploding = false;
 
-    public virtual void Init(TrainDataSO data, int level)
+    public virtual void Init(TrainData data, int level)
     {
         // 데이터
         Data = data;
@@ -40,7 +40,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         _currentHp = _maxHp;
 
         // 이름
-        gameObject.name = Data.trainName;
+        gameObject.name = Data.itemName;
 
         // UI 생성
         if (TestTrainUIManager.Instance != null)

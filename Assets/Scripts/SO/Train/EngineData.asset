@@ -9,25 +9,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa579550869244f4da933d1481f2b3b8, type: 3}
+  m_Script: {fileID: 11500000, guid: a5974e62e52e848418378bd7b431f675, type: 3}
   m_Name: EngineData
   m_EditorClassIdentifier: Assembly-CSharp::TrainEngineDataSO
+  itemName: Engine
+  desc: This is Engine
+  price: 0
+  icon: {fileID: 0}
   type: 1
-  trainName: Engine
   prefab: {fileID: 2098067401686625922, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
   levelDatas:
   - maxHP: 300
-    upgradePrice: 150
-  - maxHP: 450
     upgradePrice: 200
+  - maxHP: 450
+    upgradePrice: 500
   engineLevelData:
   - maxSpeed: 40
     minSpeed: 10
-    maxFuel: 70
-    burnRate: 2
+    maxFuel: 100
+    burnRate: 5
     accel: 1
-  - maxSpeed: 60
+  - maxSpeed: 70
     minSpeed: 15
-    maxFuel: 85
-    burnRate: 1.5
+    maxFuel: 120
+    burnRate: 5
     accel: 1.1

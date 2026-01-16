@@ -9,7 +9,7 @@ public struct TurretLevelData
 }
 
 [CreateAssetMenu(fileName = "TurretData", menuName = "Train/Turret Data")]
-public class TrainTurretDataSO : TrainDataSO
+public class TrainTurretData : TrainData
 {
     [Header("터렛 레벨 정보")]
     public List<TurretLevelData> turretLevelDatas;

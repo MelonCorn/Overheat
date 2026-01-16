@@ -25,7 +25,7 @@ public class EngineNode : TrainNode
 
     public event Action<float, float, float> OnEngineStatChanged;
 
-    public override void Init(TrainDataSO data, int level)
+    public override void Init(TrainData data, int level)
     {
         base.Init(data, level);
 
@@ -44,7 +44,7 @@ public class EngineNode : TrainNode
     // 레벨 데이터 설정
     private void SetData(int level)
     {
-        if (Data is TrainEngineDataSO engineData)
+        if (Data is TrainEngineData engineData)
         {
             // 레벨의 스탯
             var engineStat = engineData.GetEngineStat(level);

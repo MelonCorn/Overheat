@@ -7,7 +7,7 @@ public class TurretNode : TrainNode
     protected float _fireRate;     // 발사 속도
 
 
-    public override void Init(TrainDataSO data, int level)
+    public override void Init(TrainData data, int level)
     {
         base.Init(data, level);
 
@@ -26,7 +26,7 @@ public class TurretNode : TrainNode
     // 레벨 데이터 설정
     private void SetData(int level)
     {
-        if (Data is TrainTurretDataSO turretData)
+        if (Data is TrainTurretData turretData)
         {
             // 레벨의 스탯
             var turretStat = turretData.GetTurretStat(level);

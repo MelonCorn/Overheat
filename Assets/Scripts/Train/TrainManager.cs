@@ -48,10 +48,10 @@ public class TrainManager : MonoBehaviourPunCallbacks
     [SerializeField] List<TrainType> _trainInitList;
 
     [Header("열차 목록")]
-    [SerializeField] List<TrainDataSO> trains;
+    [SerializeField] List<TrainData> trains;
 
     // 검색용 열차 목록
-    private Dictionary<TrainType, TrainDataSO> _trainDict;
+    public Dictionary<TrainType, TrainData> TrainDict { get; private set; }
 
     // 현재 열차 배치 (타입, 레벨)
     private List<Train> _currentTrains = new List<Train>();
@@ -86,13 +86,13 @@ public class TrainManager : MonoBehaviourPunCallbacks
         else Destroy(gameObject);
 
         // 리스트를 딕셔너리로 변환
-        _trainDict = new Dictionary<TrainType, TrainDataSO>();
+        TrainDict = new Dictionary<TrainType, TrainData>();
 
         foreach (var train in trains)
         {
             // Key : TrainType(Enum),     Value : TrainDataSO(ScriptableObject)
-            if (!_trainDict.ContainsKey(train.type))
-                _trainDict.Add(train.type, train);
+            if (!TrainDict.ContainsKey(train.type))
+                TrainDict.Add(train.type, train);
         }
     }
 
@@ -224,7 +224,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
     private void SpawnTrain(TrainType type, int level)
     {
         // 열차 딕셔너리에 타입 있는지 확인
-        if (_trainDict.TryGetValue(type, out TrainDataSO trainData))
+        if (TrainDict.TryGetValue(type, out TrainData trainData))
         {
             // 열차 노드 하나 생성
             TrainNode newTrainNode = null;
@@ -290,7 +290,6 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 리스트 공간 확보 (2번보다 3번이 먼저 왔을 경우)
         while (_currentTrainNodes.Count <= index)
         {
-            Debug.Log("널 추가");
             _currentTrainNodes.Add(null);
         }
 
@@ -308,7 +307,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         _currentTrains[index] = trainInfo;
 
         // 데이터(SO) 찾아서 초기화
-        if (_trainDict.TryGetValue(type, out TrainDataSO data))
+        if (TrainDict.TryGetValue(type, out TrainData data))
         {
             node.Init(data, level);
         }
@@ -500,6 +499,19 @@ public class TrainManager : MonoBehaviourPunCallbacks
     {
         // 방장만 변경 가능
         if (PhotonNetwork.IsMasterClient == false) return;
+
+        // 엔진 체크
+        if (_currentTrainNodes.Count == 0 || _currentTrains[0].type != TrainType.Engine)
+        {
+            Debug.LogWarning("엔진이 없어서 화물칸을 붙일 수 없습니다!");
+            return;
+        }
+
+        // Type 열차 1레벨로 생성
+        SpawnTrain(type, 1);
+
+        // 룸 프로퍼티 갱신
+        UpdateRoomProperties();
     }
     // 마지막 추가 위치 정렬 (상점용)
     private void AlignLast()

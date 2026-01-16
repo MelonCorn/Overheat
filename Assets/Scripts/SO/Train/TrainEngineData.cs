@@ -12,7 +12,7 @@ public struct EngineLevelData
 }
 
 [CreateAssetMenu(fileName = "EngineData", menuName = "Train/Engine Data")]
-public class TrainEngineDataSO : TrainDataSO
+public class TrainEngineData : TrainData
 {
     [Header("엔진 레벨 정보")]
     public List<EngineLevelData> engineLevelData;

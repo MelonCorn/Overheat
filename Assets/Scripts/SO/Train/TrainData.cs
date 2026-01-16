@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,14 +9,13 @@ public struct BasicLevelData
 }
 
 [CreateAssetMenu(fileName = "TrainData", menuName = "Train/Basic Data")]
-public class TrainDataSO : ScriptableObject
+public class TrainData : ShopItem
 {
-    [Header("공통")]
+    [Header("열차 공통")]
     public TrainType type;      // 타입
-    public string trainName;    // 이름
     public TrainNode prefab;    // 프리팹 상점용, name 붙이면 네트워크
 
-    [Header("기본 레벨 정보")]
+    [Header("공통 레벨 정보")]
     public List<BasicLevelData> levelDatas;    // 업그레이드 정보
 
 
