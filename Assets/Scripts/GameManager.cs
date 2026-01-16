@@ -81,11 +81,11 @@ public class GameManager : MonoBehaviourPun, IPunObservable
 
     private void UpdateGoldText()
     {
-        _goldText.SetText($"{GameData.Gold.ToString("N0")}");
+        _goldText.SetText($"{GameData.Gold:N0}");
     }
     private void UpdateDayText()
     {
-        _SurviveDayText.SetText($"Day {GameData.SurviveDay.ToString("N0")}");
+        _SurviveDayText.SetText($"Day {GameData.SurviveDay}");
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

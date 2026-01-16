@@ -1,22 +1,84 @@
+using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class ShopManager : MonoBehaviour
 {
+    [Header("상점 품목 버튼 설정")]
+    [SerializeField] ShopSlot _slotPrefab;        // 항목 버튼 프리팹
+    [SerializeField] Transform _slotParent;       // 버튼 부모 트랜스폼
 
-    // 테스트용 열차 버튼
-    public void BuyTrain(TrainType type)
+    [Header("테스트용 아이템 목록")]
+    [SerializeField] List<ShopItem> _shopPlayerItems;
+
+    private void Start()
     {
-        // 타입에 맞는 정보 불러오기
-        TrainData trainData = TrainManager.Instance.TrainDict[type];
+        GenerateSlots();
+    }
 
-        // 구매비용
-        int price = trainData.price;
-
-        // 골드 충분하면 골드 소모 후
-        if (GameManager.Instance.TryUseGold(price))
+    private void GenerateSlots()
+    {
+        // 아이템 목록
+        foreach (var item in _shopPlayerItems)
         {
-            // 열차에 추가 요청
-            TrainManager.Instance.RequestAddTrain(type);
+            CreateSlot(item);
+        }
+
+        // 열차 목록
+        // TrainManager에 있는 열차 데이터 Dict 사용
+        if (TrainManager.Instance != null && TrainManager.Instance.TrainDict != null)
+        {
+            foreach (var trainData in TrainManager.Instance.TrainDict.Values)
+            {
+                // 엔진은 항목에 넣을 필요 없음
+                if (trainData is TrainEngineData) continue;
+
+                CreateSlot(trainData);
+            }
+        }
+    }
+
+
+    private void CreateSlot(ShopItem itemData)
+    {
+        // 생성
+        ShopSlot slot = Instantiate(_slotPrefab, _slotParent);
+
+        if (slot != null)
+        {
+            // 초기화 (ShopManager, ShopItem)
+            slot.Init(this, itemData);
+        }
+    }
+
+    public void TryPurchaseItem(ShopItem itemData)
+    {
+        // 골드 있는지 확인, 차감
+        if (GameManager.Instance.TryUseGold(itemData.price))
+        {
+            // 열차일 때
+            if (itemData is TrainData trainItem)
+            {
+                // 생성 요청 후 생성 시 룸 프로퍼티 갱신
+                TrainManager.Instance.RequestAddTrain(trainItem.type);
+
+                Debug.Log($"열차 구매 완료: {trainItem.itemName}");
+            }
+            // 아이템일 때
+            else if (itemData is PlayerItemData playerItem)
+            {
+                // Inventory에 아이템 생성 요청
+                // 혹은 바닥에 오브젝트로 떨구기
+                //InventoryManager.Instance.AddItem(playerItem);
+
+                Debug.Log($"아이템 구매 완료: {playerItem.itemName}");
+            }
+        }
+        else
+        {
+            Debug.Log("골드이 부족합니다!");
+
+            // 골드 부족 팝업 띄우기
         }
     }
 }
