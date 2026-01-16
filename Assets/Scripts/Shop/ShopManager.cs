@@ -1,7 +1,6 @@
 using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class ShopManager : MonoBehaviour
 {
@@ -12,9 +11,6 @@ public class ShopManager : MonoBehaviour
     [SerializeField] ShopSlotData _slotPrefab;        // 항목 버튼 프리팹
     [SerializeField] Transform _slotParent;       // 버튼 부모 트랜스폼
 
-    [Header("테스트용 아이템 목록")]
-    [SerializeField] List<ShopItem> _shopPlayerItems;
-
     private void Start()
     {
         GenerateSlots();
@@ -23,9 +19,9 @@ public class ShopManager : MonoBehaviour
     private void GenerateSlots()
     {
         // 아이템 목록
-        foreach (var item in _shopPlayerItems)
+        foreach (var item in ItemManager.Instance.ItemDict)
         {
-            CreateSlot(item);
+            CreateSlot(item.Value);
         }
 
         // 열차 목록

@@ -13,11 +13,12 @@ GameObject:
   - component: {fileID: 5230407840926473868}
   - component: {fileID: 1929659609548285138}
   - component: {fileID: 1161835146325615844}
+  - component: {fileID: 4411880462178130062}
+  - component: {fileID: 5939256108379354285}
   - component: {fileID: 5231009159725759405}
   - component: {fileID: 1076891085264245779}
   - component: {fileID: 5499606231288934782}
   - component: {fileID: 9063458009293855148}
-  - component: {fileID: 5939256108379354285}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -54,10 +55,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26d35d9e1ef51fe4e9161f39c78e8472, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHandler
+  CurrentItem: 
   _scripts:
   - {fileID: 5230407840926473868}
   - {fileID: 1929659609548285138}
   - {fileID: 1161835146325615844}
+  - {fileID: 4411880462178130062}
   _camera: {fileID: 2045652762034455185}
 --- !u!114 &5230407840926473868
 MonoBehaviour:
@@ -110,6 +113,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3015bdc119a9da247a8606565ef20ac0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputHandler
+--- !u!114 &4411880462178130062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756186601399181371}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49a6ebf5a70c0f54fbcef7f4a9ac431f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractHandler
+  _reachDistance: 3
+  _itemLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+--- !u!114 &5939256108379354285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756186601399181371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonTransformView
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!114 &5231009159725759405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,26 +246,11 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 1676165299516714826}
   - {fileID: 5939256108379354285}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &5939256108379354285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1756186601399181371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonTransformView
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!1 &2045652762034455185
 GameObject:
   m_ObjectHideFlags: 0
