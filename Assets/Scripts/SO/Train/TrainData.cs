@@ -26,4 +26,7 @@ public class TrainData : ShopItem
         int index = Mathf.Clamp(level - 1, 0, levelDatas.Count - 1);
         return levelDatas[index];
     }
+    public override void Purchase(ShopItem item)
+    {
+    }
 }

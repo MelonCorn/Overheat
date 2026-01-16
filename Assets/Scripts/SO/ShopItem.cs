@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ShopItem : ScriptableObject
+public abstract class ShopItem : ScriptableObject
 {
     [Header("이름")]
     public string itemName;
@@ -10,4 +10,7 @@ public class ShopItem : ScriptableObject
     public int price;
     [Header("아이콘")]
     public Sprite icon;
+
+    // 결제 시 실행
+    public abstract void Purchase(ShopItem item);
 }
