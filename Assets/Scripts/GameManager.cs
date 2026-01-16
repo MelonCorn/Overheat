@@ -1,20 +1,19 @@
 using Photon.Pun;
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
 
 public class GameManager : MonoBehaviourPun, IPunObservable
 {
     public static GameManager Instance;
+    private GameData _gameData;
 
-    [Header("골드")]
-    [SerializeField] int _gold; // 인스펙터 확인용
-    public int Gold => _gold;
-    public int CurrentDay { get; private set; } // 버틴 날
+    // 편의성으로 만듬
+    public int Gold => _gameData != null ? _gameData.Gold : 0;
 
     public event Action<int> OnGoldChanged;   // 골드 변경 시 이벤트
 
-    private GameData _gameData;
 
     private void Awake()
     {
@@ -28,6 +27,18 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         }
     }
 
+    private void Start()
+    {
+        _gameData = GameData.Instance;
+
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        // 씬 변경 시 골드 갱신
+        if (_gameData != null)
+        {
+            OnGoldChanged?.Invoke(_gameData.Gold);
+        }
+    }
 
     // 골드 추가
     public void AddGold(int amount)
@@ -36,7 +47,11 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         if (PhotonNetwork.IsMasterClient == false) return;
         if (_gameData == null) return;
 
-        _gameData.AddGold(amount);
+        // 데이터에 추가
+        _gameData.Gold += amount;
+
+        // 이벤트 실행
+        OnGoldChanged?.Invoke(_gameData.Gold);
     }
 
     // 골드 사용 시도
@@ -48,8 +63,11 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         // 보유 골드가 요구 골드 이상이면
         if (_gameData.Gold >= amount)
         {
-            // -로 Add
-            _gameData.AddGold(-amount);
+            // 골드 사용
+            _gameData.Gold -= amount;
+
+            // 이벤트 실행
+            OnGoldChanged?.Invoke(_gameData.Gold);
 
             return true;
         }
@@ -61,11 +79,17 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(_gameData.Gold);
+            if (_gameData != null)
+                stream.SendNext(_gameData.Gold);
         }
         else
         {
-            _gameData.SetGold((int)stream.ReceiveNext());
+            if (_gameData != null)
+            {
+                _gameData.Gold = (int)stream.ReceiveNext();
+
+                OnGoldChanged?.Invoke(_gameData.Gold);
+            }
         }
     }
 
