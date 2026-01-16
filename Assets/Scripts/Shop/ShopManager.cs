@@ -1,9 +1,13 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Progress;
 
 public class ShopManager : MonoBehaviour
 {
+    [Header("구매 물품이 나올 위치")]
+    [SerializeField] Transform _itemSpawnPoint;
+
     [Header("상점 품목 버튼 설정")]
     [SerializeField] ShopSlotData _slotPrefab;        // 항목 버튼 프리팹
     [SerializeField] Transform _slotParent;       // 버튼 부모 트랜스폼
@@ -67,15 +71,14 @@ public class ShopManager : MonoBehaviour
             // 아이템일 때
             else if (itemData is PlayerItemData playerItem)
             {
-                // Inventory에 아이템 생성 요청
-                // 혹은 바닥에 오브젝트로 떨구기
-                //InventoryManager.Instance.AddItem(playerItem);
+                // 생성 위치
+                Vector3 spawnPos = _itemSpawnPoint != null ? _itemSpawnPoint.position : Vector3.zero;
+
+                // 네트워크 객체 생성
+                GameObject newItem = PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos, Quaternion.identity);
 
                 Debug.Log($"아이템 구매 완료: {playerItem.itemName}");
             }
-
-            // 구매 후 UI적인 갱신 혹은 소환 등
-            itemData.Purchase();
         }
         else
         {

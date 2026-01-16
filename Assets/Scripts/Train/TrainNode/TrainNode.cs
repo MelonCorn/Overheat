@@ -16,6 +16,8 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     [SerializeField] Transform _rearSocket;
 
 
+    // 기차 번호
+    public int TrainIndex { get; private set; }
     // 참조 데이터
     public TrainData Data { get; private set; }
 

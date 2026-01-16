@@ -12,8 +12,5 @@ public class PlayerItemData : ShopItem
 {
     [Header("아이템 타입")]
     public ItemType itemType;
-
-    public override void Purchase()
-    {
-    }
+    public GameObject prefab;    // name 붙여서 네트워크 생성용
 }
