@@ -1,35 +1,13 @@
-using System;
-using UnityEngine;
 
-public class GameData : MonoBehaviour
+public static class GameData
 {
-    public static GameData Instance;
+    public static int Gold = 0;
+    public static int CurrentDay = 1;
 
-    [Header("확인용")]
-    [SerializeField] int _gold; 
-    [SerializeField] int _surviveDay;
-    public int Gold // 골드
+    // 게임 리셋 (타이틀로 돌아갈 때 호출용)
+    public static void Reset()
     {
-        get => _gold;
-        set => _gold = value;
-    }
-
-    public int SurviveDay   // 생존일
-    {
-        get => _surviveDay;
-        set => _surviveDay = value;
-    }
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Gold = 0;
+        CurrentDay = 1;
     }
 }
