@@ -44,9 +44,6 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
     }
 
-    [Header("상점 체크")]
-    [SerializeField] private bool _isShop = false;
-
     [Header("시작 열차 설정")]
     [SerializeField] List<TrainType> _trainInitList;
 
@@ -79,6 +76,8 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
     // 열차 준비 상태
     public bool IsTrainReady { get; private set; }
+
+    private bool _isShop => GameManager.Instance.IsShop;
 
 
     private void Awake()

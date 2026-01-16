@@ -14,9 +14,6 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
     [Header("스테이지 진행률 슬라이더")]
     [SerializeField] Slider _progressSlider;
 
-    [Header("날짜 텍스트")]
-    [SerializeField] TextMeshProUGUI _daysText;
-
     private float _totalDistance;      // 목표 거리         (클리어 목표)
     private float _currentDistance;    // 현재 이동 거리
 
@@ -70,9 +67,10 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
             float speed = engine.CurrentSpeed;
             _currentDistance += speed * Time.deltaTime;
 
-            // 골인 체크
+            // 현재 이동 거리가 누적 이동거리 이상이면
             if (_currentDistance >= _totalDistance)
             {
+                // 스테이지 클리어
                 ClearStage();
             }
         }
