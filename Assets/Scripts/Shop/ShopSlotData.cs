@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ShopSlot : MonoBehaviour
+public class ShopSlotData : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] Image _icon;

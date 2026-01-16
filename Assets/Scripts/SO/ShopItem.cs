@@ -12,5 +12,5 @@ public abstract class ShopItem : ScriptableObject
     public Sprite icon;
 
     // 결제 시 실행
-    public abstract void Purchase(ShopItem item);
+    public abstract void Purchase();
 }

@@ -5,7 +5,7 @@ using static UnityEditor.Progress;
 public class ShopManager : MonoBehaviour
 {
     [Header("상점 품목 버튼 설정")]
-    [SerializeField] ShopSlot _slotPrefab;        // 항목 버튼 프리팹
+    [SerializeField] ShopSlotData _slotPrefab;        // 항목 버튼 프리팹
     [SerializeField] Transform _slotParent;       // 버튼 부모 트랜스폼
 
     [Header("테스트용 아이템 목록")]
@@ -42,7 +42,7 @@ public class ShopManager : MonoBehaviour
     private void CreateSlot(ShopItem itemData)
     {
         // 생성
-        ShopSlot slot = Instantiate(_slotPrefab, _slotParent);
+        ShopSlotData slot = Instantiate(_slotPrefab, _slotParent);
 
         if (slot != null)
         {
@@ -73,6 +73,9 @@ public class ShopManager : MonoBehaviour
 
                 Debug.Log($"아이템 구매 완료: {playerItem.itemName}");
             }
+
+            // 구매 후 UI적인 갱신 혹은 소환 등
+            itemData.Purchase();
         }
         else
         {
