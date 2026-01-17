@@ -37,12 +37,20 @@ public class PlayerInteractHandler : MonoBehaviour
             if (item != null && item.gameObject.activeSelf)
             {
                 Debug.Log("아이템 감지, 퀵슬롯 추가 시도");
-                // 퀵슬롯에 데이터 넣기 시도
-                if (QuickSlotManager.Instance.TryAddItem(item.ItemName))
+
+                // 퀵슬롯에 데이터 넣기 시도 후 슬롯 번호 가져오기
+                int slotIndex = QuickSlotManager.Instance.TryAddItem(item.ItemName);
+
+                // 퀵슬롯에 데이터 넣기 시도 성공 시
+                if (slotIndex != -1)
                 {
-                    Debug.Log("퀵슬롯 아이템 추가 완료 객체 파괴");
-                    // 성공했으면 바닥에 있는 객체 파괴
-                    item.OnPickItem();
+                    Debug.Log("퀵슬롯 아이템 예측 추가 완료");
+
+                    // 로컬 플레이어 ViewID
+                    int playerViewID = PlayerHandler.localPlayer.photonView.ViewID;
+
+                    // 일단 아이템 픽업 함수 호출 (로컬 플레이어 ID, 슬롯 번호)
+                    item.OnPickItem(playerViewID, slotIndex);
                 }
                 else
                 {

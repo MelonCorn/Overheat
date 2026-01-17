@@ -1,48 +1,138 @@
 using Photon.Pun;
+using System.Collections;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
     [Header("아이템 정보")]
     public string ItemName { get; private set; }
 
-    private Collider _collider; // 줍기용
+    private Collider _collider;         // 줍기용
+    private Renderer[] _renderers;      // 일단 피드백용 렌더러
+
+    // 상태 플래그
+    private bool _isPredicting = false;     // 픽업 시 승인 예측 (승인 대기 상태로 일단 로컬은 픽업한 걸로 침)
+    private bool _isConfirmed = false;      // 픽업 시 승인 성공 (로컬은 승인 완료로 확실히 본인 것으로 받아들임)
+    private bool _isPickUped = false;       // 누군가 픽업한 상태
+
+    // 들어간 퀵슬롯 번호 기억
+    private int _slotIndex = -1;
 
     private void Awake()
     {
         _collider = GetComponentInChildren<Collider>();
+        _renderers = GetComponentsInChildren<Renderer>();
     }
 
 
-    public void OnPickItem()
+    // 비주얼 세팅 (스크립트는 돌아야 하기 때문)
+    private void SetVisual(bool isActive)
     {
-        // 콜라이더 끄기
-        if (_collider != null) _collider.enabled = false;
+        if (_collider != null) _collider.enabled = isActive;
+        foreach (var rend in _renderers) rend.enabled = isActive;
 
-
-        if (PhotonNetwork.IsMasterClient == true)
-        {
-            // 방장이면 직접 파괴
-            PhotonNetwork.Destroy(gameObject);
-        }
-        else
-        {
-            // 방장이 아니면 방장에게 파괴요청
-            photonView.RPC(nameof(RPC_RequestDestroy), RpcTarget.MasterClient);
-        }
+        Debug.Log($"아이템 비주얼 세팅 : {isActive}");
     }
 
-    // 방장이 요청받는 함수
+
+    // 아이템 픽업 시
+    public void OnPickItem(int playerViewID, int slotIndex)
+    {
+        _isPredicting = true;       // 예측중 (미리 선조치)
+        _isConfirmed = false;       // 픽업 확정
+
+        _slotIndex = slotIndex;     // 슬롯 번호 저장
+
+        SetVisual(false);           // 예측으로 일단 숨김
+
+        // 방장에게 픽업 요청
+        photonView.RPC(nameof(RPC_TryPickUp), RpcTarget.MasterClient, playerViewID);
+    }
+
+    // 방장이 픽업 판정
     [PunRPC]
-    private void RPC_RequestDestroy()
+    private void RPC_TryPickUp(int playerViewID)
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (_isPickUped) return; // 이미 누가 가져가서 무시
+
+        _isPickUped = true; // 픽업됨
+
+        // 픽업 주인 알림
+        photonView.RPC(nameof(RPC_PickUpComplete), RpcTarget.All, playerViewID);
+
+        // 지연시간 두고 파괴
+        // 픽업 주인을 알려서 살짝 늦게 픽업한 사람은 롤백을 시키기 위함
+        StartCoroutine(DestroyCoroutine());
+    }
+
+    // 픽업 완료 알림
+    [PunRPC]
+    private void RPC_PickUpComplete(int playerViewID)
+    {
+        // 로컬 플레이어가 있을 때만
+        if (PlayerHandler.localPlayer == null) return;
+
+        // 로컬 플레이어 ViewID
+        int myViewID = PlayerHandler.localPlayer.photonView.ViewID;
+
+        // 본인이 픽업했다면
+        if (myViewID == playerViewID)
         {
-            PhotonNetwork.Destroy(gameObject);
+            _isConfirmed = true; // 픽업 확정
+
+            // 퀵슬롯 사용 허가
+            if (QuickSlotManager.Instance != null && _slotIndex != -1)
+            {
+                QuickSlotManager.Instance.ConfirmItem(_slotIndex, ItemName);
+                Debug.Log($"아이템 픽업 확정");
+            }
+        }
+        // 본인이 픽업했지만 살짝 늦은 경우
+        else if (_isPredicting == true)
+        {
+            Debug.Log($"아이템 픽업 늦음. 롤백");
+            // 롤백으로 퀵슬롯 제거
+            RollbackItem();
         }
     }
     
+    // 픽업 살짝 늦어서 아이템 롤백
+    private void RollbackItem()
+    {
+        if (QuickSlotManager.Instance != null && _slotIndex != -1)
+        {
+            Debug.Log($"[픽업 실패] {_slotIndex}번 슬롯 {ItemName} 롤백합니다.");
+
+            // 퀵슬롯에서 제거 (슬롯 번호, 아이템 ID)
+            QuickSlotManager.Instance.RemoveItem(_slotIndex, ItemName);
+
+            // 롤백 완료했으니까 예측 상태 해제 (OnDestroy에서 두 번 실행 안 되게)
+            _isPredicting = false;
+            _slotIndex = -1;
+        }
+    }
+
+    // 파괴 코루틴
+    private IEnumerator DestroyCoroutine()
+    {
+        // 픽업 완료 알림을 받고 나서 파괴하기 위함
+        yield return new WaitForSeconds(0.5f);
+
+        // 네트워크 객체 파괴
+        PhotonNetwork.Destroy(gameObject);
+    }
+
+    // 파괴될 때 (보험용 / RPC 누락 대비)
+    private void OnDestroy()
+    {
+        // 예측 중인데 확정도 못 받았다면
+        if (_isPredicting && !_isConfirmed)
+        {
+            // 롤백
+            RollbackItem();
+        }
+    }
+
     // 생성 시 네트워크 데이터 풀어서 이름 적용
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {

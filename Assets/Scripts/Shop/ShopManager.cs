@@ -1,5 +1,4 @@
 using Photon.Pun;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ShopManager : MonoBehaviour
@@ -13,9 +12,11 @@ public class ShopManager : MonoBehaviour
 
     private void Start()
     {
+        // 시작하면 상점 항목들 생성
         GenerateSlots();
     }
 
+    // 항목 생성
     private void GenerateSlots()
     {
         // 아이템 목록
@@ -39,6 +40,8 @@ public class ShopManager : MonoBehaviour
     }
 
 
+
+    // 슬롯 버튼 생성
     private void CreateSlot(ShopItem itemData)
     {
         // 생성
