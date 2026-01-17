@@ -30,6 +30,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
             // 내 캐릭터 닉네임 설정 등
 
             // 퀵슬롯 기초 설정
+            QuickSlotManager.Instance.UpdateUI();
         }
         // 리모트 객체일 때
         else

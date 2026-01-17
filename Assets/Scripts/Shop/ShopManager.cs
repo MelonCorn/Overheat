@@ -70,8 +70,11 @@ public class ShopManager : MonoBehaviour
                 // 생성 위치
                 Vector3 spawnPos = _itemSpawnPoint != null ? _itemSpawnPoint.position : Vector3.zero;
 
+                // itemName 포장
+                object[] initData = new object[] { playerItem.itemName };
+
                 // 네트워크 객체 생성
-                GameObject newItem = PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos, Quaternion.identity);
+                GameObject newItem = PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos, Quaternion.identity, 0 , initData);
 
                 Debug.Log($"아이템 구매 완료: {playerItem.itemName}");
             }

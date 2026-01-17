@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ public class QuickSlotManager : MonoBehaviour
     [Header("퀵슬롯 UI 설정")]
     [SerializeField] Image[] _slotImages;   // 퀵슬롯 각 이미지
     [SerializeField] Sprite _defaultSprite; // 빈칸 스프라이트
+    [SerializeField] Outline[] _slotOutlines;   // 퀵슬롯 각 아웃라인
 
 
 
@@ -40,6 +42,7 @@ public class QuickSlotManager : MonoBehaviour
         {
             // 퀵슬롯에 이름 장착
             QuickSlot[CurrentSlotIndex] = itemName;
+            Debug.Log($"퀵슬롯 장착 : {CurrentSlotIndex} 슬롯 = {itemName}");
             // UI 갱신
             UpdateUI();
             return true;
@@ -74,13 +77,6 @@ public class QuickSlotManager : MonoBehaviour
         }
     }
 
-
-    // 현재 슬롯 아이템 이름 반환
-    public string GetCurrentItem()
-    {
-        return QuickSlot[CurrentSlotIndex];
-    }
-
     // 슬롯 변경
     public void SelectSlot(int index)
     {
@@ -103,24 +99,24 @@ public class QuickSlotManager : MonoBehaviour
                 // 빈 스프라이트 넣어주기
                 _slotImages[i].sprite = _defaultSprite;
 
-                // 안보이게 (투명)
-                Color tempColor = _slotImages[i].color;
-                tempColor.a = 0f;
-                _slotImages[i].color = tempColor;
+                _slotImages[i].color = Color.black;
             }
             else
             {
+                Debug.Log("아이템 아이콘 가져오기 시도");
                 // 아이템 리스트에서 아이콘 가져오기
                 if (ItemManager.Instance.ItemDict.ContainsKey(QuickSlot[i]))
                 {
+                    Debug.Log("아이템 아이콘 발견");
                     _slotImages[i].sprite = ItemManager.Instance.ItemDict[QuickSlot[i]].icon;
 
                     // 보이게
-                    Color tempColor = _slotImages[i].color;
-                    tempColor.a = 1f;
-                    _slotImages[i].color = tempColor;
+                    _slotImages[i].color = Color.white;
                 }
             }
+
+
+            _slotOutlines[i].enabled = (i == CurrentSlotIndex);
 
             // 플레이어 아이템 변경
             PlayerHandler.localPlayer.ChangeQuickSlot(QuickSlot[i]);

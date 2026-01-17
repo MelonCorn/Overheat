@@ -30,14 +30,17 @@ public class PlayerInteractHandler : MonoBehaviour
 
         if (Physics.Raycast(ray, out _hit, _reachDistance, _itemLayer))
         {
-            NetworkItem item = _hit.collider.GetComponent<NetworkItem>();
+            // 부모의 컴포넌트 가져오기
+            NetworkItem item = _hit.collider.GetComponentInParent<NetworkItem>();
 
             // item이 있고 아직 파괴되지 않은 상태인지 확인
             if (item != null && item.gameObject.activeSelf)
             {
+                Debug.Log("아이템 감지, 퀵슬롯 추가 시도");
                 // 퀵슬롯에 데이터 넣기 시도
-                if (QuickSlotManager.Instance.TryAddItem(item.ItemID))
+                if (QuickSlotManager.Instance.TryAddItem(item.ItemName))
                 {
+                    Debug.Log("퀵슬롯 아이템 추가 완료 객체 파괴");
                     // 성공했으면 바닥에 있는 객체 파괴
                     item.OnPickItem();
                 }

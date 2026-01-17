@@ -1,10 +1,11 @@
 using Photon.Pun;
 using UnityEngine;
+using static UnityEditor.Progress;
 
-public class NetworkItem : MonoBehaviourPun
+public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
     [Header("아이템 정보")]
-    public string ItemID { get; private set; }
+    public string ItemName { get; private set; }
 
     private Collider _collider; // 줍기용
 
@@ -39,6 +40,17 @@ public class NetworkItem : MonoBehaviourPun
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.Destroy(gameObject);
+        }
+    }
+    
+    // 생성 시 네트워크 데이터 풀어서 이름 적용
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        object[] data = info.photonView.InstantiationData;
+
+        if (data != null && data.Length > 0)
+        {
+            ItemName  = (string)data[0];
         }
     }
 }
