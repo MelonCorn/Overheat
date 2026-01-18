@@ -89,6 +89,11 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
             // 롤백으로 퀵슬롯 제거
             RollbackItem();
         }
+        // 아예 관련 없는 플레이어
+        else
+        {
+            SetVisual(false);
+        }
     }
     
     // 픽업 살짝 늦어서 아이템 롤백
@@ -111,10 +116,30 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
     private IEnumerator DestroyCoroutine()
     {
         // 픽업 완료 알림을 받고 나서 파괴하기 위함
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
 
         // 네트워크 객체 파괴
-        PhotonNetwork.Destroy(gameObject);
+        if (photonView.IsMine)
+        {
+            // 내가 주인이면 바로 파괴
+            PhotonNetwork.Destroy(gameObject);
+        }
+        else
+        {
+            // 주인이 따로 있으면 파괴 명령
+            photonView.RPC(nameof(RPC_DestroySelf), photonView.Owner);
+        }
+    }
+
+    // [주인] 자폭 명령 수행 (★ 추가됨)
+    [PunRPC]
+    private void RPC_DestroySelf()
+    {
+        // 주인만 파괴 권한 있음
+        if (photonView.IsMine)
+        {
+            PhotonNetwork.Destroy(gameObject);
+        }
     }
 
     // 파괴될 때 (보험용 / RPC 누락 대비)

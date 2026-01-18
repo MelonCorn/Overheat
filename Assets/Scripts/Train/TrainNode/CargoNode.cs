@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class CargoNode : TrainNode
 {
@@ -10,6 +9,7 @@ public class CargoNode : TrainNode
     private string[] _socketItems;       // 아이템명
     private GameObject[] _itemObjects;   // 오브젝트
     private bool[] _isPredicting;       // 예측 상태
+    private int[] _predictingSlots;     // 예측중인 퀵슬롯
 
     public override void Init(TrainData data, int level)
     {
@@ -20,12 +20,15 @@ public class CargoNode : TrainNode
         _socketItems = new string[count];
         _itemObjects = new GameObject[count];
         _isPredicting = new bool[count];
+        _predictingSlots = new int[count];
 
         // 소켓 초기화
         for (int i = 0; i < count; i++)
         {
             if (_sockets[i] != null)
                 _sockets[i].Init(this, i);
+
+            _predictingSlots[i] = -1;
         }
     }
 
@@ -51,6 +54,9 @@ public class CargoNode : TrainNode
             // 인벤토리 공간 있으면
             if (slot != -1)
             {
+                // 예측중인 퀵슬롯 설정
+                _predictingSlots[socketIndex] = slot;
+
                 // 로컬에서 일단 아이템 안보이게 설정
                 ApplyVisual(socketIndex, null);
 
@@ -81,6 +87,9 @@ public class CargoNode : TrainNode
                 ApplyVisual(socketIndex, handItem);
                 _isPredicting[socketIndex] = true; // 예측 상태로 변경, 상호작용 잠금
 
+                // 보관할 땐 퀵슬롯 예측 필요없음
+                if (_predictingSlots != null) _predictingSlots[socketIndex] = -1;
+
                 // 열차 매니저에게 현재 화물칸의 index번째 소켓에 손에 들고있는 아이템 등록 요청
                 TrainManager.Instance.RequestSocketInteract(this, socketIndex, handItem, "", slotIndex);
             }
@@ -98,14 +107,20 @@ public class CargoNode : TrainNode
             // 선반 오브젝트 갱신
             ApplyVisual(socketIndex, null);
             // 퀵슬롯 복구
-            QuickSlotManager.Instance.TryAddItem(itemName);
+            if (QuickSlotManager.Instance != null)
+            {
+                QuickSlotManager.Instance.RollbackAddItem(slotIndex, itemName);
+            }
         }
         else // 픽업 실패 (다시 선반으로)
         {
             // 선반 오브젝트 갱신
             ApplyVisual(socketIndex, itemName);
             // 인벤토리에서 다시 삭제
-            QuickSlotManager.Instance.RemoveItem(slotIndex, itemName);
+            if (QuickSlotManager.Instance != null)
+            {
+                QuickSlotManager.Instance.RemoveItem(slotIndex, itemName);
+            }
         }
     }
 
@@ -114,7 +129,7 @@ public class CargoNode : TrainNode
     private void ApplyVisual(int socketIndex, string itemName)
     {
         // 데이터 갱신
-        _socketItems[socketIndex] = itemName;
+        _socketItems[socketIndex] = string.IsNullOrEmpty(itemName) ? "" : itemName;
 
         // 기존 오브젝트 삭제
         if (_itemObjects[socketIndex] != null)
@@ -178,6 +193,25 @@ public class CargoNode : TrainNode
                 if (_socketItems[i] == newItem)
                 {
                     _isPredicting[i] = false; // 예측 상태 해제, 상호작용 잠금 해제
+
+                    // 새 아이템이 비어있다면 (픽업)
+                    if (string.IsNullOrEmpty(newItem))
+                    {
+                        // 예측중이던 퀵슬롯
+                        int slot = _predictingSlots[i];
+
+                        if (slot != -1 && QuickSlotManager.Instance != null)
+                        {
+                            // 퀵슬롯의 아이템
+                            string itemName = QuickSlotManager.Instance.QuickSlot[slot];
+
+                            // 사용 허가
+                            QuickSlotManager.Instance.ConfirmItem(slot, itemName);
+
+                            // 퀵슬롯 예측 삭제
+                            _predictingSlots[i] = -1;
+                        }
+                    }
                 }
             }
 

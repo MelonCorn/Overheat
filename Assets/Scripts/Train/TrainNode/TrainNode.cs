@@ -2,7 +2,6 @@ using Photon.Pun;
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicCallback // 네트워크 객체 생성 후 데이터 콜백
 {

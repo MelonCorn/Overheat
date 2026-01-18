@@ -13,6 +13,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
 
     [Header("리모트 끌 것")]
     [SerializeField] GameObject _camera;        // 카메라
+    [SerializeField] GameObject _canvas;        // 캔버스
 
     public Transform CameraTrans => _camera.transform; 
 
@@ -73,6 +74,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
         if (_camera != null)
         {
             _camera.SetActive(false);
+            _canvas.SetActive(false);
         }
     }
 

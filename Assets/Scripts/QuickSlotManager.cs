@@ -1,7 +1,5 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class QuickSlotManager : MonoBehaviour
@@ -182,6 +180,55 @@ public class QuickSlotManager : MonoBehaviour
 
         // UI 갱신 (사라짐)
         UpdateUI();
+    }
+
+
+    // 선반에 아이템 수납 실패 시 특정 슬롯에 아이템 강제로 다시 롤백
+    public void RollbackAddItem(int slotIndex, string itemName)
+    {
+        // 범위 체크
+        if (slotIndex < 0 || slotIndex >= QuickSlot.Length) return;
+
+        // 해당 슬롯이 비어있다면 (정상적)
+        if (string.IsNullOrEmpty(QuickSlot[slotIndex]))
+        {
+            QuickSlot[slotIndex] = itemName;
+            UpdateUI();
+        }
+        else
+        {
+            // 혹시나 뭔가 있다면 다른 칸 찾아서 넣음
+            Debug.LogWarning($"롤백하려는 {slotIndex}번 슬롯이 이미 차있습니다. 다른 곳에 넣습니다.");
+            TryAddItem(itemName);
+        }
+    }
+
+
+    // 아이템 버리기 시도
+    public string TryDropItem()
+    {
+        int index = CurrentSlotIndex;
+
+        // 아이템이 없으면 실패
+        if (string.IsNullOrEmpty(QuickSlot[index])) return null;
+
+        // 예측 중이면 금지
+        if (IsPredicting[index] == true)
+        {
+            Debug.LogWarning("상호작용 대기 중인 아이템은 버릴 수 없습니다.");
+            return null;
+        }
+
+        // 반환할 아이템
+        string itemName = QuickSlot[index];
+
+        // 아이템 기록 제거
+        QuickSlot[index] = null;
+
+        // UI 갱신
+        UpdateUI();
+
+        return itemName;
     }
 
     // 키보드 입력 처리 (테스트용으로 임시)
