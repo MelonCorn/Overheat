@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using UnityEngine;
 
@@ -36,7 +37,7 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 
     // 아이템 픽업 시
-    public void OnPickItem(int playerViewID, int slotIndex)
+    public void OnPickItem(int slotIndex)
     {
         _isPredicting = true;       // 예측중 (미리 선조치)
         _isConfirmed = false;       // 픽업 확정
@@ -46,19 +47,19 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
         SetVisual(false);           // 예측으로 일단 숨김
 
         // 방장에게 픽업 요청
-        photonView.RPC(nameof(RPC_TryPickUp), RpcTarget.MasterClient, playerViewID);
+        photonView.RPC(nameof(RPC_TryPickUp), RpcTarget.MasterClient);
     }
 
     // 방장이 픽업 판정
     [PunRPC]
-    private void RPC_TryPickUp(int playerViewID)
+    private void RPC_TryPickUp(PhotonMessageInfo info)
     {
         if (_isPickUped) return; // 이미 누가 가져가서 무시
 
         _isPickUped = true; // 픽업됨
 
         // 픽업 주인 알림
-        photonView.RPC(nameof(RPC_PickUpComplete), RpcTarget.All, playerViewID);
+        photonView.RPC(nameof(RPC_PickUpComplete), RpcTarget.All, info.Sender);
 
         // 지연시간 두고 파괴
         // 픽업 주인을 알려서 살짝 늦게 픽업한 사람은 롤백을 시키기 위함
@@ -67,16 +68,10 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
 
     // 픽업 완료 알림
     [PunRPC]
-    private void RPC_PickUpComplete(int playerViewID)
+    private void RPC_PickUpComplete(Player player)
     {
-        // 로컬 플레이어가 있을 때만
-        if (PlayerHandler.localPlayer == null) return;
-
-        // 로컬 플레이어 ViewID
-        int myViewID = PlayerHandler.localPlayer.photonView.ViewID;
-
         // 본인이 픽업했다면
-        if (myViewID == playerViewID)
+        if (player.IsLocal)
         {
             _isConfirmed = true; // 픽업 확정
 

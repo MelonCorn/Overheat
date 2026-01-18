@@ -49,8 +49,8 @@ public class PlayerInteractHandler : MonoBehaviour
                     // 로컬 플레이어 ViewID
                     int playerViewID = PlayerHandler.localPlayer.photonView.ViewID;
 
-                    // 일단 아이템 픽업 함수 호출 (로컬 플레이어 ID, 슬롯 번호)
-                    item.OnPickItem(playerViewID, slotIndex);
+                    // 일단 아이템 픽업 함수 호출 (슬롯 번호)
+                    item.OnPickItem(slotIndex);
                 }
                 else
                 {

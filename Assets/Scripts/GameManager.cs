@@ -79,14 +79,38 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         return false;
     }
 
+
+
+    // 골드 텍스트 갱신
     private void UpdateGoldText()
     {
         _goldText.SetText($"{GameData.Gold:N0}");
     }
+
+    // 생존일 텍스트 갱신
     private void UpdateDayText()
     {
         _SurviveDayText.SetText($"Day {GameData.SurviveDay}");
     }
+
+
+
+    // 아이템 데이터 검색
+    public ShopItem FindItemData(string itemName)
+    {
+        if (ItemManager.Instance.ItemDict.ContainsKey(itemName))
+            return ItemManager.Instance.ItemDict[itemName];
+
+        if (TrainManager.Instance != null)
+        {
+            foreach (var train in TrainManager.Instance.TrainDict.Values)
+            {
+                if (train.itemName == itemName) return train;
+            }
+        }
+        return null;
+    }
+
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
