@@ -217,11 +217,12 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         int index = (int)data[0];            // 순서
         int level = (int)data[1];            // 레벨
         TrainType type = (TrainType)data[2]; // 타입
+        string content = (string)data[3];    // 화물내용
 
         // 매니저에 등록, Init 요청
         if (TrainManager.Instance != null)
         {
-            TrainManager.Instance.RegisterNetworkTrain(this, index, type, level);
+            TrainManager.Instance.RegisterNetworkTrain(this, index, type, level, content);
         }
     }
 

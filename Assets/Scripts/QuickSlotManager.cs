@@ -11,7 +11,7 @@ public class QuickSlotManager : MonoBehaviour
     public string[] QuickSlot { get; private set; } = new string[3];    // 퀵슬롯 아이템 정보
     public int CurrentSlotIndex { get; private set; }                   // 현재 퀵슬롯
 
-    public string CurrentSlotItemName { get; private set; }             // 현재 슬롯 아이템 이름
+    public string CurrentSlotItemName => QuickSlot[CurrentSlotIndex];    // 현재 슬롯 아이템 이름
 
 
     // 예측중인 슬롯

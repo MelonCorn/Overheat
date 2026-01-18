@@ -126,9 +126,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractHandler
   _reachDistance: 3
-  _itemLayer:
+  _interactLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 3072
 --- !u!114 &5939256108379354285
 MonoBehaviour:
   m_ObjectHideFlags: 0

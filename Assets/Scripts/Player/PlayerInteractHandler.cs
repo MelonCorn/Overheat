@@ -5,8 +5,8 @@ using UnityEngine.InputSystem;
 public class PlayerInteractHandler : MonoBehaviour
 {
     [Header("상호작용 설정")]
-    [SerializeField] float _reachDistance = 3f; // 사거리
-    [SerializeField] LayerMask _itemLayer;      // 아이템 레이어
+    [SerializeField] float _reachDistance = 3f;     // 사거리
+    [SerializeField] LayerMask _interactLayer;      // 상호작용 레이어
 
     private Transform _camera;
     private RaycastHit _hit;
@@ -20,19 +20,32 @@ public class PlayerInteractHandler : MonoBehaviour
     {
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
-            TryPickUp();
+            TryInteract();
+        }
+
+        if (Keyboard.current.gKey.wasPressedThisFrame)
+        {
+            // 아이템 버리기
         }
     }
 
-    private void TryPickUp()
+    private void TryInteract()
     {
         Ray ray = new Ray(_camera.position, _camera.forward);
 
-        if (Physics.Raycast(ray, out _hit, _reachDistance, _itemLayer))
+        if (Physics.Raycast(ray, out _hit, _reachDistance, _interactLayer))
         {
-            // 부모의 컴포넌트 가져오기
-            NetworkItem item = _hit.collider.GetComponentInParent<NetworkItem>();
+            // 선반 소켓 감지
+            CargoSocket socket = _hit.collider.GetComponent<CargoSocket>();
+            if (socket != null)
+            {
+                // 선반 발견하면 상호작용 시도
+                socket.OnInteract();
+                return;
+            }
 
+            // 바닥 아이템 감지
+            NetworkItem item = _hit.collider.GetComponentInParent<NetworkItem>();
             // item이 있고 아직 파괴되지 않은 상태인지 확인
             if (item != null && item.gameObject.activeSelf)
             {
@@ -45,9 +58,6 @@ public class PlayerInteractHandler : MonoBehaviour
                 if (slotIndex != -1)
                 {
                     Debug.Log("퀵슬롯 아이템 예측 추가 완료");
-
-                    // 로컬 플레이어 ViewID
-                    int playerViewID = PlayerHandler.localPlayer.photonView.ViewID;
 
                     // 일단 아이템 픽업 함수 호출 (슬롯 번호)
                     item.OnPickItem(slotIndex);

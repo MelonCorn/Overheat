@@ -1,6 +1,8 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public enum TrainType       //  열차 타입
@@ -20,8 +22,9 @@ public struct Train         // 소유 열차 정보
 public class TrainManager : MonoBehaviourPunCallbacks
 {
     // 룸 프로퍼티 키값
-    private const string KEY_TRAIN_TYPES = "TrainTypes";
-    private const string KEY_TRAIN_LEVELS = "TrainLevels";
+    private const string KEY_TRAIN_TYPES = "TrainTypes";        // 타입
+    private const string KEY_TRAIN_LEVELS = "TrainLevels";      // 레벨
+    private const string KEY_TRAIN_CONTENTS = "TrainContents";  // 화물 정보
 
     private static TrainManager _instance;
     public static TrainManager Instance
@@ -58,6 +61,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
     // 현재 열차 배치 (스크립트)
     private List<TrainNode> _currentTrainNodes = new List<TrainNode>();
+
+    // 현재 화물 배치 (화물칸 아이템명 묶음)
+    private List<string> _currentContents = new List<string>();
 
     // 엔진 노드
     public EngineNode MainEngine
@@ -140,12 +146,15 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 룸 프로퍼티 데이터 담을 공간
         int[] types = null;
         int[] levels = null;
+        string[] contents = null;
+
         // 현재 방의 커스텀 프로퍼티 키값 KEY_TRAIN_TYPES이 있을 때
         if (PhotonNetwork.CurrentRoom != null &&
             PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey(KEY_TRAIN_TYPES))
         {
             types = (int[])PhotonNetwork.CurrentRoom.CustomProperties[KEY_TRAIN_TYPES];
             levels = (int[])PhotonNetwork.CurrentRoom.CustomProperties[KEY_TRAIN_LEVELS];
+            contents = (string[])PhotonNetwork.CurrentRoom.CustomProperties[KEY_TRAIN_CONTENTS];
         }
 
         // 룸 데이터 없으면
@@ -170,7 +179,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         {
             for (int i = 0; i < targetCount; i++)
             {
-                SpawnTrain((TrainType)types[i], levels[i]);
+                SpawnTrain((TrainType)types[i], levels[i], contents[i]);
             }
 
             // 상점 로직으로 끝
@@ -184,7 +193,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
             // 목표 생성 수만큼 생성
             for (int i = 0; i < targetCount; i++)
             {
-                SpawnTrain((TrainType)types[i], levels[i]);
+                SpawnTrain((TrainType)types[i], levels[i], contents[i]);
             }
         }
         // 일반 클라이언트
@@ -203,25 +212,27 @@ public class TrainManager : MonoBehaviourPunCallbacks
     {
         List<TrainType> initTypes = new List<TrainType>();
         List<int> initLevels = new List<int>();
+        List<string> initContents = new List<string>();
 
         // 초기 열차 리스트
         foreach (var type in _trainInitList)
         {
             initTypes.Add(type);
             initLevels.Add(1); // 기본 1레벨
+            initContents.Add(""); // 화물 비어있음
         }
 
         // 룸 프로퍼티 저장
-        SaveRoomTrainData(initTypes, initLevels);
+        SaveRoomTrainData(initTypes, initLevels, initContents);
 
         foreach (TrainType type in _trainInitList)
         {
-            SpawnTrain(type, 1);
+            SpawnTrain(type, 1, "");
         }
     }
 
     // 열차 생성
-    private void SpawnTrain(TrainType type, int level)
+    private void SpawnTrain(TrainType type, int level, string content)
     {
         // 열차 딕셔너리에 타입 있는지 확인
         if (TrainDict.TryGetValue(type, out TrainData trainData))
@@ -246,6 +257,12 @@ public class TrainManager : MonoBehaviourPunCallbacks
                 // 노드 초기화
                 newTrainNode.Init(trainData, level);
 
+                // 화물칸 소켓 정보
+                if (newTrainNode is CargoNode cargo)
+                {
+                    cargo.ImportData(content);
+                }
+
                 // 연결
                 if (_currentTrainNodes.Count > 0)
                 {
@@ -265,10 +282,11 @@ public class TrainManager : MonoBehaviourPunCallbacks
                 if (PhotonNetwork.IsMasterClient == true)
                 {
                     // 네트워크 객체 생성 시 넘길 데이터
-                    object[] initData = new object[3];
+                    object[] initData = new object[4];
                     initData[0] = _currentTrainNodes.Count;
                     initData[1] = level;
                     initData[2] = (int)type; // Enum -> int로
+                    initData[3] = content; 
 
                     // 네트워크 객체 생성
                     GameObject newTrainObj = PhotonNetwork.InstantiateRoomObject(trainData.prefab.name, Vector3.zero, Quaternion.identity, 0, initData);
@@ -285,7 +303,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
     }
 
     // 생성된 네트워크 열차 객체 동기화용
-    public void RegisterNetworkTrain(TrainNode node, int index, TrainType type, int level)
+    public void RegisterNetworkTrain(TrainNode node, int index, TrainType type, int level, string content)
     {
         // 리스트 공간 확보 (2번보다 3번이 먼저 왔을 경우)
         while (_currentTrainNodes.Count <= index)
@@ -296,7 +314,13 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 데이터 리스트 공간 확보
         while (_currentTrains.Count <= index)
         {
-            _currentTrains.Add(new Train()); // 빈 껍데기
+            _currentTrains.Add(new Train());
+        }
+
+        // 화물 정보 공간
+        while (_currentContents.Count <= index)
+        {
+            _currentContents.Add("");
         }
 
         // 현재 열차 리스트에 등록
@@ -306,12 +330,19 @@ public class TrainManager : MonoBehaviourPunCallbacks
         Train trainInfo = new Train { type = type, level = level };
         _currentTrains[index] = trainInfo;
 
+        // 현재 화물 정보 리스트에 등록
+        _currentContents[index] = content;
+
         // 데이터(SO) 찾아서 초기화
         if (TrainDict.TryGetValue(type, out TrainData data))
         {
             node.Init(data, level);
-        }
 
+            if (node is CargoNode cargo)
+            {
+                cargo.ImportData(content);
+            }
+        }
 
         Debug.Log($"현재 열차 노드 수 : " + _currentTrainNodes.Count);
 
@@ -400,26 +431,134 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
     }
 
+
+    #region 화물칸 아이템 변경
+    public void RequestSocketInteract(CargoNode node, int socketIndex, string newItem, string oldItem, int slotIndex)
+    {
+        // 화물칸 번호 체크
+        int trainIndex = _currentTrainNodes.IndexOf(node);
+        if (trainIndex == -1) return;
+
+        // 방장에게 확인 요청 (열차 번호, 소켓 번호, 아이템, 아이템, 퀵슬롯 번호)
+        photonView.RPC(nameof(RPC_SocketInteract), RpcTarget.MasterClient, trainIndex, socketIndex, newItem, oldItem, slotIndex, PhotonNetwork.LocalPlayer);
+    }
+
+
+    // 방장 전용 소켓 상호작용 확인
+    [PunRPC]
+    private void RPC_SocketInteract(int trainIndex, int socketIndex, string newItem, string oldItem, int slotIndex, Player player)
+    {
+        // 현재 화물 룸 프로퍼티 데이터 가져오기
+        string[] contents = new string[0];
+        if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey(KEY_TRAIN_CONTENTS))
+            contents = (string[])PhotonNetwork.CurrentRoom.CustomProperties[KEY_TRAIN_CONTENTS];
+
+        // 해당 화물칸의 아이템 문자열 분리
+        string targetContent = contents[trainIndex];
+        string[] items = targetContent.Split(',');
+
+        // 현재 화물에 저장된 아이템
+        string serverItem = (socketIndex < items.Length) ? items[socketIndex] : "";
+
+        // 새 아이템이 비어있으면 픽업
+        // 새 아이템이 존재하면 보관
+        bool isStore = !string.IsNullOrEmpty(newItem);
+        bool isSuccess = false;
+
+        // 검증
+        if (isStore) // 수납 시도
+        {
+            // 소켓이 비어있는지 확인
+            if (string.IsNullOrEmpty(serverItem)) isSuccess = true;
+        }
+        else // 픽업 시도
+        {
+            // 소켓에 아이템이 있는지 확인
+            if (serverItem == oldItem) isSuccess = true;
+        }
+
+        // 결과
+        if (isSuccess)
+        {
+            // 임시 배열
+            List<string> itemList = new List<string>(items);
+
+            // 사이 빈칸 채우기
+            while (itemList.Count <= socketIndex)
+            {
+                itemList.Add("");
+            }
+
+            // 데이터 갱신
+            itemList[socketIndex] = newItem;
+
+            // 다시 문자열 하나로 합치기
+            contents[trainIndex] = string.Join(",", itemList);
+
+            // 룸 프로퍼티 갱신
+            ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable
+            {
+                { KEY_TRAIN_CONTENTS, contents }
+            };
+            PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+        }
+        else
+        {
+            // 실패 알림을 상호작용 시도 요청자에게만
+            photonView.RPC(nameof(RPC_SocketRollback), player, trainIndex, socketIndex, isStore ? newItem : oldItem, slotIndex, isStore);
+        }
+    }
+
+    // 상호작용 실패로 롤백
+    [PunRPC]
+    private void RPC_SocketRollback(int trainIndex, int socketIndex, string itemName, int slotIndex, bool isStore)
+    {
+        if (_currentTrainNodes[trainIndex] is CargoNode cargo)
+            cargo.RollbackSocket(socketIndex, itemName, slotIndex, isStore);
+        
+    }
+    #endregion
+
+
     #region 룸프로퍼티
     // 현재 리스트 상태를 룸 프로퍼티에 덮어쓰기
     private void UpdateRoomProperties()
     {
         List<TrainType> types = new List<TrainType>();
         List<int> levels = new List<int>();
+        List<string> contents = new List<string>();
 
         // 기존 열차 리스트
-        foreach (var train in _currentTrains)
+        foreach (var trainNode in _currentTrainNodes)
         {
-            types.Add(train.type);
-            levels.Add(train.level);
+            // 혹시나 비어있으면 스킵
+            if (trainNode == null) continue;
+
+            // 타입, 레벨 저장
+            types.Add(trainNode.Data.type);
+            int index = _currentTrainNodes.IndexOf(trainNode);
+            levels.Add(_currentTrains[index].level);
+
+            // 화물칸이면 데이터 불러오기
+            if (trainNode is CargoNode cargo)
+            {
+                // 화물칸이 가지고있는 데이터들 압축해서 하나의 문자열로 만듬
+                string cargoString = cargo.ExportData();
+                contents.Add(cargoString);
+            }
+            else
+            {
+                // 화물칸 아니면 내용물 없음
+                contents.Add("");
+            }
         }
 
         // 룸 프로퍼티 저장
-        SaveRoomTrainData(types, levels);
+        SaveRoomTrainData(types, levels, contents);
     }
 
     // 룸 프로퍼티 저장
-    private void SaveRoomTrainData(List<TrainType> types, List<int> levels)
+    private void SaveRoomTrainData(List<TrainType> types, List<int> levels, List<string> contents)
     {
         if (PhotonNetwork.IsMasterClient == false) return;
 
@@ -434,7 +573,8 @@ public class TrainManager : MonoBehaviourPunCallbacks
         ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable
         {
             { KEY_TRAIN_TYPES, typeArr },
-            { KEY_TRAIN_LEVELS, levels.ToArray() }
+            { KEY_TRAIN_LEVELS, levels.ToArray() },
+            { KEY_TRAIN_CONTENTS, contents.ToArray() },
         };
 
         // 실제 룸 프로퍼티 갱신
@@ -444,43 +584,29 @@ public class TrainManager : MonoBehaviourPunCallbacks
     // 룸 프로퍼티 갱신 (열차 배치 순서, 추가)
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
+        // 화물 데이터 변경 시
+        if (propertiesThatChanged.ContainsKey(KEY_TRAIN_CONTENTS))
+        {
+            // 새 화물 정보들
+            string[] newContents = (string[])propertiesThatChanged[KEY_TRAIN_CONTENTS];
+
+            // 정보 순회
+            for (int i = 0; i < newContents.Length; i++)
+            {
+                if (_currentTrainNodes[i] is CargoNode cargo)
+                {
+                    // 각 화물칸에 데이터 주입
+                    cargo.ImportData(newContents[i]);
+                }
+            }
+        }
+
         // 상점 모드이고, 기차 데이터가 변경되었다면
         if (_isShop && propertiesThatChanged.ContainsKey(KEY_TRAIN_TYPES))
         {
             // 열차 새로고침
             RefreshTrain();
         }
-    }
-    #endregion
-
-
-    #region 테스트 버튼
-    // 화물칸 추가 버튼 (테스트용)
-    public void OnClickAddCargo()
-    {
-        if (_currentTrainNodes.Count == 0 || _currentTrains[0].type != TrainType.Engine)
-        {
-            Debug.LogWarning("엔진이 없어서 화물칸을 붙일 수 없습니다!");
-            return;
-        }
-        SpawnTrain(TrainType.Cargo, 1);
-
-        // 룸 프로퍼티 갱신
-        UpdateRoomProperties();
-    }
-
-    // 포탑칸 추가 버튼 (테스트용)
-    public void OnClickAddTurret()
-    {
-        if (_currentTrainNodes.Count == 0 || _currentTrains[0].type != TrainType.Engine)
-        {
-            Debug.LogWarning("엔진이 없어서 화물칸을 붙일 수 없습니다!");
-            return;
-        }
-        SpawnTrain(TrainType.Turret, 1);
-
-        // 룸 프로퍼티 갱신
-        UpdateRoomProperties();
     }
     #endregion
 
@@ -508,7 +634,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
 
         // Type 열차 1레벨로 생성
-        SpawnTrain(type, 1);
+        SpawnTrain(type, 1, "");
 
         // 룸 프로퍼티 갱신
         UpdateRoomProperties();
