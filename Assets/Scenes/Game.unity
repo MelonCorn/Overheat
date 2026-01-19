@@ -2366,8 +2366,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c2ed712e0e6081468183a7f1bd86d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
-  _baseDistance: 10000
-  _distancePerLevel: 2000
+  _baseDistance: 200
+  _distancePerLevel: 20
   _progressSlider: {fileID: 514796227}
 --- !u!4 &1396107598
 Transform:
