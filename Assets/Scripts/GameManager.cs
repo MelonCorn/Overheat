@@ -1,5 +1,4 @@
 using Photon.Pun;
-using System;
 using TMPro;
 using UnityEngine;
 
@@ -93,6 +92,12 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         _SurviveDayText.SetText($"{GameData.SurviveDay} 일차");
     }
 
+
+    // 로컬 플레이어 사망
+    public void LocalPlayerDie()
+    {
+        GameData.LocalDead = true;
+    }
 
 
     // 아이템 데이터 검색

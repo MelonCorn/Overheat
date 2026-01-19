@@ -1,12 +1,11 @@
 using Photon.Pun;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerHandler : MonoBehaviourPun, IPunObservable
 {
     public static PlayerHandler localPlayer;
-
-    public string CurrentItem = "";
 
     [Header("로컬 켤 것")]
     [SerializeField] MonoBehaviour[] _scripts; // PlayerInputHandler 같은 것들
@@ -15,7 +14,9 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
     [SerializeField] GameObject _camera;        // 카메라
     [SerializeField] GameObject _canvas;        // 캔버스
 
-    public Transform CameraTrans => _camera.transform; 
+    public Transform CameraTrans => _camera.transform;
+    public string CurrentItem = "";
+
 
     private void Awake()
     {
@@ -28,7 +29,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
             // 켤 스크립트 켜기
             EnableLocalComponents();
 
-            // 내 캐릭터 닉네임 설정 등
+            // 내 캐릭터 닉네임 설정
 
             // 퀵슬롯 기초 설정
             QuickSlotManager.Instance.UpdateUI();
@@ -50,6 +51,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
         }
     }
 
+    // 로컬 컴포넌트 설정
     private void EnableLocalComponents()
     {
         // 스크립트 켜기
@@ -67,17 +69,13 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
 
     }
 
-    // 끌 것들 끄기
+    // 리모트 컴포넌트 끄기
     private void DisableRemoteComponents()
     {
         // 카메라 끄기
-        if (_camera != null)
-        {
-            _camera.SetActive(false);
-            _canvas.SetActive(false);
-        }
+        if (_camera != null) _camera.SetActive(false);
+        if (_canvas != null) _canvas.SetActive(false);
     }
-
 
     // 퀵슬롯 변경 시
     public void ChangeQuickSlot(string itemName)
@@ -93,6 +91,9 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
             //UpdateHandModel(CurrentItem);
         }
     }
+
+
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
