@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,7 +9,10 @@ public class PlayerInputHandler : MonoBehaviour
 {
     private PlayerInput _input;
 
-    public event Action OnJumpEvent; // 점프 이벤트
+    public event Action OnJumpEvent;     // 점프 이벤트
+    public event Action OnInteractEvent; // 상호작용 이벤트
+    public event Action OnDropEvent;     // 버리기 이벤트
+    public bool IsSprint { get; private set; }     // 달리기 상태
 
     public Vector2 MoveInput { get; private set; } // 이동값 저장
     public Vector2 LookInput { get; private set; } // 회전값 저장
@@ -22,8 +26,14 @@ public class PlayerInputHandler : MonoBehaviour
     {
         _input.actions["Move"].performed += OnMovePerformed;
         _input.actions["Move"].canceled += OnMoveCanceled;
+
         _input.actions["Jump"].performed += OnJump;
 
+        _input.actions["Sprint"].performed += OnSprint;
+        _input.actions["Sprint"].canceled += OnSprint;
+
+        _input.actions["Interact"].performed += OnInteract;
+        _input.actions["DropItem"].performed += OnDropItem;
 
         _input.actions["Look"].performed += OnLookPerformed;
         _input.actions["Look"].canceled += OnLookCanceled;
@@ -33,7 +43,14 @@ public class PlayerInputHandler : MonoBehaviour
     {
         _input.actions["Move"].performed -= OnMovePerformed;
         _input.actions["Move"].canceled -= OnMoveCanceled;
+
         _input.actions["Jump"].performed -= OnJump;
+
+        _input.actions["Sprint"].performed -= OnSprint;
+        _input.actions["Sprint"].canceled -= OnSprint;
+
+        _input.actions["Interact"].performed -= OnInteract;
+        _input.actions["DropItem"].performed -= OnDropItem;
 
         _input.actions["Look"].performed -= OnLookPerformed;
         _input.actions["Look"].canceled -= OnLookCanceled;
@@ -50,6 +67,18 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnJump(InputAction.CallbackContext ctx)
     {
         OnJumpEvent?.Invoke();
+    }
+    private void OnSprint(InputAction.CallbackContext ctx)
+    {
+        IsSprint = ctx.ReadValueAsButton();
+    }
+    private void OnInteract(InputAction.CallbackContext ctx)
+    {
+        OnInteractEvent?.Invoke();
+    }
+    private void OnDropItem(InputAction.CallbackContext ctx)
+    {
+        OnDropEvent?.Invoke();
     }
     private void OnLookPerformed(InputAction.CallbackContext ctx)
     {

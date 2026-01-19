@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerStatHandler : MonoBehaviour
 {
@@ -10,6 +11,11 @@ public class PlayerStatHandler : MonoBehaviour
     [SerializeField] float _maxStamina = 100f;
     [SerializeField] float _staminaRegen = 15f; // 초당 회복량
 
+    [Header("UI")]
+    [SerializeField] Slider _hpSlider;      // 체력 바
+    [SerializeField] Slider _staminaSlider; // 기력 바
+
+
     // 내부 변수
     private int _currentHp;
     private float _currentStamina;
@@ -19,11 +25,16 @@ public class PlayerStatHandler : MonoBehaviour
     {
         _currentHp = _maxHp;
         _currentStamina = _maxStamina;
+        // UI 한 번 갱신
+        UpdateUI();
     }
     private void Update()
     {
         // 기력 회복
         RegenStamina();
+
+        // UI 갱신
+        UpdateUI();
 
         // (테스트용) K키 자해
         if (Keyboard.current.kKey.wasPressedThisFrame) TakeDamage(10);
@@ -115,4 +126,27 @@ public class PlayerStatHandler : MonoBehaviour
         }
     }
     #endregion
+
+    private void UpdateUI()
+    {
+        // 체력
+        if (_hpSlider != null)
+        {
+            // 비율 계산
+            float hpRatio = (float)_currentHp / _maxHp;
+
+            // 반영
+            _hpSlider.value = Mathf.Lerp(0f, 1f, hpRatio);
+        }
+
+        // 기력
+        if (_staminaSlider != null)
+        {
+            // 비율 계산
+            float staminaRatio = _currentStamina / _maxStamina;
+
+            // 반영
+            _staminaSlider.value = Mathf.Lerp(0f, 1f, staminaRatio);
+        }
+    }
 }

@@ -4,12 +4,18 @@ public class PlayerMovementHandler : MonoBehaviour
 {
     private CharacterController _cc;
     private PlayerInputHandler _inputHandler;
+    private PlayerStatHandler _statHandler;
 
     [Header("이동 설정")]
-    [SerializeField] float _moveSpeed = 5f;
+    [SerializeField] float _walkSpeed = 5f;
+    [SerializeField] float _runSpeed = 8f;
     [SerializeField] float _jumpPower = 2f;
     [SerializeField] float _gravity = -20f;
     
+    [Header("기력 소모 설정")]
+    [SerializeField] float _jumpStamina = 10f;
+    [SerializeField] float _runStamina = 15f;
+
     [Header("관성 설정")]
     [SerializeField] float _airSmoothTime = 0.3f;
 
@@ -31,6 +37,7 @@ public class PlayerMovementHandler : MonoBehaviour
     {
         _cc = GetComponent<CharacterController>();
         _inputHandler = GetComponent<PlayerInputHandler>();
+        _statHandler = GetComponent<PlayerStatHandler>();
     }
 
     private void OnEnable()
@@ -56,9 +63,23 @@ public class PlayerMovementHandler : MonoBehaviour
     {
         // 입력 핸들러에서 방향 가져옴
         Vector2 input = _inputHandler.MoveInput;
+        
+        // 기본 속도
+        float currentSpeed = _walkSpeed;
+
+        // 입력 있고, 지면에 붙어있으면서, 달리기 상태일 때
+        if (input != Vector2.zero && _isGrounded && _inputHandler.IsSprint)
+        {
+            // 스태미너 지속 사용
+            // 근데 스태미너 부족하면 통과 못함
+            if (_statHandler.UseStaminaContinuous(_runStamina))
+            {
+                currentSpeed = _runSpeed;
+            }
+        }
 
         // 속도 계산 (입력 방향 * 속도)
-        Vector3 targetVelocity = (transform.right * input.x + transform.forward * input.y) * _moveSpeed;
+        Vector3 targetVelocity = (transform.right * input.x + transform.forward * input.y) * currentSpeed;
 
         // 바닥
         if (_isGrounded)
@@ -87,7 +108,12 @@ public class PlayerMovementHandler : MonoBehaviour
     {
         if (_isGrounded)
         {
-            _verticalVelocity.y = Mathf.Sqrt(_jumpPower * -2f * _gravity);
+            // 기력 있으면 기력 소모 후
+            if (_statHandler.TryUseStamina(_jumpStamina))
+            {
+                // 점프
+                _verticalVelocity.y = Mathf.Sqrt(_jumpPower * -2f * _gravity);
+            }
         }
     }
 

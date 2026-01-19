@@ -3,8 +3,11 @@ using UnityEngine.InputSystem;
 using Photon.Pun;
 using TMPro;
 
+[RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerInteractHandler : MonoBehaviour
 {
+    private PlayerInputHandler _inputHandler;
+
     [Header("상호작용 텍스트")]
     [SerializeField] TextMeshProUGUI _interactText;
 
@@ -18,32 +21,23 @@ public class PlayerInteractHandler : MonoBehaviour
     // 현재 바라보고 있는 상호작용 대상
     private IInteractable _currentInteractable;
 
+    private void Awake()
+    {
+        _inputHandler = GetComponent<PlayerInputHandler>();
+    }
+
     private void Start()
     {
         _camera = PlayerHandler.localPlayer.CameraTrans;
+
+        _inputHandler.OnInteractEvent += Interact;  // 상호작용 이벤트 등록
+        _inputHandler.OnDropEvent += TryDropItem;   // 아이템 버리기 등록
     }
 
     void Update()
     {
         // 상호작용 대상 찾기
         CheckHoverInteract();
-
-        // 상호작용
-        if (Keyboard.current.eKey.wasPressedThisFrame)
-        {
-            // 상호작용 대상 존재하면 상호작용 실행
-            if (_currentInteractable != null)
-            {
-                _currentInteractable.OnInteract();
-            }
-        }
-
-        // 버리기
-        if (Keyboard.current.gKey.wasPressedThisFrame)
-        {
-            // 아이템 버리기
-            TryDropItem();
-        }
     }
 
 
@@ -84,50 +78,19 @@ public class PlayerInteractHandler : MonoBehaviour
     }
 
 
+    // 인풋 핸들러에 등록
     // 상호작용
-    private void TryInteract()
+    private void Interact()
     {
-        Ray ray = new Ray(_camera.position, _camera.forward);
-
-        if (Physics.Raycast(ray, out _hit, _reachDistance, _interactLayer))
+        // 상호작용 대상 존재하면 상호작용 실행
+        if (_currentInteractable != null)
         {
-            // 선반 소켓 감지
-            CargoSocket socket = _hit.collider.GetComponent<CargoSocket>();
-            if (socket != null)
-            {
-                // 선반 발견하면 상호작용 시도
-                socket.OnInteract();
-                return;
-            }
-
-            // 바닥 아이템 감지
-            NetworkItem item = _hit.collider.GetComponentInParent<NetworkItem>();
-            // item이 있고 아직 파괴되지 않은 상태인지 확인
-            if (item != null && item.gameObject.activeSelf)
-            {
-                Debug.Log("아이템 감지, 퀵슬롯 추가 시도");
-
-                // 퀵슬롯에 데이터 넣기 시도 후 슬롯 번호 가져오기
-                int slotIndex = QuickSlotManager.Instance.TryAddItem(item.ItemName);
-
-                // 퀵슬롯에 데이터 넣기 시도 성공 시
-                if (slotIndex != -1)
-                {
-                    Debug.Log("퀵슬롯 아이템 예측 추가 완료");
-
-                    // 일단 아이템 픽업 함수 호출 (슬롯 번호)
-                    item.OnPickItem(slotIndex);
-                }
-                else
-                {
-                    Debug.Log("인벤토리가 꽉 찼습니다");
-                }
-            }
+            _currentInteractable.OnInteract();
         }
     }
 
-
-    // 버리기
+    // 인풋 핸들러에 등록
+    // 아이템 버리기 시도
     private void TryDropItem()
     {
         // 퀵슬롯 매니저에서 들고있는 아이템 떨구기 요청
