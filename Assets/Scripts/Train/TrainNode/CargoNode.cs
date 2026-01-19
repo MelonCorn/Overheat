@@ -98,30 +98,32 @@ public class CargoNode : TrainNode
 
 
     // 판정 실패로 소켓 롤백
-    public void RollbackSocket(int socketIndex, string itemName, int slotIndex, bool isStore)
+    // serverItem 현재 선반 진짜 서버 아이템 (비주얼용)
+    // rollbackItem 내가 수납,픽업 시도한 아이템 (인벤토리 복구용)
+    public void RollbackSocket(int socketIndex, string serverItem, string rollbackItem, int slotIndex, bool isStore)
     {
         _isPredicting[socketIndex] = false; // 예측 상태 해제, 상호작용 잠금 해제
 
-        if (isStore) // 넣기 실패 (다시 인벤으로)
+        ApplyVisual(socketIndex, serverItem); // 선반 오브젝트 갱신
+
+        if (isStore) // 수납 실패
         {
-            // 선반 오브젝트 갱신
-            ApplyVisual(socketIndex, null);
-            // 퀵슬롯 복구
+            // 수납아이템 퀵슬롯에 복구
             if (QuickSlotManager.Instance != null)
             {
-                QuickSlotManager.Instance.RollbackAddItem(slotIndex, itemName);
+                QuickSlotManager.Instance.RollbackAddItem(slotIndex, rollbackItem);
             }
         }
-        else // 픽업 실패 (다시 선반으로)
+        else // 픽업 실패
         {
-            // 선반 오브젝트 갱신
-            ApplyVisual(socketIndex, itemName);
             // 인벤토리에서 다시 삭제
             if (QuickSlotManager.Instance != null)
             {
-                QuickSlotManager.Instance.RemoveItem(slotIndex, itemName);
+                QuickSlotManager.Instance.RemoveItem(slotIndex, rollbackItem);
             }
         }
+
+        _predictingSlots[socketIndex] = -1;
     }
 
 

@@ -503,17 +503,20 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
         else
         {
+            // 실패 시 롤백 아이템
+            string rollbackItem = isStore ? newItem : oldItem;
+
             // 실패 알림을 상호작용 시도 요청자에게만
-            photonView.RPC(nameof(RPC_SocketRollback), player, trainIndex, socketIndex, isStore ? newItem : oldItem, slotIndex, isStore);
+            photonView.RPC(nameof(RPC_SocketRollback), player, trainIndex, socketIndex, serverItem, rollbackItem, slotIndex, isStore);
         }
     }
 
     // 상호작용 실패로 롤백
     [PunRPC]
-    private void RPC_SocketRollback(int trainIndex, int socketIndex, string itemName, int slotIndex, bool isStore)
+    private void RPC_SocketRollback(int trainIndex, int socketIndex, string serverItem, string rollbackItem, int slotIndex, bool isStore)
     {
         if (_currentTrainNodes[trainIndex] is CargoNode cargo)
-            cargo.RollbackSocket(socketIndex, itemName, slotIndex, isStore);
+            cargo.RollbackSocket(socketIndex, serverItem, rollbackItem, slotIndex, isStore);
         
     }
     #endregion
