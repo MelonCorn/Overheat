@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class EngineNode : TrainNode
 {
+    [Header("보일러")]
+    [SerializeField] Boiler _boiler;
+
     [Header("엔진 스탯")]
     private float _maxSpeed;         // 최고 속도
     private float _minSpeed;         // 최저 속도
@@ -53,17 +56,17 @@ public class EngineNode : TrainNode
             _maxSpeed = engineStat.maxSpeed;
             _minSpeed = engineStat.minSpeed;
 
+            // 가속도
+            _accel = engineStat.accel;
+
             // 초기 속도는 최저 속도
             _currentSpeed = _minSpeed;
 
-            // 연료
-            _maxFuel = engineStat.maxFuel;
-
-            // 효율
-            _burnRate = engineStat.burnRate;
-
-            // 가속도
-            _accel = engineStat.accel;
+            // 보일러 연료 설정
+            if (_boiler != null)
+            {
+                _boiler.Init(this, engineStat.maxFuel, engineStat.burnRate);
+            }
         }
     }
     private void Update()
