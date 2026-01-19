@@ -174,7 +174,29 @@ public class CargoNode : TrainNode
         }
     }
 
+    // 소켓에 마우스를 올렸을 때 상호작용 텍스트 반환 (CargoSocket)
+    public string GetInteractText(int socketIndex)
+    {
+        // 범위 체크
+        if (socketIndex < 0 || socketIndex >= _socketItems.Length) return "";
 
+        // 예측 중(잠금) 상태면 텍스트 숨기기
+        if (_isPredicting[socketIndex]) return "";
+
+        // 현재 소켓의 아이템
+        string currentItem = _socketItems[socketIndex];
+
+        // 선반에 아이템이 있을 때 -> 픽업
+        if (!string.IsNullOrEmpty(currentItem))
+        {
+            return "To PickUp";
+        }
+        // 선반이 비어있을 때 -> 수납
+        else
+        {
+            return "To Store";
+        }
+    }
 
 
     // 룸 프로퍼티로 화물 정보 갱신

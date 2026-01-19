@@ -3,7 +3,7 @@ using Photon.Realtime;
 using System.Collections;
 using UnityEngine;
 
-public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
+public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInteractable
 {
     [Header("아이템 정보")]
     public string ItemName { get; private set; }
@@ -162,5 +162,34 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback
         {
             ItemName  = (string)data[0];
         }
+    }
+
+    public void OnInteract()
+    {
+        // 활성화 상태 체크
+        if (gameObject.activeSelf == false) return;
+
+        Debug.Log("아이템을 퀵슬롯에 추가 시도");
+
+        // 퀵슬롯 매니저에게 넣어달라고 요청
+        int slotIndex = QuickSlotManager.Instance.TryAddItem(ItemName);
+
+        // 성공 시 픽업 처리
+        if (slotIndex != -1)
+        {
+            OnPickItem(slotIndex);
+        }
+        else
+        {
+            Debug.Log("인벤토리가 꽉 찼습니다");
+        }
+    }
+
+    public string GetInteractText()
+    {
+        // 예측 중이거나 비활성이면 텍스트 없음
+        if (_isPredicting || _isPickUped || !gameObject.activeSelf) return "";
+
+        return "To PickUp";
     }
 }

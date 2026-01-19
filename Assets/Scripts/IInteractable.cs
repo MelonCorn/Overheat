@@ -1,16 +1,10 @@
-using UnityEngine;
 
-public class IInteractable : MonoBehaviour
+public interface IInteractable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    // 상호작용
+    public void OnInteract();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+    // 상호작용 문구
+    public string GetInteractText();
 }

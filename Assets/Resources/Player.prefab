@@ -230,10 +230,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49a6ebf5a70c0f54fbcef7f4a9ac431f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractHandler
+  _interactText: {fileID: 8711338845781096233}
   _reachDistance: 3
   _interactLayer:
     serializedVersion: 2
-    m_Bits: 3072
+    m_Bits: 7168
 --- !u!114 &5939256108379354285
 MonoBehaviour:
   m_ObjectHideFlags: 0

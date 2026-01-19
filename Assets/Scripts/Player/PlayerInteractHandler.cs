@@ -15,6 +15,9 @@ public class PlayerInteractHandler : MonoBehaviour
     private Transform _camera;
     private RaycastHit _hit;
 
+    // 현재 바라보고 있는 상호작용 대상
+    private IInteractable _currentInteractable;
+
     private void Start()
     {
         _camera = PlayerHandler.localPlayer.CameraTrans;
@@ -22,15 +25,61 @@ public class PlayerInteractHandler : MonoBehaviour
 
     void Update()
     {
+        // 상호작용 대상 찾기
+        CheckHoverInteract();
+
+        // 상호작용
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
-            TryInteract();
+            // 상호작용 대상 존재하면 상호작용 실행
+            if (_currentInteractable != null)
+            {
+                _currentInteractable.OnInteract();
+            }
         }
 
+        // 버리기
         if (Keyboard.current.gKey.wasPressedThisFrame)
         {
             // 아이템 버리기
             TryDropItem();
+        }
+    }
+
+
+    // 상호작용 대상 탐색
+    private void CheckHoverInteract()
+    {
+        // 초기화
+        _currentInteractable = null;
+        string prompt = "";
+
+        // 레이 시작점, 방향
+        Ray ray = new Ray(_camera.position, _camera.forward);
+
+        // 레이캐스트
+        if (Physics.Raycast(ray, out _hit, _reachDistance, _interactLayer))
+        {
+            _currentInteractable = _hit.collider.GetComponentInParent<IInteractable>();
+
+            if (_currentInteractable != null)
+            {
+                // 상호작용 문구 가져오기
+                prompt = _currentInteractable.GetInteractText();
+
+                // 만약 텍스트가 비어있으면 상호작용 불가 상태
+                if (string.IsNullOrEmpty(prompt))
+                {
+                    _currentInteractable = null;
+                }
+            }
+        }
+
+        // UI 적용
+        if (_interactText != null)
+        {
+            _interactText.SetText($"<color=#FFD000>'F'</color> {prompt}");
+            _interactText.gameObject.SetActive(!string.IsNullOrEmpty(prompt));
         }
     }
 
