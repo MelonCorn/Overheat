@@ -48,6 +48,18 @@ public class CargoNode : TrainNode
         if (string.IsNullOrEmpty(currentItem) == false)
         {
             Debug.Log("선반에 아이템 존재");
+
+            // 현재 퀵슬롯이 비어있는지 확인
+            string handItem = QuickSlotManager.Instance.CurrentSlotItemName;
+
+            // 손에 어떤 아이템 들고있으면 픽업 금지
+            if (string.IsNullOrEmpty(handItem) == false)
+            {
+                Debug.Log("손이 비어있지 않아서 선반 아이템을 집을 수 없습니다.");
+                return;
+            }
+
+
             // 일단 퀵슬롯에 아이템 추가
             int slot = QuickSlotManager.Instance.TryAddItem(currentItem);
 
