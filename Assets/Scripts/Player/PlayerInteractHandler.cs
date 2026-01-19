@@ -1,9 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Photon.Pun;
+using TMPro;
 
 public class PlayerInteractHandler : MonoBehaviour
 {
+    [Header("상호작용 텍스트")]
+    [SerializeField] TextMeshProUGUI _interactText;
+
     [Header("상호작용 설정")]
     [SerializeField] float _reachDistance = 3f;     // 사거리
     [SerializeField] LayerMask _interactLayer;      // 상호작용 레이어
