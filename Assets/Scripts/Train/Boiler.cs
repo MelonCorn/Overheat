@@ -29,7 +29,21 @@ public class Boiler : MonoBehaviour, IInteractable
 
     public string GetInteractText()
     {
-        throw new System.NotImplementedException();
+        // 손 아이템 확인
+        string handItem = QuickSlotManager.Instance.CurrentSlotItemName;
+
+        // 아이템 데이터 찾아오기
+        if (ItemManager.Instance.ItemDict.TryGetValue(handItem, out ShopItem data))
+        {
+            // 연료 타입 아이템인지 확인
+            if (data is PlayerItemData itemData && itemData.itemType == ItemType.Fuel)
+            {
+                return $"{itemData.displayName} 태우기";
+            }
+        }
+
+        // 평소엔 상태 표시
+        return $"연료 : {(int)_currentFuel} / {(int)_maxFuel}";
     }
 
     public void OnInteract()
