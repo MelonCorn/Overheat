@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerCameraHandler : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class PlayerCameraHandler : MonoBehaviour
 
     private float _xRotation = 0f; // 현재 수직 회전
 
+    private bool _isTab;
+
     private void Awake()
     {
         _inputHandler = GetComponent<PlayerInputHandler>();
@@ -23,13 +26,31 @@ public class PlayerCameraHandler : MonoBehaviour
     {
         // 로컬 객체일 때
         // 마우스 커서 숨기고 고정
-        //Cursor.lockState = CursorLockMode.Locked;
-        //Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()
     {
-        Rotate();   // 카메라 회전
+        if (_isTab == false)
+            Rotate();   // 카메라 회전
+
+        if (Keyboard.current.tabKey.wasPressedThisFrame)
+        {
+            _isTab = true;
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else if (Keyboard.current.tabKey.wasReleasedThisFrame)
+        {
+            _isTab = false;
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+
     }
 
 

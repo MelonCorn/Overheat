@@ -586,11 +586,25 @@ public class TrainManager : MonoBehaviourPunCallbacks
     // 룸 프로퍼티 갱신 (열차 배치 순서, 추가)
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
-        // 화물 데이터 변경 시
+        // 상점 모드이고, 기차 데이터가 변경되었다면
+        if (_isShop && propertiesThatChanged.ContainsKey(KEY_TRAIN_TYPES))
+        {
+            // 열차 새로고침
+            RefreshTrain();
+
+            // 내용은 알아서 채울테니 그냥 중단
+            return;
+        }
+
+        // 열차 변경 없이
+        // 화물 데이터만 변경 시
         if (propertiesThatChanged.ContainsKey(KEY_TRAIN_CONTENTS))
         {
             // 새 화물 정보들
             string[] newContents = (string[])propertiesThatChanged[KEY_TRAIN_CONTENTS];
+
+            // 혹시라도 열차랑 데이터 수 안 맞으면 중단
+            if (_currentTrainNodes.Count != newContents.Length) return;
 
             // 정보 순회
             for (int i = 0; i < newContents.Length; i++)
@@ -601,13 +615,6 @@ public class TrainManager : MonoBehaviourPunCallbacks
                     cargo.ImportData(newContents[i]);
                 }
             }
-        }
-
-        // 상점 모드이고, 기차 데이터가 변경되었다면
-        if (_isShop && propertiesThatChanged.ContainsKey(KEY_TRAIN_TYPES))
-        {
-            // 열차 새로고침
-            RefreshTrain();
         }
     }
     #endregion
