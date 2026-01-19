@@ -2,6 +2,7 @@ using UnityEngine;
 
 public enum ItemType
 {
+    Fuel,   // 연료
     Potion, // 회복 아이템
     Weapon, // 무기
 }

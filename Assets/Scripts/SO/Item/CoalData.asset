@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a4287edbb9506c45b4baf7475f2ee8a, type: 3}
-  m_Name: AppleData
+  m_Name: CoalData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerItemData
-  displayName: "\uC0AC\uACFC"
-  itemName: Apple
-  desc: "\uC0AC\uACFC\uC785\uB2C8\uB2E4."
-  price: 10
-  icon: {fileID: 21300000, guid: 436c5e63723127948af8857e903f658a, type: 3}
-  itemType: 1
-  prefab: {fileID: 429471891331199967, guid: 9e677d803ca3fa34d9dc52ef41c17141, type: 3}
+  displayName: "\uC11D\uD0C4"
+  itemName: Coal
+  desc: "\uC11D\uD0C4\uC785\uB2C8\uB2E4."
+  price: 0
+  icon: {fileID: 21300000, guid: 66efb24ed46044ab8a039599cbc47d7b, type: 3}
+  itemType: 0
+  prefab: {fileID: 8808426797613977201, guid: f09dcfd7b95861a4fa5c4f86a76cbadf, type: 3}

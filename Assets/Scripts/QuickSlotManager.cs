@@ -40,13 +40,13 @@ public class QuickSlotManager : MonoBehaviour
 
     // 아이템 추가 시도
     // 반환은 슬롯 인덱스 값 (실패는 -1)
-    public int TryAddItem(string itemName)
+    public int TryAddItem(string itemName, bool isPredicting = true)
     {
         // 현재 슬롯 빈칸 체크
         if (string.IsNullOrEmpty(QuickSlot[CurrentSlotIndex]))
         {
             // 슬롯 설정
-            SetSlot(CurrentSlotIndex, itemName, true);
+            SetSlot(CurrentSlotIndex, itemName, isPredicting);
 
             // 현재 슬롯 번호 반환
             return CurrentSlotIndex;
@@ -59,7 +59,7 @@ public class QuickSlotManager : MonoBehaviour
             if (string.IsNullOrEmpty(QuickSlot[i]))
             {
                 // 슬롯 설정
-                SetSlot(i, itemName, true);
+                SetSlot(i, itemName, isPredicting);
 
                 // 넣은 슬롯 번호 반환
                 return i;
