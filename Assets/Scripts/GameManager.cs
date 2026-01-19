@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     // 생존일 텍스트 갱신
     private void UpdateDayText()
     {
-        _SurviveDayText.SetText($"Day {GameData.SurviveDay}");
+        _SurviveDayText.SetText($"{GameData.SurviveDay} 일차");
     }
 
 

@@ -2,7 +2,9 @@ using UnityEngine;
 
 public class ShopItem : ScriptableObject
 {
-    [Header("이름")]
+    [Header("표시 이름")]
+    public string displayName;
+    [Header("스크립트용 이름")]
     public string itemName;
     [Header("설명")]
     public string desc;

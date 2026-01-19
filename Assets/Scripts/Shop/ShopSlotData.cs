@@ -27,8 +27,8 @@ public class ShopSlotData : MonoBehaviour
 
         // UI 갱신
         if (_icon != null) _icon.sprite = data.icon;
-        if (_nameText != null) _nameText.text = data.itemName;
-        if (_priceText != null) _priceText.text = $"{data.price:N0}";
+        if (_nameText != null) _nameText.SetText(data.displayName);
+        if (_priceText != null) _priceText.SetText($"{data.price:N0}");
 
         // 버튼 기능 추가 (결제 요청)
         _button.onClick.AddListener(OnClickSlot);

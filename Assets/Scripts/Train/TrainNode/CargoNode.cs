@@ -189,12 +189,12 @@ public class CargoNode : TrainNode
         // 선반에 아이템이 있을 때 -> 픽업
         if (!string.IsNullOrEmpty(currentItem))
         {
-            return "To PickUp";
+            return "획득";
         }
         // 선반이 비어있을 때 -> 수납
         else
         {
-            return "To Store";
+            return "수납";
         }
     }
 

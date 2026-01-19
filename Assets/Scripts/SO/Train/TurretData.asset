@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c8d3261398e39a48af974d6bb1d067e, type: 3}
   m_Name: TurretData
   m_EditorClassIdentifier: Assembly-CSharp::TrainTurretDataSO
+  displayName: "\uD3EC\uD0D1 \uC5F4\uCC28"
   itemName: Turret
   desc: This is Turret
   price: 150

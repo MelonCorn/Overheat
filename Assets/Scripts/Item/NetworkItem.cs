@@ -190,6 +190,6 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         // 예측 중이거나 비활성이면 텍스트 없음
         if (_isPredicting || _isPickUped || !gameObject.activeSelf) return "";
 
-        return "To PickUp";
+        return "획득";
     }
 }

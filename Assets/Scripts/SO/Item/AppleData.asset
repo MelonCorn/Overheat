@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a4287edbb9506c45b4baf7475f2ee8a, type: 3}
   m_Name: AppleData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerItemData
+  displayName: "\uC0AC\uACFC"
   itemName: Apple
-  desc: This is Apple
+  desc: "\uC0AC\uACFC\uC785\uB2C8\uB2E4."
   price: 10
   icon: {fileID: 21300000, guid: 436c5e63723127948af8857e903f658a, type: 3}
   itemType: 0
