@@ -116,18 +116,21 @@ public class EngineNode : TrainNode
         _currentSpeed = Mathf.Lerp(_currentSpeed, targetSpeed, smoothRate * Time.deltaTime);
     }
 
-    // 연료 추가
-    // 연료 아이템에서 호출
-    public void AddFuel(float amount)
+    // 연료 충전 요청보내기 (Boiler)
+    public void AddFuelRequest(float amount)
     {
-        _currentFuel += amount;
-
-        if (_currentFuel > _maxFuel)
-            _currentFuel = _maxFuel;
-
-        // 연료 UI 갱신 이벤트 호출
+        photonView.RPC(nameof(RPC_AddFuel), RpcTarget.MasterClient, amount);
     }
 
+    // 방장이 실제 연료 추가
+    [PunRPC]
+    private void RPC_AddFuel(float amount)
+    {
+        if (_boiler != null)
+        {
+            //_boiler.AddFuel(amount);
+        }
+    }
 
     // 동기화 (방장이 계산한 연료와 속도를 클라이언트에게 전송)
     public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

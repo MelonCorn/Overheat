@@ -48,6 +48,26 @@ public class Boiler : MonoBehaviour, IInteractable
 
     public void OnInteract()
     {
-        throw new System.NotImplementedException();
+        // 손 아이템
+        string handItem = QuickSlotManager.Instance.CurrentSlotItemName;
+        // 퀵슬롯 번호
+        int slotIndex = QuickSlotManager.Instance.CurrentSlotIndex;
+
+        // 손에 든 아이템 데이터 찾아와서
+        if (ItemManager.Instance.ItemDict.TryGetValue(handItem, out ShopItem data))
+        {
+            // 연료 타입이면
+            if (data is PlayerItemData itemData && itemData.itemType == ItemType.Fuel)
+            {
+                // 엔진에 연료 충전 요청
+                if (_engineNode != null)
+                {
+                    _engineNode.AddFuelRequest(_fuelAddAmount);
+                }
+
+                // 아이템 소모
+                QuickSlotManager.Instance.RemoveItem(slotIndex, handItem);
+            }
+        }
     }
 }
