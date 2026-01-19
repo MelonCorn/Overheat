@@ -24,10 +24,19 @@ public class ShopManager : MonoBehaviourPun
     // 항목 생성
     private void GenerateSlots()
     {
+
         // 아이템 목록
-        foreach (var item in ItemManager.Instance.ItemDict)
+        // ItemManager 있는 아이템 데이터 Dict 사용
+        if (ItemManager.Instance != null && ItemManager.Instance.ItemDict != null)
         {
-            CreateSlot(item.Value);
+            foreach (var itemData in ItemManager.Instance.ItemDict.Values)
+            {
+                // 석탄은 항목에 넣을 필요 없음
+                if (itemData is FuelData) continue;
+
+                // 상점 항목 생성
+                CreateSlot(itemData);
+            }
         }
 
         // 열차 목록

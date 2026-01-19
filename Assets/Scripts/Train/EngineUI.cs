@@ -53,12 +53,6 @@ public class EngineUI : MonoBehaviour
 
         // 텍스트 갱신
         UpdateSpeedText(curSpeed);
-
-        //// 연료용량 바늘 느낌
-        //if (_fuelGaugeImage != null)
-        //{
-        //    _fuelGaugeImage.fillAmount = (maxFuel > 0) ? (curFuel / maxFuel) : 0;
-        //}
     }
 
     // 연료 목표 업데이트
@@ -86,11 +80,6 @@ public class EngineUI : MonoBehaviour
             // SetText는 내부적으로 미리 할당된 char[] 배열을 덮어쓰기라고 함
             _speedText.SetText($"{curSpeed:0} km/h");
         }
-    }
-
-    public void ClickAddFuel()
-    {
-        _targetEngine.AddFuel(5);
     }
 
     private void OnDestroy()

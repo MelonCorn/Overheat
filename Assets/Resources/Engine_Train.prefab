@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EngineNode
   _rearSocket: {fileID: 8189540316866135606}
+  _boiler: {fileID: 1471782928515510517}
 --- !u!114 &1767256785288966860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -462,6 +463,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4279533824622599398}
+  - component: {fileID: 1471782928515510517}
   m_Layer: 12
   m_Name: Boiler
   m_TagString: Untagged
@@ -485,3 +487,15 @@ Transform:
   - {fileID: 3884949678314298171}
   m_Father: {fileID: 486193984599303235}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1471782928515510517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4435966696898680458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b881b83a0732b44b9edac669c9bc85c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boiler

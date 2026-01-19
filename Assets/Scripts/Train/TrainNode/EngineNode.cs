@@ -10,8 +10,6 @@ public class EngineNode : TrainNode
     [Header("엔진 스탯")]
     private float _maxSpeed;         // 최고 속도
     private float _minSpeed;         // 최저 속도
-    private float _maxFuel;          // 최대 연료
-    private float _burnRate;         // 초당 연료 소모
     private float _accel;            // 가속도
 
     // 실시간 변수 (동기화용)
@@ -19,12 +17,7 @@ public class EngineNode : TrainNode
     private float _currentFuel;      // 현재 연료
 
     public float CurrentSpeed => _currentSpeed;
-    public float CurrentFuel => _currentFuel;
-    public float MaxFuel => _maxFuel;
     public float MaxSpeed => _maxSpeed;
-
-    // UI 표시용 연료 비율 (0.0 ~ 1.0)
-    public float FuelRatio => _maxFuel > 0 ? _currentFuel / _maxFuel : 0f;
 
     public event Action<float, float, float> OnEngineStatChanged;
 
@@ -75,35 +68,27 @@ public class EngineNode : TrainNode
         if (PhotonNetwork.IsMasterClient == false) return;
 
         // 연료 소모
-        BurnFuel();
+        if (_boiler != null)
+        {
+            _boiler.BurnFuel();
+        }
 
         // 속도 계산
         CalculateSpeed();
 
-        // 엔진 정보 갱신
-        OnEngineStatChanged?.Invoke(_currentSpeed, _currentFuel, _maxFuel);
-    }
-
-
-    // 연료 소모
-    private void BurnFuel()
-    {
-        // 연료 남아있으면
-        if (_currentFuel > 0)
+        // 엔진 정보 UI 갱신
+        if (_boiler != null)
         {
-            // 초당 소모
-            _currentFuel -= _burnRate * Time.deltaTime;
-
-            // 0 맞추기
-            if (_currentFuel < 0) _currentFuel = 0;
+            OnEngineStatChanged?.Invoke(_currentSpeed, _boiler.CurrentFuel, _boiler.MaxFuel);
         }
     }
+
 
     // 연료 비율에 따른 속도 계산
     private void CalculateSpeed()
     {
         // 연료 비율에 따라 목표 속도 설정
-        float targetSpeed = Mathf.Lerp(_minSpeed, _maxSpeed, FuelRatio);
+        float targetSpeed = Mathf.Lerp(_minSpeed, _maxSpeed, _boiler.FuelRatio);
 
         // 가속도
         float smoothRate = _accel;
@@ -128,7 +113,7 @@ public class EngineNode : TrainNode
     {
         if (_boiler != null)
         {
-            //_boiler.AddFuel(amount);
+            _boiler.AddFuel(amount);
         }
     }
 
@@ -141,16 +126,19 @@ public class EngineNode : TrainNode
         if (stream.IsWriting)
         {
             stream.SendNext(_currentSpeed); // 현재 속도
-            stream.SendNext(_currentFuel);  // 현재 연료
+            stream.SendNext(_boiler.CurrentFuel); // 보일러 연료
         }
         // 클라
         else
         {
             _currentSpeed = (float)stream.ReceiveNext();
-            _currentFuel = (float)stream.ReceiveNext();
+            float fuel = (float)stream.ReceiveNext();
 
-            // 엔진 정보 갱신
-            OnEngineStatChanged?.Invoke(_currentSpeed, _currentFuel, _maxFuel);
+            // 보일러에 연료 적용
+            _boiler.SetFuel(fuel);
+
+            // 엔진 정보 UI 갱신
+            OnEngineStatChanged?.Invoke(_currentSpeed, _boiler.CurrentFuel, _boiler.MaxFuel);
         }
     }
 }
