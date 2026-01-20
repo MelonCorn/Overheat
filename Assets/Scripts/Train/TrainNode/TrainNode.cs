@@ -247,8 +247,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
                 if (player != null && player == PlayerHandler.localPlayer)
                 {
                     Debug.Log($"[ªÁ∏¡] æ∆. ∆¯πﬂø° »÷∏ª∏≤");
-                    if (GameManager.Instance != null)
-                        GameManager.Instance.LocalPlayerDead(true);
+                    player.TakeDamage(999999);
                 }
             }
             // æ∆¿Ã≈€

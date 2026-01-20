@@ -6,7 +6,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
 {
     public static PlayerHandler localPlayer;
 
-    private PlayerInteractHandler _playerInteractHandler;
+    private PlayerStatHandler _statHandler;
+    private PlayerInteractHandler _interactHandler;
 
     [Header("로컬 켤 것")]
     [SerializeField] MonoBehaviour[] _scripts; // PlayerInputHandler 같은 것들
@@ -19,7 +20,6 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
     [SerializeField] float _moveSmoothSpeed = 10f; // 이동
     [SerializeField] float _rotSmoothSpeed = 10f;  // 회전
     [SerializeField] float _teleportDistance = 5.0f; // 순간이동
-    [SerializeField] float _snapDistance = 0.15f; // 바닥 스냅
 
     private Vector3 _networkPosition;       // 네트워크 위치
     private Quaternion _networkRotation;    // 네트워크 회전
@@ -30,7 +30,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
 
     private void Awake()
     {
-        _playerInteractHandler = GetComponent<PlayerInteractHandler>();
+        _statHandler = GetComponent<PlayerStatHandler>();
+        _interactHandler = GetComponent<PlayerInteractHandler>();
 
         // 스폰위치, 회전 넣고 시작
         _networkPosition = transform.position;
@@ -51,7 +52,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
             // 내 캐릭터 닉네임 설정
 
             // 상호작용 카메라 설정
-            _playerInteractHandler.SetCamera(_camera.transform);
+            _interactHandler.SetCamera(_camera.transform);
 
             // 퀵슬롯 기초 설정
             if(QuickSlotManager.Instance != null)
@@ -131,6 +132,12 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
         }
     }
 
+
+    // 플레이어 피격
+    public void TakeDamage(int dmg)
+    {
+        _statHandler.TakeDamage(dmg);
+    }
 
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

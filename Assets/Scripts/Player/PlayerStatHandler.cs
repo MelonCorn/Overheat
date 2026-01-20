@@ -25,6 +25,18 @@ public class PlayerStatHandler : MonoBehaviour
     {
         _currentHp = _maxHp;
         _currentStamina = _maxStamina;
+
+        if (GameManager.Instance.IsShop && GameData.LocalDead)
+        {
+            // 체력 10%로 생성
+            _currentHp = (int)(_maxHp * 0.1f);
+
+            // 부활했으니 사망 상태 Off
+            GameManager.Instance.LocalPlayerDead(false);
+
+            Debug.Log("부상 상태로 부활했습니다. (체력 10%)");
+        }
+
         // UI 한 번 갱신
         UpdateUI();
     }
@@ -76,7 +88,10 @@ public class PlayerStatHandler : MonoBehaviour
         Debug.Log("으앙 죽음");
 
         // 게임 데이터에 일단 로컬 플레이어 사망 기록 (스테이지 클리어 후 상점에서 체력 낮은 상태로 부활)
-        GameManager.Instance.LocalPlayerDie();
+        GameManager.Instance.LocalPlayerDead(true);
+
+        // 입력 차단, 사망 애니메이션 혹은 랙돌
+        // 사망 UI, 관전 카메라 등
     }
     #endregion
 
