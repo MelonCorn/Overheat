@@ -1,15 +1,31 @@
+using Photon.Pun;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+
+[Serializable]
+public class SocketData
+{
+    public string ItemName = "";        // 아이템명
+    public GameObject VisualObject = null; // 오브젝트
+    public bool IsPredicting = false;   // 예측(잠금)상태
+    public int PredictingSlot = -1;     // 예측 연동된 퀵슬롯
+
+    // 초기화/청소 함수
+    public void Clear()
+    {
+        ItemName = "";
+        IsPredicting = false;
+        PredictingSlot = -1;
+    }
+}
 
 public class CargoNode : TrainNode
 {
     [Header("선반")]
     [SerializeField] CargoSocket[] _sockets;
 
-    // 소켓 관리
-    private string[] _socketItems;       // 아이템명
-    private GameObject[] _itemObjects;   // 오브젝트
-    private bool[] _isPredicting;       // 예측 상태
-    private int[] _predictingSlots;     // 예측중인 퀵슬롯
+    private SocketData[] _socketItems;  // 선반 아이템 데이터
 
     public override void Init(TrainData data, int level)
     {
@@ -17,65 +33,71 @@ public class CargoNode : TrainNode
 
         // 선반 소켓 수 만큼 초기화
         int count = _sockets.Length;
-        _socketItems = new string[count];
-        _itemObjects = new GameObject[count];
-        _isPredicting = new bool[count];
-        _predictingSlots = new int[count];
 
-        // 소켓 초기화
-        for (int i = 0; i < count; i++)
+        // 배열 생성
+        _socketItems = new SocketData[count];
+
+        // 배열 순회
+        for(int i = 0; i < count; i++)
         {
+            // 소켓 초기화
             if (_sockets[i] != null)
                 _sockets[i].Init(this, i);
 
-            _predictingSlots[i] = -1;
+            // 데이터 생성
+            _socketItems[i] = new SocketData();
         }
     }
 
 
     // 소켓 상호작용
-    public void InteractSocket(int socketIndex)
+    public void InteractSocket(int index)
     {
         Debug.Log("소켓 상호작용 시도");
-        // 예측 상태면 상호작용 무시 (잠금)
-        if (socketIndex < 0 || socketIndex >= _socketItems.Length) return;
-        if (_isPredicting[socketIndex]) return;
 
-        // 소켓 아이템 이름
-        string currentItem = _socketItems[socketIndex];
+        // 예측 상태면 상호작용 무시 (잠금)
+        if (index < 0 || index >= _socketItems.Length) return;
+
+        // index 소켓의 아이템 데이터
+        SocketData data = _socketItems[index];
+
+        // 예측 중이면 무시
+        if (data.IsPredicting) return;
 
         // 아이템 있으면 픽업 시도
-        if (string.IsNullOrEmpty(currentItem) == false)
+        if (string.IsNullOrEmpty(data.ItemName) == false)
         {
             Debug.Log("선반에 아이템 존재");
 
-            // 현재 퀵슬롯이 비어있는지 확인
+            // 아이템 이름 백업
+            string targetItemName = data.ItemName;
+
+            // 현재 퀵슬롯 아이템
             string handItem = QuickSlotManager.Instance.CurrentSlotItemName;
 
-            // 손에 어떤 아이템 들고있으면 픽업 금지
+            // 손에 어떤 아이템 들고있으면 픽업 패스
             if (string.IsNullOrEmpty(handItem) == false)
             {
                 Debug.Log("손이 비어있지 않아서 선반 아이템을 집을 수 없습니다.");
                 return;
             }
 
-
             // 일단 퀵슬롯에 아이템 추가
-            int slot = QuickSlotManager.Instance.TryAddItem(currentItem);
+            int slot = QuickSlotManager.Instance.TryAddItem(targetItemName);
 
             // 인벤토리 공간 있으면
             if (slot != -1)
             {
-                // 예측중인 퀵슬롯 설정
-                _predictingSlots[socketIndex] = slot;
+                data.PredictingSlot = slot;  // 예측중인 퀵슬롯 설정
+                data.IsPredicting = true;    // 예측 상태로 변경, 상호작용 잠금
 
                 // 로컬에서 일단 아이템 안보이게 설정
-                ApplyVisual(socketIndex, null);
-
-                _isPredicting[socketIndex] = true; // 예측 상태로 변경, 상호작용 잠금
+                // 여기서 data.ItemName ""로 초기화
+                ApplyVisual(index, null);
 
                 // 열차 매니저에게 현재 화물칸의 index번째 소켓의 아이템을 퀵슬롯에 등록 요청
-                TrainManager.Instance.RequestSocketInteract(this, socketIndex, "", currentItem, slot);
+                // 여기서 백업해둔 targetItemName 사용
+                TrainManager.Instance.RequestSocketInteract(this, index, "", targetItemName, slot);
             }
         }
         // 비어있으면 수납 시도
@@ -96,14 +118,13 @@ public class CargoNode : TrainNode
                 QuickSlotManager.Instance.RemoveItem(slotIndex, handItem);
 
                 // 선반 오브젝트 갱신
-                ApplyVisual(socketIndex, handItem);
-                _isPredicting[socketIndex] = true; // 예측 상태로 변경, 상호작용 잠금
+                ApplyVisual(index, handItem);
 
-                // 보관할 땐 퀵슬롯 예측 필요없음
-                if (_predictingSlots != null) _predictingSlots[socketIndex] = -1;
+                data.IsPredicting = true;  // 예측 상태로 변경, 상호작용 잠금
+                data.PredictingSlot = -1;  // 보관은 퀵슬롯 예측 필요 없음
 
                 // 열차 매니저에게 현재 화물칸의 index번째 소켓에 손에 들고있는 아이템 등록 요청
-                TrainManager.Instance.RequestSocketInteract(this, socketIndex, handItem, "", slotIndex);
+                TrainManager.Instance.RequestSocketInteract(this, index, handItem, "", slotIndex);
             }
         }
     }
@@ -112,96 +133,158 @@ public class CargoNode : TrainNode
     // 판정 실패로 소켓 롤백
     // serverItem 현재 선반 진짜 서버 아이템 (비주얼용)
     // rollbackItem 내가 수납,픽업 시도한 아이템 (인벤토리 복구용)
-    public void RollbackSocket(int socketIndex, string serverItem, string rollbackItem, int slotIndex, bool isStore)
+    public void RollbackSocket(int index, string serverItem, string rollbackItem, int slotIndex, bool isStore)
     {
-        _isPredicting[socketIndex] = false; // 예측 상태 해제, 상호작용 잠금 해제
+        // 범위 체크
+        if (index < 0 || index >= _socketItems.Length) return;
 
-        ApplyVisual(socketIndex, serverItem); // 선반 오브젝트 갱신
+        // index 소켓의 아이템 데이터
+        SocketData data = _socketItems[index];
+
+        data.IsPredicting = false; // 예측 상태 해제, 상호작용 잠금 해제
+        data.PredictingSlot = -1;
+
+        ApplyVisual(index, serverItem); // 선반 오브젝트 갱신
 
         if (isStore) // 수납 실패
         {
             // 수납아이템 퀵슬롯에 복구
             if (QuickSlotManager.Instance != null)
-            {
                 QuickSlotManager.Instance.RollbackAddItem(slotIndex, rollbackItem);
-            }
         }
         else // 픽업 실패
         {
             // 인벤토리에서 다시 삭제
             if (QuickSlotManager.Instance != null)
-            {
                 QuickSlotManager.Instance.RemoveItem(slotIndex, rollbackItem);
-            }
         }
-
-        _predictingSlots[socketIndex] = -1;
     }
 
 
-    // 소켓 오브젝트 처리
-    private void ApplyVisual(int socketIndex, string itemName)
+    // 선반 오브젝트 처리
+    private void ApplyVisual(int index, string itemName)
     {
-        // 데이터 갱신
-        _socketItems[socketIndex] = string.IsNullOrEmpty(itemName) ? "" : itemName;
+        // index 소켓의 아이템 데이터
+        SocketData data = _socketItems[index];
 
-        // 기존 오브젝트 삭제
-        if (_itemObjects[socketIndex] != null)
-            Destroy(_itemObjects[socketIndex]);
+        // 이름 갱신
+        data.ItemName = string.IsNullOrEmpty(itemName) ? "" : itemName;
+
+        // 선반 오브젝트가 있을 때
+        if (data.VisualObject != null)
+        {
+            // 반납용 PoolableObject 컴포넌트
+            PoolableObject poolObject = data.VisualObject.GetComponent<PoolableObject>();
+
+            // 컴포넌트 있으면
+            if (poolObject != null)
+                poolObject.Release(); // 풀로 돌아감
+            else
+                Destroy(data.VisualObject); // 풀링 대상 아니면 파괴
+
+            // 비우기
+            data.VisualObject = null;
+        }
 
         // 혹시나 아이템 비어있으면 무시
         if (string.IsNullOrEmpty(itemName)) return;
 
-        // 새 오브젝트 생성
-        if (ItemManager.Instance.ItemDict.ContainsKey(itemName))
+        // 아이템명으로 찾아오기
+        if (ItemManager.Instance.ItemDict.TryGetValue(itemName, out ShopItem itemData))
         {
-            // 새 아이템
-            var itemData = ItemManager.Instance.ItemDict[itemName];
-
             // 아이템 맞으면
-            if(itemData is PlayerItemData data)
+            if(itemData is PlayerItemData pData)
             {
-                // 생성
-                GameObject newItem = Instantiate(data.prefab, _sockets[socketIndex].transform);
+                // 프리팹에서 풀 컴포넌트 찾기
+                PoolableObject prefabPoolable = pData.prefab.GetComponent<PoolableObject>();
 
-                // 위치 초기화
-                newItem.transform.localPosition = Vector3.zero;
-                newItem.transform.localRotation = Quaternion.identity;
+                // 풀 오브젝트면
+                if (prefabPoolable != null)
+                {
+                    // 로컬 오브젝트로 활성화
+                    PoolableObject newObj = PoolManager.Instance.Spawn(prefabPoolable, _sockets[index].transform);
 
-                // 소켓에 등록
-                _itemObjects[socketIndex] = newItem;
+                    // 선반 모드로 전환
+                    NetworkItem netItem = newObj.GetComponent<NetworkItem>();
+                    if (netItem != null)
+                        netItem.SwitchToSocketMode();
+
+                    // 데이터 등록
+                    data.VisualObject = newObj.gameObject;
+                }
+                else
+                {
+                    // PoolableObject가 안 붙어 있으면 걍 생성
+                    GameObject newItem = Instantiate(pData.prefab, _sockets[index].transform);
+
+                    // 위치 지정
+                    newItem.transform.localPosition = Vector3.zero;
+                    newItem.transform.localRotation = Quaternion.identity;
+
+                    // 수동 제거
+                    var pv = newItem.GetComponent<PhotonView>();
+                    if (pv != null) Destroy(pv);
+                    var collider = newItem.GetComponent<Collider>();
+                    if (collider != null) Destroy(collider);
+
+                    // 데이터 등록
+                    data.VisualObject = newItem;
+                }
             }
         }
     }
 
     // 소켓에 마우스를 올렸을 때 상호작용 텍스트 반환 (CargoSocket)
-    public string GetInteractText(int socketIndex)
+    public string GetInteractText(int index)
     {
         // 범위 체크
-        if (socketIndex < 0 || socketIndex >= _socketItems.Length) return "";
+        if (index < 0 || index >= _socketItems.Length) return "";
+
+        // index 소켓의 아이템 데이터
+        SocketData data = _socketItems[index];
 
         // 예측 중(잠금) 상태면 텍스트 숨기기
-        if (_isPredicting[socketIndex]) return "";
+        if (data.IsPredicting) return "";
 
         // 현재 소켓의 아이템
-        string currentItem = _socketItems[socketIndex];
+        string currentItem = data.ItemName;
 
         // 선반에 아이템이 있을 때 -> 픽업
-        if (!string.IsNullOrEmpty(currentItem))
-        {
-            return "획득";
-        }
-        // 선반이 비어있을 때 -> 수납
-        else
-        {
-            return "수납";
-        }
+        return string.IsNullOrEmpty(data.ItemName) ? "수납" : "획득";
     }
 
+
+    // 화물칸이 파괴될 때
+    public void ClearAllSockets()
+    {
+        if (_socketItems == null) return;
+
+        // 선반 순회
+        foreach (var data in _socketItems)
+        {
+            // 비주얼 있으면
+            if (data.VisualObject != null)
+            {
+                // 풀 스크립트 가져와서
+                var poolObj = data.VisualObject.GetComponent<PoolableObject>();
+                // 있으면 반납
+                if (poolObj != null) poolObj.Release();
+                // 없으면 파괴
+                else Destroy(data.VisualObject);
+                // 비주얼 비우고
+                data.VisualObject = null;
+            }
+            // 나머지 데이터 초기화
+            data.Clear();
+        }
+    }
 
     // 룸 프로퍼티로 화물 정보 갱신
     public void ImportData(string content)
     {
+        Debug.Log($"[ImportData] 데이터 수신: {content}");
+
+        // null로 들어왔으면 "" 일단 할당
         if (content == null) content = "";
 
         // 한줄인 아이템 목록 소켓별로 분리
@@ -212,47 +295,49 @@ public class CargoNode : TrainNode
         {
             // 새로운 갱신된 아이템
             string newItem = (i < items.Length) ? items[i] : "";
+            SocketData data = _socketItems[i];
 
-            // 예측 중이 아닐 때 소켓 아이템 바로 설정
-            if (_isPredicting[i] == false)
+            // 예측 중이 아닐 때 (남이 바꾼거 갱신)
+            if (data.IsPredicting == false)
             {
-                if (_socketItems[i] != newItem)
-                {
-                    ApplyVisual(i, newItem);
-                }
+                // 내거랑 다르면 소켓 아이템 바로 설정
+                if (data.ItemName != newItem) ApplyVisual(i, newItem);
             }
-            // 수납 혹은 픽업으로 예측 중
+            // 수납 혹은 픽업으로 예측 중 (내가 바꾼거 예측)
             else
             {
+                Debug.Log("서버 승인 완료! 잠금 해제");
                 // 예측 중인데 데이터 들어왔으면 성공
                 // 내가 바꾼 거랑 서버랑 같으면
-                if (_socketItems[i] == newItem)
+                if (data.ItemName == newItem)
                 {
-                    _isPredicting[i] = false; // 예측 상태 해제, 상호작용 잠금 해제
+                    data.IsPredicting = false; // 예측 상태 해제, 상호작용 잠금 해제
 
                     // 새 아이템이 비어있다면 (픽업)
                     if (string.IsNullOrEmpty(newItem))
                     {
-                        // 예측중이던 퀵슬롯
-                        int slot = _predictingSlots[i];
-
-                        if (slot != -1 && QuickSlotManager.Instance != null)
+                        // 예측 중이던 퀵슬롯이고 퀵슬롯 매니저 있을 때
+                        if (data.PredictingSlot != -1 && QuickSlotManager.Instance != null)
                         {
                             // 퀵슬롯의 아이템
-                            string itemName = QuickSlotManager.Instance.QuickSlot[slot];
+                            string itemName = QuickSlotManager.Instance.QuickSlot[data.PredictingSlot];
 
                             // 사용 허가
-                            QuickSlotManager.Instance.ConfirmItem(slot, itemName);
+                            QuickSlotManager.Instance.ConfirmItem(data.PredictingSlot, itemName);
 
-                            // 퀵슬롯 예측 삭제
-                            _predictingSlots[i] = -1;
+                            // 퀵슬롯 예측 상태 해지
+                            data.PredictingSlot = -1;
                         }
                     }
+                }
+                else
+                {
+                    Debug.Log($"데이터 불일치 대기중.. Local: {data.ItemName} / Server: {newItem}");
                 }
             }
 
             // 데이터 최신으로 갱신
-            _socketItems[i] = newItem;
+            data.ItemName = newItem;
         }
     }
 
@@ -260,6 +345,15 @@ public class CargoNode : TrainNode
     public string ExportData()
     {
         if (_socketItems == null) return "";
-        return string.Join(",", _socketItems);
+
+        // 반환용 리스트
+        List<string> list = new List<string>();
+
+        // 소켓 순회돌면서 아이템명 리스트
+        foreach (var data in _socketItems)
+            list.Add(data.ItemName);
+
+        // ,으로 구분해서 화물칸 아이템 데이터 리스트 반환
+        return string.Join(",", list);
     }
 }

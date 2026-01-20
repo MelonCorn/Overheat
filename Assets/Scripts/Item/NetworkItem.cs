@@ -10,6 +10,7 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
 
     private Collider _collider;         // 줍기용
     private Renderer[] _renderers;      // 일단 피드백용 렌더러
+    private PhotonView _pv;             // 일반, 네트워크 스위칭
 
     // 상태 플래그
     private bool _isPredicting = false;     // 픽업 시 승인 예측 (승인 대기 상태로 일단 로컬은 픽업한 걸로 침)
@@ -23,6 +24,7 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
     {
         _collider = GetComponentInChildren<Collider>();
         _renderers = GetComponentsInChildren<Renderer>();
+        _pv = GetComponent<PhotonView>();
     }
 
     // 네트워크 풀링 대비
@@ -36,6 +38,10 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
 
         // 비주얼 다시 켜기
         SetVisual(true);
+        
+        // 이전 선반용으로 사용되었을 수 있기 때문에 켜줌
+        if (_collider != null) _collider.enabled = true;
+        if (_pv != null) _pv.enabled = true;
     }
 
     // 비주얼 세팅 (스크립트는 돌아야 하기 때문)
@@ -206,5 +212,21 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
 
         canInteract = true;
         return "획득";
+    }
+
+
+    // 선반에 놓을 때 호출
+    // 선반모드
+    public void SwitchToSocketMode()
+    {
+        // 소켓보다 콜라이더 크면 안되니까
+        if (_collider != null) _collider.enabled = false;
+
+        // ViewID 충돌 있을 수도 있고 끄면 걍 네트워크 동기화 차단됨
+        if (_pv != null) _pv.enabled = false;
+
+        // 위치 초기화
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
     }
 }

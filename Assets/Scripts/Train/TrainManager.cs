@@ -363,8 +363,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
         int count = _currentTrainNodes.Count - index;
 
         // 데이터 리스트에서 즉시 삭제해서 잘라버림
-        _currentTrainNodes.RemoveRange(index, count);
-        _currentTrains.RemoveRange(index, count);
+        _currentTrainNodes.RemoveRange(index, count);   // 열차 노드 리스트
+        _currentTrains.RemoveRange(index, count);       // 열차 데이터 리스트 (Train)
+        _currentContents.RemoveRange(index, count);     // 화물 데이터
 
         // 룸 프로퍼티 갱신 (열차 리스트)
         if (PhotonNetwork.IsMasterClient)

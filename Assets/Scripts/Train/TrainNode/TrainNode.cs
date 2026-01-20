@@ -204,6 +204,10 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         // 폭발 범위 내 오브젝트 처리
         ExplosionHit();
 
+        // 만약 이 열차가 화물 열차라면
+        // 선반 비우기 
+        if (this is CargoNode cargo) cargo.ClearAllSockets();
+
         // UI 파괴
         OnExplode?.Invoke();
 
