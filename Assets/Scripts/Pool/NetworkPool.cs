@@ -57,6 +57,9 @@ public class NetworkPool : MonoBehaviour, IPunPrefabPool
     // 파괴 요청
     public void Destroy(GameObject gameObject)
     {
+        // 플레이어같이 아예 그냥 지혼자 파괴되는 애들 예외
+        if (gameObject == null) return;
+
         // PoolableObject 컴포넌트 있는지 확인
         PoolableObject poolObj = gameObject.GetComponent<PoolableObject>();
 
@@ -68,7 +71,8 @@ public class NetworkPool : MonoBehaviour, IPunPrefabPool
         else
         {
             // 풀링 대상 아니면 진짜 파괴
-            Destroy(gameObject);
+            // GameObject붙여서 무한 재귀 방지
+            GameObject.Destroy(gameObject);
         }
     }
 }
