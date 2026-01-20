@@ -23,10 +23,13 @@ public class CargoSocket : MonoBehaviour, IInteractable
             _parentNode.InteractSocket(_index);
         }
     }
-    public string GetInteractText()
+    public string GetInteractText(out bool canInteract)
     {
+        canInteract = false;
+
         if (_parentNode != null)
         {
+            canInteract = true;
             // 화물칸에서 현재 소켓 아이템 여부에 따라 문구 반환
             return _parentNode.GetInteractText(_index);
         }

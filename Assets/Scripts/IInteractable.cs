@@ -6,5 +6,5 @@ public interface IInteractable
 
 
     // 상호작용 문구
-    public string GetInteractText();
+    public string GetInteractText(out bool canInteract);
 }

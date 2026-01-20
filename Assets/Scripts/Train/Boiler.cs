@@ -75,8 +75,11 @@ public class Boiler : MonoBehaviour, IInteractable
     }
 
 
-    public string GetInteractText()
+    public string GetInteractText(out bool canInteract)
     {
+        // 기본적으로 상호작용 가능
+        canInteract = true;
+
         // 상점 (아무나, 맨손)
         if (GameManager.Instance.IsShop == true)
         {
@@ -94,6 +97,8 @@ public class Boiler : MonoBehaviour, IInteractable
             // 참가자
             else
             {
+                // 상호작용 불가능
+                canInteract = false;
                 return "출발 대기 중 ...";
             }
         }
@@ -109,6 +114,8 @@ public class Boiler : MonoBehaviour, IInteractable
         }
 
         // 손에 석탄 없을 때 상태 표시
+        // 상호작용 불가능
+        canInteract = false;
         return $"연료 : {(int)_currentFuel} / {(int)_maxFuel}";
     }
 

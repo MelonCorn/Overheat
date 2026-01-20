@@ -6,8 +6,10 @@ public class ItemDispenser : MonoBehaviour, IInteractable
     [Header("공급할 아이템")]
     [SerializeField] string _targetItemName = "Coal";   // 일단 석탄 포대 밖에 없어서 기본은 Fuel
 
-    public string GetInteractText()
+    public string GetInteractText(out bool canInteract)
     {
+        canInteract = true;
+
         return $"{_targetItemName} 획득";
     }
 

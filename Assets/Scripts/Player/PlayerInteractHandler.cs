@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Photon.Pun;
 using TMPro;
 
@@ -50,7 +49,9 @@ public class PlayerInteractHandler : MonoBehaviour
     {
         // 초기화
         _currentInteractable = null;
-        string prompt = "";
+        
+        string prompt = "";         // 내용
+        bool canInteract = false;   // 상호작용 가능 여부
 
         // 레이 시작점, 방향
         Ray ray = new Ray(_camera.position, _camera.forward);
@@ -63,7 +64,7 @@ public class PlayerInteractHandler : MonoBehaviour
             if (_currentInteractable != null)
             {
                 // 상호작용 문구 가져오기
-                prompt = _currentInteractable.GetInteractText();
+                prompt = _currentInteractable.GetInteractText(out canInteract);
 
                 // 만약 텍스트가 비어있으면 상호작용 불가 상태
                 if (string.IsNullOrEmpty(prompt))
@@ -76,7 +77,14 @@ public class PlayerInteractHandler : MonoBehaviour
         // UI 적용
         if (_interactText != null)
         {
-            _interactText.SetText($"<color=#FFD000>'F'</color> {prompt}");
+            // 상호작용 가능하면 'F' 붙이고
+            // 아니면 텍스트만 출력
+            if (canInteract)
+                _interactText.SetText($"<color=#FFD000>'F'</color> {prompt}");
+            else
+                // 안내 문구
+                _interactText.SetText($"<color=#CCCCCC>{prompt}</color>");
+
             _interactText.gameObject.SetActive(!string.IsNullOrEmpty(prompt));
         }
     }

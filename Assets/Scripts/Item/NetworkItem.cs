@@ -197,11 +197,14 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         }
     }
 
-    public string GetInteractText()
+    public string GetInteractText(out bool canInteract)
     {
+        canInteract = false;
+
         // 예측 중이거나 비활성이면 텍스트 없음
         if (_isPredicting || _isPickUped || !gameObject.activeSelf) return "";
 
+        canInteract = true;
         return "획득";
     }
 }
