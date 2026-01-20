@@ -159,10 +159,10 @@ public class EngineNode : TrainNode
             {
                 // 보일러에 연료 적용
                 _boiler.SetFuel(fuel);
-
-                // 엔진 정보 UI 갱신
-                OnEngineStatChanged?.Invoke(_currentSpeed, _boiler.CurrentFuel, _boiler.MaxFuel);
             }
+
+            // 엔진 정보 UI 갱신
+            OnEngineStatChanged?.Invoke(_currentSpeed, _boiler.CurrentFuel, _boiler.MaxFuel);
         }
     }
 }
