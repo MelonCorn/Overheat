@@ -155,7 +155,7 @@ public class EngineNode : TrainNode
             float fuel = (float)stream.ReceiveNext();
 
             // 네트워크 무시 시간 지나면
-            if (Time.time >= _networkIgnoreTime)
+            if (Time.time >= _lastNetworkIgnoreTime)
             {
                 // 보일러에 연료 적용
                 _boiler.SetFuel(fuel);

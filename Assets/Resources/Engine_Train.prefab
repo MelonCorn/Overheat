@@ -52,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EngineNode
   _rearSocket: {fileID: 8189540316866135606}
   _boiler: {fileID: 1471782928515510517}
+  _networkIgnoreTime: 0.3
 --- !u!114 &1767256785288966860
 MonoBehaviour:
   m_ObjectHideFlags: 0
