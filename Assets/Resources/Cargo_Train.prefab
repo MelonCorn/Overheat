@@ -862,6 +862,7 @@ GameObject:
   - component: {fileID: 8555217796217155076}
   - component: {fileID: -4805454882420814375}
   - component: {fileID: 1234139693818358911}
+  - component: {fileID: 4150364145139569135}
   m_Layer: 7
   m_Name: Cargo_Train
   m_TagString: Untagged
@@ -948,6 +949,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9144f30be0a8ad548bd61183051509fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolableObject
+--- !u!65 &4150364145139569135
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8054259242214271907}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5.622988, y: 10.468433, z: 11.064762}
+  m_Center: {x: 0, y: 3.678135, z: -5.1980495}
 --- !u!1 &8342235131867456719
 GameObject:
   m_ObjectHideFlags: 0

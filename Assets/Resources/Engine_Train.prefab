@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2098067401686625922}
   - component: {fileID: 1767256785288966860}
   - component: {fileID: 7547301502804744115}
+  - component: {fileID: 6643782600324714060}
   m_Layer: 7
   m_Name: Engine_Train
   m_TagString: Untagged
@@ -88,6 +89,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9144f30be0a8ad548bd61183051509fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolableObject
+--- !u!65 &6643782600324714060
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 150980348517921138}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5.6239557, y: 9.390811, z: 12.3188}
+  m_Center: {x: 0, y: 4.4001594, z: -5.1543717}
 --- !u!1 &2215439601591910928
 GameObject:
   m_ObjectHideFlags: 0

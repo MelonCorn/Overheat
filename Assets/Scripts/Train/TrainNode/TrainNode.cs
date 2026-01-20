@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicCallback // 네트워크 객체 생성 후 데이터 콜백
@@ -223,14 +224,17 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
         if (boxCol == null) return;
 
+        Debug.Log("박스 콜라이더 유, 폭발 처리 시작");
+
         // 범위 설정
         Vector3 worldCenter = transform.TransformPoint(boxCol.center);
         Vector3 halfSize = boxCol.size * 0.5f;
         halfSize.y += 5.0f;
-        Quaternion orientation = transform.rotation;
 
         // 박스 범위 내 잡힌 모든 _explosionMask 콜라이더 저장
-        Collider[] hits = Physics.OverlapBox(worldCenter, halfSize, orientation, _explosionMask);
+        Collider[] hits = Physics.OverlapBox(worldCenter, halfSize, transform.rotation, _explosionMask);
+
+        Debug.Log($"박스 범위 내 모든 explosion 레이어 오브젝트 수 {hits.Length}");
 
         // 모든 콜라이더 순회
         foreach (var hit in hits)
@@ -241,6 +245,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
             // 로컬 플레이어
             if ((hitLayerMask & _localPlayerLayer) != 0)
             {
+                Debug.Log($"로컬플레이어 감지");
                 // 로컬 플레이어인지 확인 (레이어로 이미 걸렀는데 혹시 몰라서 이중 체크)
                 PlayerHandler player = hit.GetComponentInParent<PlayerHandler>();
 
@@ -253,6 +258,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
             // 아이템
             else if ((hitLayerMask & _itemLayer) != 0)
             {
+                Debug.Log($"버려진 아이템");
                 // 아이템의 PhotonView 확인
                 PhotonView itemPhotonview = hit.GetComponentInParent<PhotonView>();
 

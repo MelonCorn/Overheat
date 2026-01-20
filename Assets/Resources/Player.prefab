@@ -282,7 +282,7 @@ MonoBehaviour:
   _airSmoothTime: 0.3
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 4288
   _groundCheckRadius: 0.4
   _groundCheckOffset: 0.5
   _groundCheckDistance: 0.2

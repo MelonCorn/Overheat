@@ -51,6 +51,10 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
 
             // 내 캐릭터 닉네임 설정
 
+            // 로컬 플레이어 레이어 설정
+            int layerIndex = LayerMask.NameToLayer("LocalPlayer");
+            if (layerIndex != -1) gameObject.layer = layerIndex;
+
             // 상호작용 카메라 설정
             _interactHandler.SetCamera(_camera.transform);
 

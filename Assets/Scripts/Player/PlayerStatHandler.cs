@@ -92,6 +92,13 @@ public class PlayerStatHandler : MonoBehaviour
 
         // 입력 차단, 사망 애니메이션 혹은 랙돌
         // 사망 UI, 관전 카메라 등
+        // 테스트용 임시 차단
+        var input = GetComponent<PlayerInputHandler>();
+        var move = GetComponent<PlayerMovementHandler>();
+        input.enabled = false; // 키보드 입력 차단
+        move.enabled = false;
+
+
     }
     #endregion
 

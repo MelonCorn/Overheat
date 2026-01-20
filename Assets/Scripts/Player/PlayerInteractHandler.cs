@@ -5,6 +5,7 @@ using TMPro;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerInteractHandler : MonoBehaviour
 {
+    private PlayerMovementHandler _movementHandler;
     private PlayerInputHandler _inputHandler;
 
     [Header("상호작용 텍스트")]
@@ -22,6 +23,7 @@ public class PlayerInteractHandler : MonoBehaviour
 
     private void Awake()
     {
+        _movementHandler = GetComponent<PlayerMovementHandler>();
         _inputHandler = GetComponent<PlayerInputHandler>();
     }
 
@@ -124,8 +126,8 @@ public class PlayerInteractHandler : MonoBehaviour
                 // 생성 지점 (기본은 레이 시작점)
                 Vector3 spawnPos = rayOrigin;
 
-                // 레이캐스트 아래로 10 길이
-                if (Physics.Raycast(rayOrigin, Vector3.down, out _hit, 10.0f))
+                // 레이캐스트 아래로 10 길이 땅 레이어만
+                if (Physics.Raycast(rayOrigin, Vector3.down, out _hit, 10.0f, _movementHandler.GroundLayer))
                 {
                     // 생성 지점은 히트한 위치
                     spawnPos = _hit.point;
