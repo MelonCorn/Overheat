@@ -3095,6 +3095,7 @@ MonoBehaviour:
   _isShop: 0
   _goldText: {fileID: 44768187}
   _SurviveDayText: {fileID: 341828667}
+  _loadSceneName: Shop
 --- !u!4 &1878544096
 Transform:
   m_ObjectHideFlags: 0

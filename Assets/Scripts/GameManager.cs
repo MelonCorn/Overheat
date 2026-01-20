@@ -1,8 +1,8 @@
-using ExitGames.Client.Photon;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
+[RequireComponent(typeof(NetworkPool))]
 public class GameManager : MonoBehaviourPun, IPunObservable
 {
     public static GameManager Instance;
@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     [Header("텍스트")]
     [SerializeField] TextMeshProUGUI _goldText;            // 골드
     [SerializeField] TextMeshProUGUI _SurviveDayText;      // 생존일
+
+    [Header("이동할 씬")]
+    [SerializeField] string _loadSceneName = "GameScene";
 
     public bool IsShop => _isShop;
 
@@ -29,9 +32,9 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         }
 
         // 네트워크 풀 사용
-        NetworkPool myPool = GetComponent<NetworkPool>();
+        NetworkPool customPool = GetComponent<NetworkPool>();
 
-        PhotonNetwork.PrefabPool = myPool;
+        PhotonNetwork.PrefabPool = customPool;
     }
 
     private void Start()
@@ -50,6 +53,44 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         UpdateGoldText();
         UpdateDayText();
     }
+
+    #region 씬 변경
+    // 열차 출발 요청
+    public void RequestChangeScene()
+    {
+        // 방장이면 바로 출발
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ChangeScene();
+        }
+        // 방장이 아니면 출발 요청
+        else
+        {
+            photonView.RPC(nameof(RPC_RequestChangeScene), RpcTarget.MasterClient);
+        }
+    }
+
+    // 출발 요청
+    [PunRPC]
+    private void RPC_RequestChangeScene()
+    {
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        ChangeScene();
+    }
+
+    // 씬 이동
+    private void ChangeScene()
+    {
+        Debug.Log("씬 이동");
+        // 방 닫기
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+
+        // 모두 다 같이 이동
+        PhotonNetwork.LoadLevel(_loadSceneName);
+    }
+    #endregion
+
 
     // 골드 추가
     public void AddGold(int amount)
@@ -89,13 +130,13 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     // 골드 텍스트 갱신
     private void UpdateGoldText()
     {
-        _goldText.SetText($"{GameData.Gold:N0}");
+        _goldText?.SetText($"{GameData.Gold:N0}");
     }
 
     // 생존일 텍스트 갱신
     private void UpdateDayText()
     {
-        _SurviveDayText.SetText($"{GameData.SurviveDay} 일차");
+        _SurviveDayText?.SetText($"{GameData.SurviveDay} 일차");
     }
 
 
