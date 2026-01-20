@@ -42,7 +42,11 @@ public class PoolManager : MonoBehaviour
                 return obj;
             },
             actionOnGet: (obj) => obj.gameObject.SetActive(true),       // 꺼낼 때 활성화
-            actionOnRelease: (obj) => obj.gameObject.SetActive(false),  // 반납할 때 비활성화
+            actionOnRelease: (obj) =>
+            {
+                obj.gameObject.SetActive(false);    // 반납할 때 비활성화
+                obj.transform.SetParent(transform); // 반납은 무조건 PoolManager 아래로
+            },  
             actionOnDestroy: (obj) => Destroy(obj.gameObject),          // 풀이 꽉 찼거나 터질 때 진짜 파괴
                                                               
             defaultCapacity: 10, // 기본 개수
@@ -59,6 +63,9 @@ public class PoolManager : MonoBehaviour
     {
         // 오브젝트 가져옴
         PoolableObject obj = GetObject(prefab);
+
+        // PoolManager 자식으로
+        obj.transform.SetParent(transform);
 
         // 위치 세팅
         obj.transform.position = position;
