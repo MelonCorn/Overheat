@@ -1,11 +1,12 @@
 using Photon.Pun;
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerHandler : MonoBehaviourPun, IPunObservable
 {
     public static PlayerHandler localPlayer;
+
+    private PlayerInteractHandler _playerInteractHandler;
 
     [Header("로컬 켤 것")]
     [SerializeField] MonoBehaviour[] _scripts; // PlayerInputHandler 같은 것들
@@ -20,6 +21,11 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
 
     private void Awake()
     {
+        _playerInteractHandler = GetComponent<PlayerInteractHandler>();
+    }
+
+    private void Start()
+    {
         // 로컬 객체일 때
         if (photonView.IsMine == true)
         {
@@ -30,6 +36,9 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
             EnableLocalComponents();
 
             // 내 캐릭터 닉네임 설정
+
+            // 상호작용 카메라 설정
+            _playerInteractHandler.SetCamera(_camera.transform);
 
             // 퀵슬롯 기초 설정
             QuickSlotManager.Instance.UpdateUI();

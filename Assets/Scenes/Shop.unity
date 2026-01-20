@@ -620,6 +620,50 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &441339160
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 441339161}
+  - component: {fileID: 441339162}
+  m_Layer: 0
+  m_Name: PoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &441339161
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441339160}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 743418238}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &441339162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441339160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef5a0bb1da49714b99d230a8084feba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PoolManager
 --- !u!1 &484367167
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,6 +674,7 @@ GameObject:
   m_Component:
   - component: {fileID: 484367169}
   - component: {fileID: 484367168}
+  - component: {fileID: 484367171}
   - component: {fileID: 484367170}
   m_Layer: 0
   m_Name: GameManager
@@ -691,6 +736,23 @@ MonoBehaviour:
   sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &484367171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 484367167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59094932bc34f474a82be9e5859546fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkPoolManager
+  _networkPrefabs:
+  - {fileID: 1234139693818358911, guid: 809fed2a0f5b063469cc82d96cf22ea4, type: 3}
+  - {fileID: -8758523366128538463, guid: 79d9af64b98ce66499c3589ea8170fc2, type: 3}
+  - {fileID: 5843901296592451507, guid: f09dcfd7b95861a4fa5c4f86a76cbadf, type: 3}
+  - {fileID: -4925531393011033924, guid: 9e677d803ca3fa34d9dc52ef41c17141, type: 3}
 --- !u!1 &548878389
 GameObject:
   m_ObjectHideFlags: 0
@@ -932,6 +994,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 441339161}
   - {fileID: 1820175776}
   - {fileID: 349975659}
   - {fileID: 484367169}

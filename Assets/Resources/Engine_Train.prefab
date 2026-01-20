@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 486193984599303235}
   - component: {fileID: 2098067401686625922}
   - component: {fileID: 1767256785288966860}
+  - component: {fileID: 7547301502804744115}
   m_Layer: 7
   m_Name: Engine_Train
   m_TagString: Untagged
@@ -74,6 +75,18 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &7547301502804744115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 150980348517921138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9144f30be0a8ad548bd61183051509fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PoolableObject
 --- !u!1 &2215439601591910928
 GameObject:
   m_ObjectHideFlags: 0

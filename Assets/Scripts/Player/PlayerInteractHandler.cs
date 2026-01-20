@@ -28,8 +28,6 @@ public class PlayerInteractHandler : MonoBehaviour
 
     private void Start()
     {
-        _camera = PlayerHandler.localPlayer.CameraTrans;
-
         _inputHandler.OnInteractEvent += Interact;  // 상호작용 이벤트 등록
         _inputHandler.OnDropEvent += TryDropItem;   // 아이템 버리기 등록
     }
@@ -38,6 +36,12 @@ public class PlayerInteractHandler : MonoBehaviour
     {
         // 상호작용 대상 찾기
         CheckHoverInteract();
+    }
+
+    // 카메라 설정
+    public void SetCamera(Transform cameraTrans)
+    {
+        _camera = cameraTrans;
     }
 
 

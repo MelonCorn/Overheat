@@ -154,8 +154,8 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         }
     }
 
-    // 파괴될 때 (보험용 / RPC 누락 대비)
-    private void OnDestroy()
+    // 비활성화될 때 (보험용 / RPC 누락 대비)
+    private void OnDisable()
     {
         // 예측 중인데 확정도 못 받았다면
         if (_isPredicting && !_isConfirmed)

@@ -1,3 +1,4 @@
+using ExitGames.Client.Photon;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
@@ -28,7 +29,9 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         }
 
         // 네트워크 풀 사용
-        PhotonNetwork.PrefabPool = new DefaultPool();
+        NetworkPool myPool = GetComponent<NetworkPool>();
+
+        PhotonNetwork.PrefabPool = myPool;
     }
 
     private void Start()

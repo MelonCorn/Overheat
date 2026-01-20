@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 7703969941497097959}
   - component: {fileID: 7932186883149349877}
   - component: {fileID: 1899852967147318386}
+  - component: {fileID: -8758523366128538463}
   m_Layer: 7
   m_Name: Turret_Train
   m_TagString: Untagged
@@ -102,6 +103,18 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &-8758523366128538463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6183726779034400174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9144f30be0a8ad548bd61183051509fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PoolableObject
 --- !u!1 &8512258272379617699
 GameObject:
   m_ObjectHideFlags: 0

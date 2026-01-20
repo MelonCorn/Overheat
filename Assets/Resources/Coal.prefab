@@ -122,6 +122,7 @@ GameObject:
   - component: {fileID: 7656127911291937169}
   - component: {fileID: 8009386612231841443}
   - component: {fileID: 6362866173631728995}
+  - component: {fileID: 5843901296592451507}
   m_Layer: 10
   m_Name: Coal
   m_TagString: Untagged
@@ -179,3 +180,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc6f2b02c4cef0d409d3c6f04461660a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkItem
+--- !u!114 &5843901296592451507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8808426797613977201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9144f30be0a8ad548bd61183051509fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PoolableObject
