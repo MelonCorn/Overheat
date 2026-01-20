@@ -141,10 +141,7 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     // 생존일 텍스트 갱신
     private void UpdateDayText()
     {
-        if(TrainManager.Instance.MainEngine != null)
-            _SurviveDayText?.SetText($"{GameData.SurviveDay} 일차");
-        else
-            _SurviveDayText?.SetText($"대기 중");
+        _SurviveDayText?.SetText($"{GameData.SurviveDay} 일차");
     }
 
 

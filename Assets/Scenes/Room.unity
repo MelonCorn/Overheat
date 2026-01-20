@@ -310,7 +310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   _isShop: 0
   _goldText: {fileID: 0}
-  _SurviveDayText: {fileID: 904127499}
+  _SurviveDayText: {fileID: 0}
   _loadSceneName: Game
 --- !u!4 &484367169
 Transform:
