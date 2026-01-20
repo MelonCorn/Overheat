@@ -77,91 +77,82 @@ public class Boiler : MonoBehaviour, IInteractable
 
     public string GetInteractText()
     {
-        // 아이템이 석탄일 때 텍스트 분기
-        if (IsCoalInHand(out ShopItem data))
+        // 상점 (아무나, 맨손)
+        if (GameManager.Instance.IsShop == true)
         {
-            // 상점이나 대기실이면
-            // EngineNode가 없거나 상점이면 출발
-            if (GameManager.Instance.IsShop || _engineNode == null)
-            {
-                // 대기실인데 방장 아니면
-                if (GameManager.Instance.IsShop == false && PhotonNetwork.IsMasterClient == true)
-                    return "방장만 조작할 수 있습니다.";
-
-                // 상점이면 클라이언트도 가능
-                // 방장이면 항상
-                return "열차 출발 !";
-            }
-
-            // 인게임이면 상호작용 + 연료
-            return $"{((FuelData)data).displayName} 태우기\n연료 : {(int)_currentFuel} / {(int)_maxFuel}";
+            return "다음 지역으로 출발";
         }
 
-        // 석탄 없을 때 상태 표시
+        // 대기실 (맨손)
+        if (_engineNode == null)
+        {
+            // 방장
+            if (PhotonNetwork.IsMasterClient == true)
+            {
+                return "열차 가동 !";
+            }
+            // 참가자
+            else
+            {
+                return "출발 대기 중 ...";
+            }
+        }
+
+        // 퀵슬롯 확인
+        if (QuickSlotManager.Instance != null)
+        {
+            // 손에 석탄이 들려있을 때만
+            if (IsCoalInHand(out ShopItem data))
+            {
+                return $"{((FuelData)data).displayName} 태우기\n연료 : {(int)_currentFuel} / {(int)_maxFuel}";
+            }
+        }
+
+        // 손에 석탄 없을 때 상태 표시
         return $"연료 : {(int)_currentFuel} / {(int)_maxFuel}";
     }
 
     public void OnInteract()
     {
-        // 상점이면 일단 임시로 중단 나중에 레디로 변경
-        if (GameManager.Instance.IsShop) return;
+        // 상점 (아무나, 맨손)
+        if (GameManager.Instance.IsShop == true)
+        {
+            // 씬 전환 요청
+            GameManager.Instance.RequestChangeScene();
+            return;
+        }
 
-        // 손에 든 게 석탄인지 확인
+        // 대기실 (방장만, 맨손)
+        if (_engineNode == null)
+        {
+            if (PhotonNetwork.IsMasterClient == true)
+            {
+                Debug.Log("대기실에서 게임 시작 요청");
+                GameManager.Instance.RequestChangeScene();
+            }
+            return;
+        }
+
+        // null 방어
+        if (QuickSlotManager.Instance == null) return;
+
         string handItem = QuickSlotManager.Instance.CurrentSlotItemName;
         int slotIndex = QuickSlotManager.Instance.CurrentSlotIndex;
 
-        if (ItemManager.Instance.ItemDict.TryGetValue(handItem, out ShopItem data))
+        // 석탄인지 확인
+        if (IsCoalInHand(out ShopItem data))
         {
-            if (data is FuelData fuelData && fuelData.itemType == ItemType.Fuel)
+            if (data is FuelData fuelData)
             {
-                // 인게임 (엔진 연결돼 있고 상점 아님)
-                if (_engineNode != null && GameManager.Instance.IsShop == false)
+                // 인게임 로직: 연료 채우기 + 아이템 소모
+                float amount = fuelData._fuelAddAmount;
+                if (_engineNode != null)
                 {
-                    // 연료 채우고 속도 올림
-                    float amount = fuelData._fuelAddAmount;
-                    // 엔진에 요청
                     _engineNode.AddFuelRequest(amount);
-                    // 아이템 삭제
-                    QuickSlotManager.Instance.RemoveItem(slotIndex, handItem);
                 }
-                // 대기실이거나 상점
-                else
-                {
-                    // 게임 시작 요청
-                    TryStartGame(slotIndex, handItem);
-                }
-            }
-        }
-    }
 
-    // 대기실, 상점
-    // 게임 시작 시도
-    private void TryStartGame(int slotIndex, string handItem)
-    {
-        // 대기실
-        if (GameManager.Instance.IsShop == false)
-        {
-            // 방장만 가능
-            if (PhotonNetwork.IsMasterClient == true)
-            {
-                // 아이템 소모
                 QuickSlotManager.Instance.RemoveItem(slotIndex, handItem);
-                // 게임 매니저에게 출발 요청
-                GameManager.Instance.RequestChangeScene();
             }
-            else
-            {
-                Debug.Log("대기실에서는 방장만 출발시킬 수 있습니다.");
-            }
-        }
-        // 상점
-        else
-        {
-            // 누구나 가능
-            // 아이템 소모
-            QuickSlotManager.Instance.RemoveItem(slotIndex, handItem);
-            // 게임 매니저에 출발 요청 (RPC)
-            GameManager.Instance.RequestChangeScene();
         }
     }
 }

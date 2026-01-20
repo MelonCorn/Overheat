@@ -15,18 +15,16 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
             yield return null;
         }
 
+        // 대기실에서 스킵
         // 열차 매니저 준비 완료할 때까지 대기
         // TrainManager가 존재하고, Ready될 때 까지
-        yield return new WaitUntil(() => TrainManager.Instance != null && TrainManager.Instance.IsTrainReady);
+        if (TrainManager.Instance != null)
+        {
+            // 열차 생성 완료될 때까지 대기
+            yield return new WaitUntil(() => TrainManager.Instance.IsTrainReady);
+        }
 
         // 객체 스폰해서 로컬 플레이어로 지정
         PlayerHandler.localPlayer = PhotonNetwork.Instantiate(_playerPrefab.name, _spawnPoint.position, Quaternion.identity).GetComponent<PlayerHandler>();
-    }
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-    }
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
     }
 }

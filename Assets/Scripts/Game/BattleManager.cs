@@ -94,13 +94,12 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
         if (_isStageClear) return;
         _isStageClear = true;
 
-        Debug.Log("스테이지 클리어!");
+        Debug.Log("오늘 하루도 생존!");
 
         // 네트워크 열차 객체 싹 지우고 
         if (TrainManager.Instance != null) TrainManager.Instance.ClearNetworkTrains();
-
-        // 상점으로 이동
-        PhotonNetwork.LoadLevel("Shop");
+        // 씬 변경 요청
+        if (GameManager.Instance != null) GameManager.Instance.RequestChangeScene();
     }
 
     // 데이터 동기화

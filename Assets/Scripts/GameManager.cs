@@ -83,8 +83,14 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     private void ChangeScene()
     {
         Debug.Log("씬 이동");
-        // 방 닫기
-        PhotonNetwork.CurrentRoom.IsOpen = false;
+
+        // 룸이 열려있으면 닫기
+        if (PhotonNetwork.CurrentRoom.IsOpen)
+        {
+            Debug.Log("방을 잠궜습니다.");
+            PhotonNetwork.CurrentRoom.IsOpen = false;       // 참가 불가
+            PhotonNetwork.CurrentRoom.IsVisible = false;    // 목록에서도 안보이게
+        }
 
         // 모두 다 같이 이동
         PhotonNetwork.LoadLevel(_loadSceneName);
