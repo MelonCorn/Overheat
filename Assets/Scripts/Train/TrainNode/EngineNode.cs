@@ -7,18 +7,24 @@ public class EngineNode : TrainNode
     [Header("보일러")]
     [SerializeField] Boiler _boiler;
 
-    [Header("엔진 스탯")]
+    [Header("네트워크 동기화 무시 설정")]
+    [SerializeField] float _networkIgnoreTime;
+
     private float _maxSpeed;         // 최고 속도
     private float _minSpeed;         // 최저 속도
     private float _accel;            // 가속도
 
+
+
     // 실시간 변수 (동기화용)
     private float _currentSpeed;     // 현재 속도
+    private float _lastNetworkIgnoreTime;// 네트워크 데이터 무시 시간
 
     public float CurrentSpeed => _currentSpeed;
     public float MaxSpeed => _maxSpeed;
 
     public event Action<float, float, float> OnEngineStatChanged;
+
 
     public override void Init(TrainData data, int level)
     {
@@ -112,6 +118,9 @@ public class EngineNode : TrainNode
 
             // UI도 즉시 갱신
             OnEngineStatChanged?.Invoke(_currentSpeed, _boiler.CurrentFuel, _boiler.MaxFuel);
+
+            // 예측을 위해서 _networkIgnoreTime 시간동안 오는 옛날 데이터 무시
+            _lastNetworkIgnoreTime = Time.time + _networkIgnoreTime;
         }
 
         // 다 하고 실제로 방장에게 연료 추가 요청
@@ -145,11 +154,15 @@ public class EngineNode : TrainNode
             _currentSpeed = (float)stream.ReceiveNext();
             float fuel = (float)stream.ReceiveNext();
 
-            // 보일러에 연료 적용
-            _boiler.SetFuel(fuel);
+            // 네트워크 무시 시간 지나면
+            if (Time.time >= _networkIgnoreTime)
+            {
+                // 보일러에 연료 적용
+                _boiler.SetFuel(fuel);
 
-            // 엔진 정보 UI 갱신
-            OnEngineStatChanged?.Invoke(_currentSpeed, _boiler.CurrentFuel, _boiler.MaxFuel);
+                // 엔진 정보 UI 갱신
+                OnEngineStatChanged?.Invoke(_currentSpeed, _boiler.CurrentFuel, _boiler.MaxFuel);
+            }
         }
     }
 }
