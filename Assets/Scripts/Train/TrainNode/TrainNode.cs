@@ -14,6 +14,11 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     [Header("후방 연결부")]
     [SerializeField] Transform _rearSocket;
 
+    // 파괴 타겟 레이어
+    protected LayerMask _localPlayerLayer;   // 로컬플레이어
+    protected LayerMask _itemLayer;         // 아이템
+
+    private LayerMask _explosionMask;       // 폭발 체크용
 
     // 기차 번호
     public int TrainIndex { get; private set; }
@@ -48,6 +53,18 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         {
             TestTrainUIManager.Instance.CreateUI(this);
         }
+
+
+        // LocalPlayer 레이어 설정
+        int layerIndex = LayerMask.NameToLayer("LocalPlayer");
+        if (layerIndex != -1) _localPlayerLayer = 1 << layerIndex;
+
+        //  Item 레이어 설정
+        int itemIndex = LayerMask.NameToLayer("Item");
+        if (itemIndex != -1) _itemLayer = 1 << itemIndex;
+
+        // 비트 OR 연산으로 동시에 감지
+        _explosionMask = _localPlayerLayer | _itemLayer;
     }
 
     // 업그레이드
@@ -181,15 +198,10 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         yield return new WaitForSeconds(0.15f);
 
         // 뒷차 연쇄 작용
-        if (_nextTrain != null)
-        {
-            _nextTrain.Explode();
-        }
+        if (_nextTrain != null) _nextTrain.Explode();
 
-        // 나 타고있으면 사망
-        // CheckLocalPlayerHit();
-
-        // 내부 아이템 전소
+        // 폭발 범위 내 오브젝트 처리
+        ExplosionHit();
 
         // UI 파괴
         OnExplode?.Invoke();
@@ -202,6 +214,58 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         else gameObject.SetActive(false);
     }
 
+
+    // 폭발 범위 내 오브젝트 처리
+    private void ExplosionHit()
+    {
+        // 열차의 루트 콜라이더
+        BoxCollider boxCol = GetComponent<BoxCollider>();
+
+        if (boxCol == null) return;
+
+        // 범위 설정
+        Vector3 worldCenter = transform.TransformPoint(boxCol.center);
+        Vector3 halfSize = boxCol.size * 0.5f;
+        halfSize.y += 5.0f;
+        Quaternion orientation = transform.rotation;
+
+        // 박스 범위 내 잡힌 모든 _explosionMask 콜라이더 저장
+        Collider[] hits = Physics.OverlapBox(worldCenter, halfSize, orientation, _explosionMask);
+
+        // 모든 콜라이더 순회
+        foreach (var hit in hits)
+        {
+            // 충돌한 물체의 레이어 (비트 값으로 변환)
+            int hitLayerMask = 1 << hit.gameObject.layer;
+
+            // 로컬 플레이어
+            if ((hitLayerMask & _localPlayerLayer) != 0)
+            {
+                // 로컬 플레이어인지 확인 (레이어로 이미 걸렀는데 혹시 몰라서 이중 체크)
+                PlayerHandler player = hit.GetComponentInParent<PlayerHandler>();
+
+                if (player != null && player == PlayerHandler.localPlayer)
+                {
+                    Debug.Log($"[사망] 아. 폭발에 휘말림");
+                    if (GameManager.Instance != null)
+                        GameManager.Instance.LocalPlayerDead(true);
+                }
+            }
+            // 아이템
+            else if ((hitLayerMask & _itemLayer) != 0)
+            {
+                // 아이템의 PhotonView 확인
+                PhotonView itemPhotonview = hit.GetComponentInParent<PhotonView>();
+
+                // 내가 생성한 아이템인지 확인
+                if (itemPhotonview != null && itemPhotonview.IsMine)
+                {
+                    Debug.Log($"[파괴] 내 아이템 {itemPhotonview.gameObject.name} 파괴");
+                    PhotonNetwork.Destroy(itemPhotonview.gameObject);
+                }
+            }
+        }
+    }
 
     // 네트워크로 생성되면 호출
     public void OnPhotonInstantiate(PhotonMessageInfo info)

@@ -146,9 +146,9 @@ public class GameManager : MonoBehaviourPun, IPunObservable
 
 
     // 로컬 플레이어 사망
-    public void LocalPlayerDie()
+    public void LocalPlayerDead(bool active)
     {
-        GameData.LocalDead = true;
+        GameData.LocalDead = active;
     }
 
 
