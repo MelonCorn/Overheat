@@ -15,10 +15,13 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
             yield return null;
         }
 
+        // 프로퍼티 사용하지 않고 조용히 가져오기
+        TrainManager trainManager = FindAnyObjectByType<TrainManager>();
+
         // 대기실에서 스킵
         // 열차 매니저 준비 완료할 때까지 대기
         // TrainManager가 존재하고, Ready될 때 까지
-        if (TrainManager.Instance != null)
+        if (trainManager != null)
         {
             // 열차 생성 완료될 때까지 대기
             yield return new WaitUntil(() => TrainManager.Instance.IsTrainReady);
