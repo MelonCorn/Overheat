@@ -35,12 +35,6 @@ public class TrainManager : MonoBehaviourPunCallbacks
             {
                 // 씬에 있는 TrainManager를 찾아옴 (Awake보다 먼저 실행 가능)
                 _instance = FindAnyObjectByType<TrainManager>();
-
-                // 그래도 없다면 내 실수
-                if (_instance == null)
-                {
-                    Debug.LogError("씬에 TrainManager가 없습니다");
-                }
             }
             return _instance;
         }

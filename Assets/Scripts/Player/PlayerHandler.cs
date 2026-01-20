@@ -41,7 +41,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
             _playerInteractHandler.SetCamera(_camera.transform);
 
             // 퀵슬롯 기초 설정
-            QuickSlotManager.Instance.UpdateUI();
+            if(QuickSlotManager.Instance != null)
+                QuickSlotManager.Instance.UpdateUI();
         }
         // 리모트 객체일 때
         else
