@@ -25,6 +25,18 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         _renderers = GetComponentsInChildren<Renderer>();
     }
 
+    // 네트워크 풀링 대비
+    private void OnEnable()
+    {
+        // 상태 리셋
+        _isPredicting = false;
+        _isConfirmed = false;
+        _isPickUped = false;
+        _slotIndex = -1;
+
+        // 비주얼 다시 켜기
+        SetVisual(true);
+    }
 
     // 비주얼 세팅 (스크립트는 돌아야 하기 때문)
     private void SetVisual(bool isActive)

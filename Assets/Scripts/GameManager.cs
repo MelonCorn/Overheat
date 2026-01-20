@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         {
             Destroy(gameObject);
         }
+
+        // 네트워크 풀 사용
+        PhotonNetwork.PrefabPool = new DefaultPool();
     }
 
     private void Start()

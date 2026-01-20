@@ -2,7 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class PoolableObject : MonoBehaviour, IPunPrefabPool
+public class PoolableObject : MonoBehaviour
 {
     // 소속 풀
     private IObjectPool<PoolableObject> _pool;
@@ -25,15 +25,5 @@ public class PoolableObject : MonoBehaviour, IPunPrefabPool
             // 풀 없으면 그냥 파괴
             Destroy(gameObject);
         }
-    }
-
-    public GameObject Instantiate(string prefabId, Vector3 position, Quaternion rotation)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Destroy(GameObject gameObject)
-    {
-        throw new System.NotImplementedException();
     }
 }
