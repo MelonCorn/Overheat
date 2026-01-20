@@ -14,7 +14,6 @@ public class EngineNode : TrainNode
 
     // 실시간 변수 (동기화용)
     private float _currentSpeed;     // 현재 속도
-    private float _currentFuel;      // 현재 연료
 
     public float CurrentSpeed => _currentSpeed;
     public float MaxSpeed => _maxSpeed;
@@ -104,6 +103,18 @@ public class EngineNode : TrainNode
     // 연료 충전 요청보내기 (Boiler)
     public void AddFuelRequest(float amount)
     {
+        // 로컬에서 먼저 즉시 반영
+        // 예측으로 미리 해두고 방장이 뿌려주는 데이터로 동기화
+        if (_boiler != null)
+        {
+            // 미리 연료 채우기
+            _boiler.AddFuel(amount);
+
+            // UI도 즉시 갱신
+            OnEngineStatChanged?.Invoke(_currentSpeed, _boiler.CurrentFuel, _boiler.MaxFuel);
+        }
+
+        // 다 하고 실제로 방장에게 연료 추가 요청
         photonView.RPC(nameof(RPC_AddFuel), RpcTarget.MasterClient, amount);
     }
 
