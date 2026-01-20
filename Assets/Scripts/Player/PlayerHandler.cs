@@ -15,6 +15,15 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
     [SerializeField] GameObject _camera;        // 카메라
     [SerializeField] GameObject _canvas;        // 캔버스
 
+    [Header("네트워크 동기화 설정")]
+    [SerializeField] float _moveSmoothSpeed = 10f; // 이동
+    [SerializeField] float _rotSmoothSpeed = 10f;  // 회전
+    [SerializeField] float _teleportDistance = 5.0f; // 순간이동
+    [SerializeField] float _snapDistance = 0.15f; // 바닥 스냅
+
+    private Vector3 _networkPosition;       // 네트워크 위치
+    private Quaternion _networkRotation;    // 네트워크 회전
+
     public Transform CameraTrans => _camera.transform;
     public string CurrentItem = "";
 
@@ -22,6 +31,10 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
     private void Awake()
     {
         _playerInteractHandler = GetComponent<PlayerInteractHandler>();
+
+        // 스폰위치, 회전 넣고 시작
+        _networkPosition = transform.position;
+        _networkRotation = transform.rotation;
     }
 
     private void Start()
@@ -50,6 +63,22 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
             // 끌 것들 끄기 
             DisableRemoteComponents();
         }
+    }
+
+    private void Update()
+    {
+        // 내 객체는 할 필요 없음
+        if (photonView.IsMine == true) return;
+
+        // 위치 보간
+        // 거리 차이가 너무 벌어지면 텔포
+        if (Vector3.Distance(transform.position, _networkPosition) > _teleportDistance)
+            transform.position = _networkPosition;
+        else
+            transform.position = Vector3.Lerp(transform.position, _networkPosition, Time.deltaTime * _moveSmoothSpeed);
+
+        // 회전 보간
+        transform.rotation = Quaternion.Lerp(transform.rotation, _networkRotation, Time.deltaTime * _rotSmoothSpeed);
     }
 
     private void OnDestroy()
@@ -108,10 +137,20 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
+            // 트랜스폼
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+
+            // 들고있는 아이템
             stream.SendNext(CurrentItem);
         }
         else
         {
+            // 트랜스폼
+            _networkPosition = (Vector3)stream.ReceiveNext();
+            _networkRotation = (Quaternion)stream.ReceiveNext();
+
+            // 들고있는 아이템
             string receiveItem = (string)stream.ReceiveNext();
 
             if (CurrentItem != receiveItem)
