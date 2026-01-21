@@ -8,6 +8,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
 
     private PlayerStatHandler _statHandler;
     private PlayerInteractHandler _interactHandler;
+    private PlayerItemHandler _itemHandler;
 
     [Header("로컬 켤 것")]
     [SerializeField] MonoBehaviour[] _scripts; // PlayerInputHandler 같은 것들
@@ -32,6 +33,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
     {
         _statHandler = GetComponent<PlayerStatHandler>();
         _interactHandler = GetComponent<PlayerInteractHandler>();
+        _itemHandler = GetComponent<PlayerItemHandler>();
 
         // 스폰위치, 회전 넣고 시작
         _networkPosition = transform.position;
@@ -55,8 +57,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
             int layerIndex = LayerMask.NameToLayer("LocalPlayer");
             if (layerIndex != -1) gameObject.layer = layerIndex;
 
-            // 상호작용 카메라 설정
-            _interactHandler.SetCamera(_camera.transform);
+            // 카메라 설정
+            SetCamera();
 
             // 퀵슬롯 기초 설정
             if(QuickSlotManager.Instance != null)
@@ -119,6 +121,14 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable
         // 카메라 끄기
         if (_camera != null) _camera.SetActive(false);
         if (_canvas != null) _canvas.SetActive(false);
+    }
+
+
+    // 카메라 설정
+    private void SetCamera()
+    {
+        _interactHandler.SetCamera(_camera.transform);
+        _itemHandler.SetCamera(_camera.transform);
     }
 
     // 퀵슬롯 변경 시

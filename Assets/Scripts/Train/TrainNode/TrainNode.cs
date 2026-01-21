@@ -4,7 +4,8 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicCallback // 네트워크 객체 생성 후 데이터 콜백
+public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicCallback, // 네트워크 객체 생성 후 데이터 콜백
+                                            IDamageable, IRepairable
 {
     protected int _maxHp;         // 최대 체력
     protected int _currentHp;     // 현재 체력
