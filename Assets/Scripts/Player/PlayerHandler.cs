@@ -2,7 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerHandler : MonoBehaviourPun, IPunObservable
+public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 {
     public static PlayerHandler localPlayer;
 
