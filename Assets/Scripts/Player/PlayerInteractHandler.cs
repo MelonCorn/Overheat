@@ -82,10 +82,10 @@ public class PlayerInteractHandler : MonoBehaviour
             // 상호작용 가능하면 'F' 붙이고
             // 아니면 텍스트만 출력
             if (canInteract)
-                _interactText.SetText($"<color=#FFD000>'F'</color> {prompt}");
+                _interactText.SetText($"<color=#FFD000>[F]</color> {prompt}");
             else
                 // 안내 문구
-                _interactText.SetText($"<color=#CCCCCC>{prompt}</color>");
+                _interactText.SetText($"{prompt}");
 
             _interactText.gameObject.SetActive(!string.IsNullOrEmpty(prompt));
         }

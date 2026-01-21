@@ -23,8 +23,6 @@ public class Boiler : MonoBehaviour, IInteractable
         _engineNode = engine;
         _maxFuel = maxFuel;
         _burnRate = burnRate;
-
-        Debug.Log($"보일러 초기화 {_engineNode}");
     }
 
     // 연료 연소 (방장이 태움)
