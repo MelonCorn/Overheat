@@ -12,7 +12,10 @@ public class PlayerInputHandler : MonoBehaviour
     public event Action OnJumpEvent;     // 점프 이벤트
     public event Action OnInteractEvent; // 상호작용 이벤트
     public event Action OnDropEvent;     // 버리기 이벤트
+    public event Action OnFireEvent;     // 좌클릭 이벤트
+
     public bool IsSprint { get; private set; }     // 달리기 상태
+    public bool IsFiring { get; private set; }     // 마우스 누르고 있는 상태
 
     public Vector2 MoveInput { get; private set; } // 이동값 저장
     public Vector2 LookInput { get; private set; } // 회전값 저장
@@ -37,6 +40,9 @@ public class PlayerInputHandler : MonoBehaviour
 
         _input.actions["Look"].performed += OnLookPerformed;
         _input.actions["Look"].canceled += OnLookCanceled;
+
+        _input.actions["Fire"].performed += OnFirePerformed;
+        _input.actions["Fire"].canceled += OnFireCanceled;
     }
 
     private void OnDisable()
@@ -54,6 +60,9 @@ public class PlayerInputHandler : MonoBehaviour
 
         _input.actions["Look"].performed -= OnLookPerformed;
         _input.actions["Look"].canceled -= OnLookCanceled;
+
+        _input.actions["Fire"].performed -= OnFirePerformed;
+        _input.actions["Fire"].canceled -= OnFireCanceled;
     }
 
     private void OnMovePerformed(InputAction.CallbackContext ctx)
@@ -87,5 +96,14 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnLookCanceled(InputAction.CallbackContext ctx)
     {
         LookInput = Vector2.zero;
+    }
+    private void OnFirePerformed(InputAction.CallbackContext ctx)
+    {
+        IsFiring = true;
+        OnFireEvent?.Invoke();
+    }
+    private void OnFireCanceled(InputAction.CallbackContext ctx)
+    {
+        IsFiring = false;
     }
 }

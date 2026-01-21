@@ -63,8 +63,8 @@ public class Boiler : MonoBehaviour, IInteractable
             // 아이템 데이터 찾아오기
             if (ItemManager.Instance.ItemDict.TryGetValue(handItem, out ShopItem item))
             {
-                // 아이템이 연료 데이터고, 연료 타입이 맞다면
-                if (item is FuelData fuelData && fuelData.itemType == ItemType.Fuel)
+                // 아이템이 연료 데이터라면
+                if (item is FuelData fuelData)
                 {
                     data = item;
                     return true;
