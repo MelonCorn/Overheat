@@ -622,13 +622,6 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
 
     #region 상점용
-    public void LoadShop()
-    {
-        // 싹 지우고
-        ClearNetworkTrains();
-        // 상점으로 이동
-        PhotonNetwork.LoadLevel("Shop");
-    }
 
     // Type 열차 추가 (상점용)
     public void RequestAddTrain(TrainType type)
@@ -687,10 +680,4 @@ public class TrainManager : MonoBehaviourPunCallbacks
         StartCoroutine(SpawnTrainCoroutine());
     }
     #endregion
-
-
-    public void ClickGame()
-    {
-        PhotonNetwork.LoadLevel("Game");
-    }
 }
