@@ -20,7 +20,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     [Header("네트워크 동기화 설정")]
     [SerializeField] float _moveSmoothSpeed = 10f; // 이동
     [SerializeField] float _rotSmoothSpeed = 10f;  // 회전
-    [SerializeField] float _teleportDistance = 5.0f; // 순간이동
+    [SerializeField] float _teleportDistance = 5f; // 순간이동
 
     private Vector3 _networkPosition;       // 네트워크 위치
     private Quaternion _networkRotation;    // 네트워크 회전

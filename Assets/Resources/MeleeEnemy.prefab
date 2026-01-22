@@ -259,7 +259,7 @@ MonoBehaviour:
   _climbDuration: 1.5
   _vaultDuration: 0.6
   _chaseSpeed: 2.5
-  _rotSpeed: 5
+  _rotSpeed: 10
   _chaseRadius: 15
   _retargetInterval: 0.5
   _wayWidth: 2

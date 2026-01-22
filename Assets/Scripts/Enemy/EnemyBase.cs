@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(PoolableObject))]
-public class EnemyBase : MonoBehaviourPun, IDamageable
+public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
 {
     [Header("적 스탯")]
     [SerializeField] protected int _maxHp = 100;        // 최대 체력
@@ -13,12 +13,22 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
     [SerializeField] protected int _damage = 10;        // 공격력
     [SerializeField] protected float _attackRange = 2f; // 범위
     [SerializeField] protected float _attackRate = 1f;  // 간격
+
+    [Header("네트워크 동기화 설정")]
+    [SerializeField] float _moveSmoothSpeed = 10f;
+    [SerializeField] float _rotSmoothSpeed = 10f;
+    [SerializeField] float _teleportDistance = 5f;
+
     public bool IsDead { get; protected set; }  // 사망 상태
 
     protected Collider _collider;       // 콜라이더
     
     protected Transform _targetPlayer;        // 타겟 (플레이어나 열차임)
     protected float _lastAttackTime;    // 공격 쿨타임
+        
+    // 네트워크 트랜스폼
+    private Vector3 _networkPos;
+    private Quaternion _networkRot;
 
     protected virtual void Awake()
     {
@@ -33,6 +43,9 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
 
         // 개체 수 증가
         EnemySpawner.ActiveCount++;
+
+        _networkPos = transform.position;
+        _networkRot = transform.rotation;
     }
     protected virtual void OnDisable()
     {
@@ -47,16 +60,39 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
     }
     protected virtual void Update()
     {
-        if (PhotonNetwork.IsMasterClient == false) return;
-        if (_currentHp <= 0) return;
-        if (IsDead) return;
+        if (PhotonNetwork.IsMasterClient == true)
+        {
+            if (_currentHp <= 0) return;
+            if (IsDead) return;
 
-        // AI 로직
-        Think();
+            // AI 로직
+            Think();
+        }
+        else
+        {
+            // 네트워크 트랜스폼 동기화
+            UpdateNetworkTransform();
+        }
+
     }
 
+    // 자식에서 구현할 AI 로직
     protected virtual void Think() { }
 
+
+    // 클라이언트용 네트워크 동기화
+    protected void UpdateNetworkTransform()
+    {
+        // 위치 보간
+        // 거리 차이가 너무 벌어지면 텔포
+        if (Vector3.Distance(transform.position, _networkPos) > _teleportDistance)
+            transform.position = _networkPos;
+        else
+            transform.position = Vector3.Lerp(transform.position, _networkPos, Time.deltaTime * _moveSmoothSpeed);
+
+        // 회전 보간
+        transform.rotation = Quaternion.Lerp(transform.rotation, _networkRot, Time.deltaTime * _rotSmoothSpeed);
+    }
 
     // 적 피격
     public void TakeDamage(int dmg)
@@ -151,5 +187,21 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
 
         // 풀 반납
         PhotonNetwork.Destroy(gameObject);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if(stream.IsWriting)
+        {
+            // 트랜스폼
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            // 트랜스폼
+            _networkPos = (Vector3)stream.ReceiveNext();
+            _networkRot = (Quaternion)stream.ReceiveNext();
+        }
     }
 }
