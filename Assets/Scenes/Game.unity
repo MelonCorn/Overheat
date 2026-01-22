@@ -1634,7 +1634,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemManager
   _shopPlayerItems:
   - {fileID: 11400000, guid: 7822bfc5d4051504c8b0eb646a7d0936, type: 2}
-  - {fileID: 11400000, guid: 6273787eca0be024b8b9b09ca4fb2a04, type: 2}
+  - {fileID: 11400000, guid: 5cfbadca69574ee428ee24bfd2e0b39a, type: 2}
 --- !u!4 &771979427
 Transform:
   m_ObjectHideFlags: 0
