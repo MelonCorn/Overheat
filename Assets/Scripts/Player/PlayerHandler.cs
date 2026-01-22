@@ -162,13 +162,20 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         }
     }
 
+    
 
     // 플레이어 피격
     public void TakeDamage(int dmg)
     {
-        _statHandler.TakeDamage(dmg);
+        photonView.RPC("RPC_Damage", photonView.Owner, dmg);
     }
 
+    // 클라어언트에게 호출
+    [PunRPC]
+    private void RPC_Damage(int dmg)
+    {
+        _statHandler.TakeDamage(dmg);
+    }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
