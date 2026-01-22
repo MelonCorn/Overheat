@@ -35,7 +35,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1625051881338355133}
-  - {fileID: 1412809372645081133}
+  - {fileID: 5007524837972439931}
   - {fileID: 8189540316866135606}
   - {fileID: 2002759820133776298}
   - {fileID: 4279533824622599398}
@@ -145,9 +145,9 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
+  m_VoxelSize: 0.1
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: b0550cf4c00e2bd4d97bcd9170f32701, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 5f2a9d2c9511655479b8cfcbd40088b2, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &2215439601591910928
 GameObject:
@@ -529,6 +529,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemDispenser
   _targetItemName: Coal
+--- !u!1 &4070383369047080590
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5007524837972439931}
+  - component: {fileID: 2034817824126753127}
+  m_Layer: 7
+  m_Name: Bridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5007524837972439931
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4070383369047080590}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10.4}
+  m_LocalScale: {x: 2.4353223, y: 0.71682, z: 1.5275791}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1412809372645081133}
+  m_Father: {fileID: 486193984599303235}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2034817824126753127
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4070383369047080590}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4435966696898680458
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,11 +654,11 @@ Transform:
   m_GameObject: {fileID: 6627942871807196626}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.35841, z: -10.4}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.49999997, z: -0.27952728}
+  m_LocalScale: {x: 0.41062325, y: 1.3950503, z: 0.65463054}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 486193984599303235}
+  m_Father: {fileID: 5007524837972439931}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1605824783941043172
 MonoBehaviour:
@@ -620,8 +674,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshLink
   m_SerializedVersion: 1
   m_AgentTypeID: 0
-  m_StartPoint: {x: 0, y: 0, z: -0.7}
-  m_EndPoint: {x: 0, y: 0, z: 0.7}
+  m_StartPoint: {x: 0, y: 0, z: -0.1}
+  m_EndPoint: {x: 0, y: 0, z: 0.1}
   m_StartTransform: {fileID: 0}
   m_EndTransform: {fileID: 0}
   m_Activated: 1
@@ -656,7 +710,7 @@ Transform:
   m_GameObject: {fileID: 7105432924132022904}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.09, y: 2.74, z: -8.27}
+  m_LocalPosition: {x: -2.09, y: 2, z: -8.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -687,7 +741,7 @@ Transform:
   m_GameObject: {fileID: 7194083041244675426}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.09, y: 2.74, z: -8.27}
+  m_LocalPosition: {x: 2.09, y: 2, z: -8.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

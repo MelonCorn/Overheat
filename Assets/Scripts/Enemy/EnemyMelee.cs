@@ -11,15 +11,19 @@ public class EnemyMelee : EnemyBase
     { 
         Approach,   // 열차 접근
         Climb,      // 열차 등반
-        Chase       // 플레이어 추적
+        Chase,      // 플레이어 추적
+        Cross,      // 열차 칸 이동
     }   
 
     [Header("침투 행동 설정")]
     [SerializeField] float _runSpeed = 8f;          // 열차 접근 속도
+    [SerializeField] float _chaseSpeed = 3f;        // 추적 속도
     [SerializeField] float _climbDuration = 1.5f;   // 창문 넘는 시간
     [SerializeField] float _vaultDuration = 0.5f;   // 내부로 착지하는 시간
     [SerializeField] float _chaseRadius = 15f;      // 플레이어 탐지 범위
     [SerializeField] float _retargetInterval = 0.5f;// 타겟 재탐색 간격
+
+    [SerializeField] float _wayWidth = 2f;          // 통로 너비
 
     private NavMeshAgent _agent;
 
@@ -40,7 +44,14 @@ public class EnemyMelee : EnemyBase
         // 다시 활성화 되었을 때
 
         // 일단 agent 끄기 
-        if (_agent != null) _agent.enabled = false; 
+        if (_agent != null)
+        {
+            _agent.enabled = false;                 
+            _agent.speed = _chaseSpeed;  // 속도
+            _agent.autoTraverseOffMeshLink = false; // 링크 자동 이동 끄기
+            // 멈추는 거리는 공격사거리보다 좀 가깝게
+            _agent.stoppingDistance = Mathf.Max(_attackRange - 0.3f, 0.5f);
+        }
 
         // 접근 상태
         _state = State.Approach;
@@ -97,11 +108,17 @@ public class EnemyMelee : EnemyBase
             case State.Approach:
                 UpdateApproach();
                 break;
+
             case State.Climb:
-                // 코루틴이 동작 중
+                // 코루틴 동작 중
                 break;
+
             case State.Chase:
                 UpdateChase();
+                break;
+
+            case State.Cross:
+                // 코루틴 동작 중
                 break;
         }
     }
@@ -228,6 +245,15 @@ public class EnemyMelee : EnemyBase
         // NavMesh 위 아니면 무시
         if (_agent == null || _agent.isOnNavMesh == false) return;
 
+        // 링크 만나면
+        if (_agent.isOnOffMeshLink)
+        { 
+            // 커스텀 링크 타기
+            StartCoroutine(CrossLink());
+            // 링크 타는 동안 추적, 공격 중지
+            return;
+        }
+
         // 공격 쿨타임 체크
         if (Time.time >= _lastAttackTime + _attackRate)
         {
@@ -250,17 +276,93 @@ public class EnemyMelee : EnemyBase
         // 이동
         if (_targetPlayer != null)
         {
+            float distance = Vector3.Distance(transform.position, _targetPlayer.position);
+
             // 타겟이 너무 멀어지면 포기 (재탐색)
-            if (Vector3.Distance(transform.position, _targetPlayer.position) > _chaseRadius)
+            if (distance > _chaseRadius)
             {
                 _targetPlayer = null;
                 return;
             }
 
-            _agent.SetDestination(_targetPlayer.position);
+            if (distance <= _agent.stoppingDistance)
+            {
+                // 이미 사거리 내 도착했으면 가만히
+                if (_agent.isStopped == false) _agent.isStopped = true;
+            }
+            else
+            {
+                // 멀리 있으면 이동
+                if (_agent.isStopped == true) _agent.isStopped = false;
+                _agent.SetDestination(_targetPlayer.position);
+            }
         }
     }
 
+
+    // 열차 커스텀 링크 건너기 
+    private IEnumerator CrossLink()
+    {
+        _state = State.Cross;
+
+        // 링크 데이터 가져오기
+        OffMeshLinkData data = _agent.currentOffMeshLinkData;
+
+        // 시작 위치는 그냥 지금 위치
+        Vector3 startPos = transform.position;
+        // 링크의 정중앙 도착점을 사용
+        Vector3 linkEndPos = data.endPos;
+
+        // 벽 뚫기 방지용 X 제한
+        float minX = linkEndPos.x - (_wayWidth * 0.5f);
+        float maxX = linkEndPos.x + (_wayWidth * 0.5f);
+        float clampedX = Mathf.Clamp(startPos.x, minX, maxX);
+
+        // 도착점의 z사용
+        Vector3 targetPos = new Vector3(clampedX, linkEndPos.y, linkEndPos.z);
+
+        // 거리 체크
+        while (transform.position != targetPos)
+        {
+            // 한 프레임 이동 거리
+            float step = _chaseSpeed * Time.deltaTime;
+
+            // 타겟으로 이동
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, step);
+
+            Vector3 dir = (targetPos - transform.position).normalized;
+            if (dir != Vector3.zero)
+            {
+                //  몸 방향도 이동 방향으로 회전
+                Quaternion lookRot = Quaternion.LookRotation(dir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 10f);
+            }
+
+            yield return null;
+        }
+
+        // 끝나면 위치 확정
+        transform.position = targetPos;
+        // 에이전트 강제 동기화
+        _agent.Warp(targetPos);
+
+        Vector3 finalDir = (targetPos - startPos).normalized;
+        if (finalDir == Vector3.zero) finalDir = transform.forward;
+
+        _agent.velocity = finalDir * _chaseSpeed;
+
+        if (_targetPlayer != null)
+        {
+            _agent.SetDestination(_targetPlayer.position);
+        }
+
+        // 이거 쓰면 링크 EndPos로 끌려감
+        //_agent.CompleteOffMeshLink();
+
+
+        // 다시 추적 상태로 복귀
+        _state = State.Chase; 
+    }
 
 
     // 가까운 플레이어 탐지

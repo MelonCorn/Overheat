@@ -105,7 +105,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -122,8 +122,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2511444190918227780}
-  - component: {fileID: 2777239783733987957}
   - component: {fileID: 2030663710812079412}
+  - component: {fileID: 2777239783733987957}
   - component: {fileID: 2748390949015410194}
   - component: {fileID: -3524396956993671518}
   m_Layer: 0
@@ -149,6 +149,29 @@ Transform:
   - {fileID: 5736902887339068384}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2030663710812079412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5153021981749270405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14eded46fc5c63e49b09d2a75e0f7de6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyMelee
+  _maxHp: 100
+  _damage: 8
+  _attackRange: 2
+  _attackRate: 1
+  _runSpeed: 8
+  _chaseSpeed: 2.5
+  _climbDuration: 1.5
+  _vaultDuration: 0.5
+  _chaseRadius: 15
+  _retargetInterval: 0.5
+  _wayWidth: 2
 --- !u!195 &2777239783733987957
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -168,30 +191,9 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 0
+  m_BaseOffset: -0.05
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &2030663710812079412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5153021981749270405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14eded46fc5c63e49b09d2a75e0f7de6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyMelee
-  _maxHp: 100
-  _damage: 10
-  _attackRange: 2
-  _attackRate: 1
-  _runSpeed: 8
-  _climbDuration: 1.5
-  _vaultDuration: 0.5
-  _chaseRadius: 15
-  _retargetInterval: 0.5
 --- !u!114 &2748390949015410194
 MonoBehaviour:
   m_ObjectHideFlags: 0
