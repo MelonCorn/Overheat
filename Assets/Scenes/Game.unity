@@ -2312,8 +2312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c2ed712e0e6081468183a7f1bd86d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
-  _baseDistance: 200
-  _distancePerLevel: 20
+  _baseDistance: 2000
+  _distancePerLevel: 200
   _progressSlider: {fileID: 514796227}
 --- !u!4 &1396107598
 Transform:
@@ -3173,6 +3173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14e95247a566c8c47983e52c627f482a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  ActivePlayers: []
   _isShop: 0
   _lostItemSpawnPoint: {fileID: 912058149}
   _goldText: {fileID: 44768187}

@@ -180,7 +180,7 @@ public class EnemyMelee : EnemyBase
         // NavMesh 바닥 높이 찾기
         // targetX 위치에서 반경 2f 가장 가까운 NavMesh 바닥 찾기
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(targetX, out hit, 2.0f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(targetX, out hit, 4f, NavMesh.AllAreas))
         {
             endPos = hit.position; // NavMesh 상의 좌표
         }
