@@ -38,12 +38,11 @@ public class EnemyMelee : EnemyBase
         base.OnEnable();
 
         // 다시 활성화 되었을 때
-        if (_agent != null)
-        {
-            _agent.enabled = true;
-            _agent.isStopped = false;
-        }
 
+        // 일단 agent 끄기 
+        if (_agent != null) _agent.enabled = false; 
+
+        // 접근 상태
         _state = State.Approach;
 
         // 가까운 창문 찾기
@@ -214,9 +213,9 @@ public class EnemyMelee : EnemyBase
         // 플레이어 추적 모드 (NavMesh 활성화)
         if (_agent != null)
         {
-            _agent.enabled = true;
-            _agent.Warp(endPos); // 에이전트 위치 동기화
-            _agent.isStopped = false;
+            _agent.enabled = true;  // 에이전드 이제 활성화
+            _agent.Warp(endPos);    // 에이전트 위치 동기화
+            _agent.isStopped = false; // 정지
         }
         _state = State.Chase;
     }
