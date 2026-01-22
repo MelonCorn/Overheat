@@ -16,7 +16,7 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
 
     protected Collider _collider;       // 콜라이더
     
-    protected Transform _target;        // 타겟 (플레이어나 열차임)
+    protected Transform _targetPlayer;        // 타겟 (플레이어나 열차임)
     protected float _lastAttackTime;    // 공격 쿨타임
 
     protected virtual void Awake()
@@ -45,7 +45,11 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
     }
     protected virtual void Update()
     {
+        if (PhotonNetwork.IsMasterClient == false) return;
+        if (_currentHp <= 0) return;
+
         // AI 로직
+        Think();
     }
 
     protected virtual void Think() { }

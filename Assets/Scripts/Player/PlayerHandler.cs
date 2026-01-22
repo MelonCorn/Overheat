@@ -40,6 +40,22 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         _networkRotation = transform.rotation;
     }
 
+    private void OnEnable()
+    {
+        // 활성화된 플레이어 중 이 플레이어가 없다면
+        if (GameManager.Instance.ActivePlayers.Contains(this) == false)
+        {
+            // 플레이어 리스트에 추가
+            GameManager.Instance.ActivePlayers.Add(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        // 플레이어 리스트에서 제거
+        GameManager.Instance.ActivePlayers.Remove(this);
+    }
+
     private void Start()
     {
         // 로컬 객체일 때

@@ -1,5 +1,6 @@
 using Photon.Pun;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviourPun, IPunObservable
 {
     public static GameManager Instance;
+    
+    public List<PlayerHandler> ActivePlayers = new List<PlayerHandler>();
 
     [Header("상점 체크")]
     [SerializeField] bool _isShop;

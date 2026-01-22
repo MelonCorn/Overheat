@@ -157,7 +157,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 5153021981749270405}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -186,6 +186,10 @@ MonoBehaviour:
   _damage: 10
   _attackRange: 2
   _attackRate: 1
+  _runSpeed: 8
+  _climbDuration: 1.5
+  _vaultDuration: 0.5
+  _chaseRadius: 15
 --- !u!114 &2748390949015410194
 MonoBehaviour:
   m_ObjectHideFlags: 0
