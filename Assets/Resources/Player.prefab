@@ -208,6 +208,7 @@ GameObject:
   - component: {fileID: 1161835146325615844}
   - component: {fileID: 6439853996020436887}
   - component: {fileID: 4411880462178130062}
+  - component: {fileID: 1243383332005046132}
   - component: {fileID: 5231009159725759405}
   - component: {fileID: 1076891085264245779}
   - component: {fileID: 5499606231288934782}
@@ -255,6 +256,7 @@ MonoBehaviour:
   - {fileID: 1161835146325615844}
   - {fileID: 4411880462178130062}
   - {fileID: 6439853996020436887}
+  - {fileID: 1243383332005046132}
   _camera: {fileID: 2045652762034455185}
   _canvas: {fileID: 1435600471120788571}
   _moveSmoothSpeed: 10
@@ -349,6 +351,18 @@ MonoBehaviour:
   _interactLayer:
     serializedVersion: 2
     m_Bits: 7168
+--- !u!114 &1243383332005046132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756186601399181371}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa52cf491b4186640953fd49f48708a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerItemHandler
 --- !u!114 &5231009159725759405
 MonoBehaviour:
   m_ObjectHideFlags: 0

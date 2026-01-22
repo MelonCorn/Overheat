@@ -95,4 +95,21 @@ public class EnemySpawner : MonoBehaviourPun
             PhotonNetwork.InstantiateRoomObject(_meleeEnemy.name, spawnPos, Quaternion.identity);
         }
     }
+    
+    
+    // 씬 뷰에서 적 생성 범위 확인용
+    private void OnDrawGizmos()
+    {
+        if (TrainManager.Instance == null) return;
+
+        // 열차 끝 위치 가져오기
+        float rearZ = TrainManager.Instance.GetLastZ();
+
+        // 스폰 라인
+        Gizmos.color = Color.red;
+        // 왼쪽 라인
+        Gizmos.DrawLine(new Vector3(-_spawnWidth, _flyHeight, 5), new Vector3(-_spawnWidth, _flyHeight, rearZ - 5));
+        // 오른쪽 라인
+        Gizmos.DrawLine(new Vector3(_spawnWidth, _flyHeight, 5), new Vector3(_spawnWidth, _flyHeight, rearZ - 5));
+    }
 }
