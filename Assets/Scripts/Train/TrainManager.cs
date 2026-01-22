@@ -78,6 +78,8 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public List<TrainNode> TrainNodes => _currentTrainNodes;    // 외부 참조용 열차 노드들
+
 
     // 열차 준비 상태
     public bool IsTrainReady { get; private set; }

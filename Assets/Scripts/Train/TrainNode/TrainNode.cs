@@ -13,6 +13,9 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     protected TrainNode _prevTrain;   // 앞차
     protected TrainNode _nextTrain;   // 뒷차
 
+    [Header("침투 창문 포인트")]
+    [SerializeField] Transform[] _windowPoints;
+
     [Header("후방 연결부")]
     [SerializeField] Transform _rearSocket;
 
@@ -114,6 +117,38 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         _nextTrain = nextTrain;
     }
 
+
+    // 가장 가까운 창문 위치 반환
+    public Transform GetClosestWindow(Vector3 enemyPos)
+    {
+        // 등록된 창문 없으면 그냥 내 위치 (예외)
+        if (_windowPoints == null || _windowPoints.Length == 0)
+            return transform;
+
+        // 가까운 창문 트랜스폼 껍데기
+        Transform closestPoint = null;
+        // 제일 가까운 거리 (비교하면서 줄여야하기 때문에 일단 최대로)
+        float minDistance = float.MaxValue;
+
+        // 창문 포인트마다
+        foreach (Transform point in _windowPoints)
+        {
+            // 적 위치와 창문 위치 거리
+            float distance = Vector3.Distance(enemyPos, point.position);
+
+            // 가까운 거리 갱신
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestPoint = point;
+            }
+        }
+
+        // 제일 가까운 창문 트랜스폼 반환
+        return closestPoint;
+    }
+
+
     // 피해
     public void TakeDamage(int amount)
     {
@@ -159,6 +194,8 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     }
 
 
+
+    #region 파괴
     // 열차 파괴 
     [PunRPC]
     public void ExplodeRPC()
@@ -185,7 +222,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     {
         // 이미 폭발 중이면 무시
         if (_isExploding) return;
-        
+
         _isExploding = true;
 
         // 폭발 코루틴 시작
@@ -276,6 +313,11 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
             }
         }
     }
+    #endregion
+
+
+
+
 
     // 네트워크로 생성되면 호출
     public void OnPhotonInstantiate(PhotonMessageInfo info)

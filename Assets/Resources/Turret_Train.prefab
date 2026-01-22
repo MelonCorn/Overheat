@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 1899852967147318386}
   - component: {fileID: -8758523366128538463}
   - component: {fileID: 5931062609029871792}
+  - component: {fileID: 5979170694836046238}
   m_Layer: 7
   m_Name: Turret_Train
   m_TagString: Untagged
@@ -137,6 +138,38 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 5.3232985, y: 7.4052052, z: 7.346754}
   m_Center: {x: 0, y: 3.2026026, z: -3.173377}
+--- !u!114 &5979170694836046238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6183726779034400174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: edc7b64b6c40382408cde75ce09c0b7c, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1 &8512258272379617699
 GameObject:
   m_ObjectHideFlags: 0
