@@ -149,11 +149,11 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         }
     }
 
-    // [주인] 자폭 명령 수행 (★ 추가됨)
+    // 파괴
     [PunRPC]
     private void RPC_DestroySelf()
     {
-        // 주인만 파괴 권한 있음
+        // 주인만
         if (photonView.IsMine)
         {
             PhotonNetwork.Destroy(gameObject);
