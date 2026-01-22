@@ -38,6 +38,8 @@ Transform:
   - {fileID: 8189540316866135606}
   - {fileID: 2002759820133776298}
   - {fileID: 4279533824622599398}
+  - {fileID: 5978218106668412326}
+  - {fileID: 5096909081790558174}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2098067401686625922
@@ -52,6 +54,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b8f64f6199af17458c6ecf1e79a0c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EngineNode
+  _windowPoints:
+  - {fileID: 5978218106668412326}
+  - {fileID: 5096909081790558174}
   _rearSocket: {fileID: 8189540316866135606}
   _boiler: {fileID: 1471782928515510517}
   _networkIgnoreTime: 0.3
@@ -568,3 +573,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b881b83a0732b44b9edac669c9bc85c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boiler
+--- !u!1 &7105432924132022904
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5978218106668412326}
+  m_Layer: 0
+  m_Name: Window
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5978218106668412326
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7105432924132022904}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.09, y: 2.74, z: -8.27}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 486193984599303235}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7194083041244675426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5096909081790558174}
+  m_Layer: 0
+  m_Name: Window (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5096909081790558174
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7194083041244675426}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2.09, y: 2.74, z: -8.27}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 486193984599303235}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -19,12 +19,14 @@ public class EnemyMelee : EnemyBase
     [SerializeField] float _climbDuration = 1.5f;   // 창문 넘는 시간
     [SerializeField] float _vaultDuration = 0.5f;   // 내부로 착지하는 시간
     [SerializeField] float _chaseRadius = 15f;      // 플레이어 탐지 범위
+    [SerializeField] float _retargetInterval = 0.5f;// 타겟 재탐색 간격
 
     private NavMeshAgent _agent;
 
-
     private State _state = State.Approach;  // 현재 상태
     private Transform _targetWindow;        // 침투할 창문
+
+    private float _lastRetargetTime;        // 마지막 리타겟 시간
 
     protected override void Awake()
     {
@@ -227,30 +229,36 @@ public class EnemyMelee : EnemyBase
         // NavMesh 위 아니면 무시
         if (_agent == null || _agent.isOnNavMesh == false) return;
 
-        // 타겟이 없거나
-        // 타겟과 자신의 거리가 추적 거리를 벗어났으면
-        if (_targetPlayer == null || Vector3.Distance(transform.position, _targetPlayer.position) > _chaseRadius)
+        // 공격 쿨타임 체크
+        if (Time.time >= _lastAttackTime + _attackRate)
         {
-            // 가까운 플레이어 탐지
-            FindClosestPlayer();
+            // 공격 범위 내 플레이어 찾아서 공격 시도
+            if (TryAttackInRange())
+            {
+                // 공격했으면 이번 프레임 이동 스킵
+                _agent.SetDestination(transform.position);
+                return;
+            }
         }
 
-        // 타겟 있으면
+        // 가장 가까운 타겟 갱신
+        if (Time.time >= _lastRetargetTime + _retargetInterval)
+        {
+            FindClosestPlayer();
+            _lastRetargetTime = Time.time;
+        }
+
+        // 이동
         if (_targetPlayer != null)
         {
-            // agent 목표지점 설정 (타겟)
-            _agent.SetDestination(_targetPlayer.position);
-
-            // 타겟과의 거리
-            float distance = Vector3.Distance(transform.position, _targetPlayer.position);
-
-            // 거리가 공격범위 이하이고
-            // 공격 쿨타임 됐으면
-            if (distance <= _attackRange && Time.time >= _lastAttackTime + _attackRate)
+            // 타겟이 너무 멀어지면 포기 (재탐색)
+            if (Vector3.Distance(transform.position, _targetPlayer.position) > _chaseRadius)
             {
-                // 공격
-                Attack();
+                _targetPlayer = null;
+                return;
             }
+
+            _agent.SetDestination(_targetPlayer.position);
         }
     }
 
@@ -264,6 +272,9 @@ public class EnemyMelee : EnemyBase
 
         // 제일 가까운 거리 (일단 비교를 위해 최대로)
         float minDistance = float.MaxValue;
+
+        // 제일 가까운 타겟
+        Transform bestTarget = null;
 
         // 플레이어마다 체크
         foreach (var player in players)
@@ -282,14 +293,43 @@ public class EnemyMelee : EnemyBase
             {
                 // 타겟 갱신
                 minDistance = distance;
-                _targetPlayer = player.transform;
+                bestTarget = player.transform;
             }
         }
+
+        // 최종 타겟 설정
+        _targetPlayer = bestTarget;
     }
 
+    // 범위 내 공격 시도
+    private bool TryAttackInRange()
+    {
+        // 모든 플레이어
+        var players = GameManager.Instance.ActivePlayers;
+
+        foreach (var player in players)
+        {
+            if (player == null) continue; // or player.IsDead check
+
+            // 거리 체크
+            float distance = Vector3.Distance(transform.position, player.transform.position);
+
+            // 공격 사거리 안이라면
+            if (distance <= _attackRange)
+            {
+                // 타겟 변경
+                _targetPlayer = player.transform;
+
+                // 공격 실행
+                Attack(player);
+                return true;
+            }
+        }
+        return false;
+    }
 
     // 공격
-    private void Attack()
+    private void Attack(IDamageable target)
     {
         // 마지막 공격 시간 기록
         _lastAttackTime = Time.time;
@@ -297,12 +337,15 @@ public class EnemyMelee : EnemyBase
         // 공격 애니메이션 재생
         // anim.SetTrigger("Attack");
 
-        // 타겟 있을 떄
-        if (_targetPlayer != null)
+        // 타겟이 컴포넌트면
+        if (target is Component comp)
         {
-            // 피해주기
-            IDamageable target = _targetPlayer.GetComponent<IDamageable>();
-            if (target != null) target.TakeDamage(_damage);
+            // 바라보기
+            Vector3 lookPos = new Vector3(comp.transform.position.x, transform.position.y, comp.transform.position.z);
+            transform.LookAt(lookPos);
         }
+
+        // 데미지
+        target.TakeDamage(_damage);
     }
 }
