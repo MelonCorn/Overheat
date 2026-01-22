@@ -13,6 +13,7 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
     [SerializeField] protected int _damage = 10;        // 공격력
     [SerializeField] protected float _attackRange = 2f; // 범위
     [SerializeField] protected float _attackRate = 1f;  // 간격
+    public bool IsDead { get; protected set; }  // 사망 상태
 
     protected Collider _collider;       // 콜라이더
     
@@ -27,7 +28,8 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
     protected virtual void OnEnable()
     {
         _currentHp = _maxHp;
-        if(_collider != null) _collider.enabled = true;
+        IsDead = false;
+        if (_collider != null) _collider.enabled = true;
 
         // 개체 수 증가
         EnemySpawner.ActiveCount++;
@@ -47,6 +49,7 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
     {
         if (PhotonNetwork.IsMasterClient == false) return;
         if (_currentHp <= 0) return;
+        if (IsDead) return;
 
         // AI 로직
         Think();
@@ -116,6 +119,11 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
     [PunRPC]
     protected void RPC_Die()
     {
+        IsDead = true;
+
+        // 자식 클래스 사망
+        OnDeath();
+
         // 사망 애니메이션 재생
         // 
 
@@ -129,6 +137,8 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
         }
     }
 
+    // 사망
+    protected virtual void OnDeath() { }
 
     // 디스폰 코루티 
     IEnumerator Despawn()

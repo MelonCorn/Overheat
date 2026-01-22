@@ -25,6 +25,12 @@ public class EnemySpawner : MonoBehaviourPun
         ActiveCount = 0;
     }
 
+    private void Start()
+    {
+        // 테스트용 즉시 스폰
+        Invoke(nameof(TrySpawnEnemy), 2.0f);
+    }
+
     private void Update()
     {
         // 방장만 스폰 관리

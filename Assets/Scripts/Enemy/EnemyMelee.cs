@@ -17,12 +17,14 @@ public class EnemyMelee : EnemyBase
 
     [Header("침투 행동 설정")]
     [SerializeField] float _runSpeed = 8f;          // 열차 접근 속도
-    [SerializeField] float _chaseSpeed = 3f;        // 추적 속도
     [SerializeField] float _climbDuration = 1.5f;   // 창문 넘는 시간
-    [SerializeField] float _vaultDuration = 0.5f;   // 내부로 착지하는 시간
+    [SerializeField] float _vaultDuration = 1f;   // 내부로 착지하는 시간
+
+    [Header("추적 행동 설정")]
+    [SerializeField] float _chaseSpeed = 3f;        // 추적 속도
+    [SerializeField] float _rotSpeed = 5f;          // 회전 속도
     [SerializeField] float _chaseRadius = 15f;      // 플레이어 탐지 범위
     [SerializeField] float _retargetInterval = 0.5f;// 타겟 재탐색 간격
-
     [SerializeField] float _wayWidth = 2f;          // 통로 너비
 
     private NavMeshAgent _agent;
@@ -42,16 +44,9 @@ public class EnemyMelee : EnemyBase
         base.OnEnable();
 
         // 다시 활성화 되었을 때
-
-        // 일단 agent 끄기 
-        if (_agent != null)
-        {
-            _agent.enabled = false;                 
-            _agent.speed = _chaseSpeed;  // 속도
-            _agent.autoTraverseOffMeshLink = false; // 링크 자동 이동 끄기
-            // 멈추는 거리는 공격사거리보다 좀 가깝게
-            _agent.stoppingDistance = Mathf.Max(_attackRange - 0.3f, 0.5f);
-        }
+        
+        // 에이전트 리셋
+        ResetAgent();
 
         // 접근 상태
         _state = State.Approach;
@@ -285,15 +280,30 @@ public class EnemyMelee : EnemyBase
                 return;
             }
 
-            if (distance <= _agent.stoppingDistance)
+            // 에이전트의 정지 거리
+            float stopDistance = _agent.stoppingDistance;
+
+            // 정지 거리보다 안쪽으로 들어왔다면
+            if (distance <= stopDistance)
             {
-                // 이미 사거리 내 도착했으면 가만히
-                if (_agent.isStopped == false) _agent.isStopped = true;
+                // 멈춤
+                if (_agent.isStopped == false)
+                {
+                    _agent.isStopped = true;
+                }
+
+                // 멈춰있을 때도 플레이어를 바라보게
+                // y 제외 방향
+                Vector3 dir = (_targetPlayer.position - transform.position).normalized;
+                dir.y = 0;
+                // 회전
+                if (dir != Vector3.zero) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * _rotSpeed);
             }
-            else
+            // 정지거리보다 0.5더 멀어지면
+            else if (distance > stopDistance + 0.5f)
             {
-                // 멀리 있으면 이동
-                if (_agent.isStopped == true) _agent.isStopped = false;
+                // 이동
+                if (_agent.isStopped) _agent.isStopped = false;
                 _agent.SetDestination(_targetPlayer.position);
             }
         }
@@ -448,5 +458,40 @@ public class EnemyMelee : EnemyBase
 
         // 데미지
         target.TakeDamage(_damage);
+    }
+
+
+    // 사망 시
+    protected override void OnDeath()
+    {
+        base.OnDeath();
+
+        // 진행 중인 코루틴 강제 종료
+        // 창문 넘기, 링크 건너기
+        StopAllCoroutines();
+
+        // 정지
+        _agent.isStopped = true;
+
+        // 에이전트 리셋
+        ResetAgent();
+    }
+
+
+    // 에이전트 리셋
+    private void ResetAgent()
+    {
+        if (_agent == null) return;
+
+        // 일단 끄기            
+        _agent.enabled = false;
+
+        // 물리적 힘 제거
+        _agent.velocity = Vector3.zero;
+
+        // 스탯 초기화
+        _agent.speed = _chaseSpeed;
+        _agent.autoTraverseOffMeshLink = false;
+        _agent.stoppingDistance = Mathf.Max(_attackRange - 0.3f, 0.5f);
     }
 }
