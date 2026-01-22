@@ -2,6 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(PoolableObject))]
 public class EnemyBase : MonoBehaviourPun, IDamageable
 {
     [Header("적 스탯")]
@@ -27,9 +28,17 @@ public class EnemyBase : MonoBehaviourPun, IDamageable
     {
         _currentHp = _maxHp;
         if(_collider != null) _collider.enabled = true;
+
+        // 개체 수 증가
+        EnemySpawner.ActiveCount++;
     }
     protected virtual void OnDisable()
     {
+        // 개체 수 감소
+        EnemySpawner.ActiveCount--;
+        
+        // 음수 방지
+        if (EnemySpawner.ActiveCount < 0) EnemySpawner.ActiveCount = 0;
     }
     protected virtual void Start()
     {

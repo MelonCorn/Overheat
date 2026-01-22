@@ -431,6 +431,22 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
     }
 
+    // 열차 마지막 칸의 Z 좌표 반환 (적 스포너용)
+    public float GetLastZ()
+    {
+        // 열차 없거나 초기화 안 됐으면 0
+        if (_currentTrainNodes == null || _currentTrainNodes.Count == 0) return 0f;
+
+        // 마지막 칸 가져오기
+        TrainNode lastNode = _currentTrainNodes[_currentTrainNodes.Count - 1];
+
+        // 마지막 칸이 비어있으면 0 (방어)
+        if (lastNode == null) return 0f;
+
+        // 마지막 칸의 z 반환
+        return lastNode.transform.position.z;
+    }
+
 
     #region 화물칸 아이템 변경
     public void RequestSocketInteract(CargoNode node, int socketIndex, string newItem, string oldItem, int slotIndex)

@@ -1553,6 +1553,56 @@ MonoBehaviour:
   m_EffectColor: {r: 1, g: 0.9933983, b: 0, a: 1}
   m_EffectDistance: {x: 5, y: 5}
   m_UseGraphicAlpha: 1
+--- !u!1 &759135626
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 759135628}
+  - component: {fileID: 759135627}
+  m_Layer: 0
+  m_Name: EnemySpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &759135627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759135626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 969187aede595444bb9ee328f99016d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  _meleeEnemy: {fileID: 5153021981749270405, guid: d5000d49449974545835a59bd2ca16f7, type: 3}
+  _rangeEnemy: {fileID: 7662809541345423709, guid: fde0a6a32c2d83e4aada12b21885503a, type: 3}
+  _spawnInterval: 5
+  _maxEnemyCount: 15
+  _spawnWidth: 20
+  _flyHeight: 6
+--- !u!4 &759135628
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759135626}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &771979425
 GameObject:
   m_ObjectHideFlags: 0
@@ -3609,6 +3659,7 @@ SceneRoots:
   - {fileID: 1371897036}
   - {fileID: 1679592414}
   - {fileID: 837137957}
+  - {fileID: 759135628}
   - {fileID: 1869453001}
   - {fileID: 912058149}
   - {fileID: 1826963491}
