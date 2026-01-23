@@ -142,7 +142,7 @@ public class PlayerInteractHandler : MonoBehaviour
                 object[] initData = new object[] { itemName };
 
                 // 匙飘况农 按眉 积己
-                PhotonNetwork.Instantiate(itemData.prefab.name, spawnPos, Quaternion.Euler(0, transform.rotation.y, 0), 0 , initData);
+                PhotonNetwork.Instantiate(itemData.prefab.name, spawnPos, Quaternion.Euler(0, transform.eulerAngles.y, 0), 0 , initData);
 
                 Debug.Log($"{itemName} 滚府扁(匙飘况农 积己) 己傍!");
             }
