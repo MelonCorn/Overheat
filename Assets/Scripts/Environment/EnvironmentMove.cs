@@ -2,7 +2,7 @@ using UnityEngine;
 
 // 환경 오브젝트는 반드시 PoolableObject
 [RequireComponent(typeof(PoolableObject))]
-public class EnvironmentMoveHandler : MonoBehaviour
+public class EnvironmentMove : MonoBehaviour
 {
     private PoolableObject _poolable;   // 자신의 풀 관리자
 

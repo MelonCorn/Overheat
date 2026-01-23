@@ -64,8 +64,9 @@ public class EnemySpawner : MonoBehaviourPun
         // 나중에 스테이지 난이도에 따라 확률 조정 가능
         //bool isRange = Random.value > 0.5f;
 
-        // 테스트용 침투형 적
-        bool isRange = false;
+        // 테스트용
+        bool isRange = true;
+        //bool isRange = false;
 
         // 스폰 포인트 선언
         Vector3 spawnPos = Vector3.zero;

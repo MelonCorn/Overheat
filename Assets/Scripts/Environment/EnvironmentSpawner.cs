@@ -74,7 +74,7 @@ public class EnvironmentSpawner : MonoBehaviour
         PoolableObject spawnedObj = PoolManager.Instance.Spawn(selectedPrefab, spawnPos, Quaternion.identity);
 
         // 움직임 세팅
-        var mover = spawnedObj.GetComponent<EnvironmentMoveHandler>();
+        var mover = spawnedObj.GetComponent<EnvironmentMove>();
         if (mover != null)
         {
             // 이동 속도, 반환 Z 설정

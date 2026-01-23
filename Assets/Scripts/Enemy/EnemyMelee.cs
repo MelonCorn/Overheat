@@ -43,6 +43,8 @@ public class EnemyMelee : EnemyBase
     {
         base.OnEnable();
 
+        if (PhotonNetwork.IsMasterClient == false) return;
+
         // 다시 활성화 되었을 때
         
         // 에이전트 리셋
