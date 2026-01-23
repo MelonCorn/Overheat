@@ -1,5 +1,6 @@
 using System;
 using Unity.VisualScripting;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,9 +14,7 @@ public class PlayerInputHandler : MonoBehaviour
     public event Action OnInteractEvent; // 상호작용 이벤트
     public event Action OnDropEvent;     // 버리기 이벤트
     public event Action OnFireEvent;     // 좌클릭 이벤트
-    public event Action<int> OnSlot1Event;    // 1번 슬롯 이벤트
-    public event Action<int> OnSlot2Event;    // 2번 슬롯 이벤트
-    public event Action<int> OnSlot3Event;    // 3번 슬롯 이벤트
+    public event Action<int> OnQuickSlotEvent;  // 퀵슬롯 이벤트
 
     public bool IsSprint { get; private set; }     // 달리기 상태
     public bool IsFiring { get; private set; }     // 마우스 누르고 있는 상태
@@ -47,13 +46,14 @@ public class PlayerInputHandler : MonoBehaviour
         _input.actions["Fire"].performed += OnFirePerformed;
         _input.actions["Fire"].canceled += OnFireCanceled;
 
-        _input.actions["Slot1"].performed += (ctx) => { OnSlot1Event?.Invoke(1); };
-        _input.actions["Slot2"].performed += (ctx) => { OnSlot2Event?.Invoke(2); };
-        _input.actions["Slot3"].performed += (ctx) => { OnSlot3Event?.Invoke(3); };
+        _input.actions["Slot1"].performed += _ => OnQuickSlotEvent?.Invoke(0);
+        _input.actions["Slot2"].performed += _ => OnQuickSlotEvent?.Invoke(1);
+        _input.actions["Slot3"].performed += _ => OnQuickSlotEvent?.Invoke(2);
 
-        OnSlot1Event += QuickSlotManager.Instance.SelectSlot;
-        OnSlot2Event += QuickSlotManager.Instance.SelectSlot;
-        OnSlot3Event += QuickSlotManager.Instance.SelectSlot;
+        if(QuickSlotManager.Instance != null)
+        {
+            OnQuickSlotEvent += QuickSlotManager.Instance.SelectSlot;
+        }
     }
 
     private void OnDisable()
@@ -75,9 +75,10 @@ public class PlayerInputHandler : MonoBehaviour
         _input.actions["Fire"].performed -= OnFirePerformed;
         _input.actions["Fire"].canceled -= OnFireCanceled;
 
-        OnSlot1Event -= QuickSlotManager.Instance.SelectSlot;
-        OnSlot2Event -= QuickSlotManager.Instance.SelectSlot;
-        OnSlot3Event -= QuickSlotManager.Instance.SelectSlot;
+        if (QuickSlotManager.Instance != null)
+        {
+            OnQuickSlotEvent -= QuickSlotManager.Instance.SelectSlot;
+        }
     }
 
     private void OnMovePerformed(InputAction.CallbackContext ctx)
