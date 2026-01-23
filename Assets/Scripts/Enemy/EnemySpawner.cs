@@ -15,7 +15,8 @@ public class EnemySpawner : MonoBehaviourPun
 
     [Header("범위 설정")]
     [SerializeField] float _spawnWidth = 20f;    // 적 생성 시 좌우 거리
-    [SerializeField] float _flyHeight = 6f;      // 파괴형 적 높이
+    [SerializeField] float _flyMinHeight = 1f;   // 파괴형 적 최소 높이
+    [SerializeField] float _flyMaxHeight = 5f;   // 파괴형 적 최대 높이
 
     private float _timer;
 
@@ -88,10 +89,10 @@ public class EnemySpawner : MonoBehaviourPun
         if (isRange) // 파괴형 (멀리서)
         {
             // 높이 랜덤
-            yPos = Random.Range(1f, _flyHeight);
+            yPos = Random.Range(_flyMinHeight, _flyMaxHeight);
 
             // 최종 생성 위치
-            spawnPos = new Vector3(xPos, _flyHeight, randomZ);
+            spawnPos = new Vector3(xPos, yPos, randomZ);
 
             // 룸 오브젝트로 생성 (방장이 나가도 유지됨)
             PhotonNetwork.InstantiateRoomObject(_rangeEnemy.name, spawnPos, Quaternion.identity);
@@ -104,22 +105,5 @@ public class EnemySpawner : MonoBehaviourPun
             // 룸 오브젝트로 생성
             PhotonNetwork.InstantiateRoomObject(_meleeEnemy.name, spawnPos, Quaternion.identity);
         }
-    }
-    
-    
-    // 씬 뷰에서 적 생성 범위 확인용
-    private void OnDrawGizmos()
-    {
-        if (TrainManager.Instance == null) return;
-
-        // 열차 끝 위치 가져오기
-        float rearZ = TrainManager.Instance.GetLastZ();
-
-        // 스폰 라인
-        Gizmos.color = Color.red;
-        // 왼쪽 라인
-        Gizmos.DrawLine(new Vector3(-_spawnWidth, _flyHeight, 5), new Vector3(-_spawnWidth, _flyHeight, rearZ - 5));
-        // 오른쪽 라인
-        Gizmos.DrawLine(new Vector3(_spawnWidth, _flyHeight, 5), new Vector3(_spawnWidth, _flyHeight, rearZ - 5));
     }
 }

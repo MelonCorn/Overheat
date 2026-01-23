@@ -98,9 +98,6 @@ public class EnemyRange : EnemyBase
         // 방향 (타겟 포인트 - 자신)
         Vector3 dir = (targetPos - transform.position).normalized;
 
-        // 위아래로는 안움직이고 몸통만
-        dir.y = 0; 
-
         if (dir != Vector3.zero)
         {
             // 부드럽게 회전
