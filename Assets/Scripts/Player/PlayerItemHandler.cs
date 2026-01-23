@@ -28,7 +28,12 @@ public class PlayerItemHandler : MonoBehaviour
             OnTryHoldUse();
         }
     }
-    
+
+    private void OnDisable()
+    {
+        _inputHandler.OnFireEvent -= OnTryUse;
+    }
+
     // 아이템 사용 시도 (단발/클릭)
     private void OnTryUse()
     {

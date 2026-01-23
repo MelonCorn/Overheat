@@ -1587,7 +1587,8 @@ MonoBehaviour:
   _spawnInterval: 1000
   _maxEnemyCount: 15
   _spawnWidth: 20
-  _flyHeight: 6
+  _flyMinHeight: 1
+  _flyMaxHeight: 5
 --- !u!4 &759135628
 Transform:
   m_ObjectHideFlags: 0
@@ -1635,6 +1636,7 @@ MonoBehaviour:
   _shopPlayerItems:
   - {fileID: 11400000, guid: 7822bfc5d4051504c8b0eb646a7d0936, type: 2}
   - {fileID: 11400000, guid: 5cfbadca69574ee428ee24bfd2e0b39a, type: 2}
+  - {fileID: 11400000, guid: bb36074fa912b2141a61b4487c2603b7, type: 2}
 --- !u!4 &771979427
 Transform:
   m_ObjectHideFlags: 0
@@ -3249,6 +3251,7 @@ MonoBehaviour:
   - {fileID: 1332703872}
   - {fileID: 728471370}
   - {fileID: 443426826}
+  _starterItemName: Pistol
 --- !u!4 &1881315413
 Transform:
   m_ObjectHideFlags: 0

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8234832183667491119}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,8 +42,7 @@ GameObject:
   - component: {fileID: 5868876143277716487}
   - component: {fileID: 1534931030514403915}
   - component: {fileID: 1064952314389663919}
-  - component: {fileID: 3278947092971566507}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,27 +121,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &3278947092971566507
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4155514057344861823}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4306429993035316450
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,8 +132,7 @@ GameObject:
   - component: {fileID: 6111232080537875045}
   - component: {fileID: 8291173303839300252}
   - component: {fileID: 6179649086855592861}
-  - component: {fileID: 12347876941654839}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,27 +210,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &12347876941654839
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4306429993035316450}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7662809541345423709
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,7 +222,8 @@ GameObject:
   - component: {fileID: 6863976466020935766}
   - component: {fileID: 6599100313037801769}
   - component: {fileID: 3836888502562610475}
-  m_Layer: 0
+  - component: {fileID: 2005855064760846363}
+  m_Layer: 14
   m_Name: RangeEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -350,3 +307,24 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!135 &2005855064760846363
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7662809541345423709}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0.5, z: 0}

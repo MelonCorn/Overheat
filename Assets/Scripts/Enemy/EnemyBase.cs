@@ -100,6 +100,8 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
         // 체력없으면 중단
         if (_currentHp <= 0) return;
 
+        Debug.Log($"[적] {dmg}의 고통을 맛봤습니다.");
+
         // 이펙트, 사운드 로컬 즉시 실행 (예측)
         PlayHitEffect();
 

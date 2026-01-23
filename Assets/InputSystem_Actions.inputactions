@@ -70,6 +70,33 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Slot1",
+                    "type": "Button",
+                    "id": "5e0565cf-55dc-4900-899b-fda99714fc5b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Slot2",
+                    "type": "Button",
+                    "id": "32af0dc9-ef2f-453c-b1b8-87e375c4c45f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Slot3",
+                    "type": "Button",
+                    "id": "ccd32f04-1850-4b63-b6a5-1ff95ed36947",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Crouch",
                     "type": "Button",
                     "id": "27c5f898-bc57-4ee1-8800-db469aca5fe3",
@@ -319,6 +346,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "DropItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "244615e2-16ff-466f-a625-6fb157ebe139",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slot1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aec9d697-1b96-490e-a6e8-9d2de70a8807",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slot2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "787895aa-4f68-47ad-8ddc-78569861c4cc",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slot3",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6630247556394414223}
   - component: {fileID: 7110625452682758018}
   - component: {fileID: 2935307007361686971}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 6768454132242322240}
   - component: {fileID: 431420839576412323}
   - component: {fileID: 7885485164701588996}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,7 +216,7 @@ GameObject:
   - component: {fileID: 2777239783733987957}
   - component: {fileID: 2748390949015410194}
   - component: {fileID: -3524396956993671518}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: MeleeEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -255,6 +255,9 @@ MonoBehaviour:
   _damage: 8
   _attackRange: 2
   _attackRate: 1
+  _moveSmoothSpeed: 10
+  _rotSmoothSpeed: 10
+  _teleportDistance: 5
   _runSpeed: 8
   _climbDuration: 1.5
   _vaultDuration: 0.6
@@ -315,7 +318,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 2030663710812079412}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

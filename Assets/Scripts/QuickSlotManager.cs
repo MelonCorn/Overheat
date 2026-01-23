@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -21,6 +22,9 @@ public class QuickSlotManager : MonoBehaviour
     [SerializeField] Sprite _defaultSprite; // 빈칸 스프라이트
     [SerializeField] Outline[] _slotOutlines;   // 퀵슬롯 각 아웃라인
 
+    [Header("테스트용 스타터팩")]
+    [SerializeField] string _starterItemName = "Pistol";
+
 
 
     private void Awake()
@@ -34,6 +38,38 @@ public class QuickSlotManager : MonoBehaviour
         {
             Destroy(gameObject);
             return;
+        }
+    }
+
+
+    private IEnumerator Start()
+    {
+        // 로컬 플레이어 할당될 때까지 대기
+        yield return new WaitUntil(() => PlayerHandler.localPlayer != null);
+
+        // 플레이어 초기화할 때 꼬일수 있으니까 일단한 프레임 더 대기
+        yield return null;
+
+        // 스타터팩 아직 지급받지 않았다면
+        if (GameData.HasStarterItem == false)
+        {
+            // 아이템 추가 시도 (예측 없이 즉시)
+            int index = TryAddItem(_starterItemName, false);
+
+            if (index != -1)
+            {
+                Debug.Log($"[스타터팩] {_starterItemName}을 {index}번 슬롯에 지급");
+
+                // 지급 완료 처리
+                GameData.HasStarterItem = true; 
+
+                // 지급받은 아이템 바로 손에 들게
+                SelectSlot(index);
+            }
+            else
+            {
+                Debug.LogWarning($"[스타터팩 지급 실패] {_starterItemName}을 넣을 공간이 없거나 아이템 이름이 잘못됨");
+            }
         }
     }
 
@@ -154,11 +190,13 @@ public class QuickSlotManager : MonoBehaviour
                 }
             }
 
-
             _slotOutlines[i].enabled = (i == CurrentSlotIndex);
 
             // 플레이어 아이템 변경
-            PlayerHandler.localPlayer.ChangeQuickSlot(QuickSlot[i]);
+            if (PlayerHandler.localPlayer != null)
+            {
+                PlayerHandler.localPlayer.ChangeQuickSlot(QuickSlot[i]);
+            }
         }
     }
 
@@ -229,13 +267,5 @@ public class QuickSlotManager : MonoBehaviour
         UpdateUI();
 
         return itemName;
-    }
-
-    // 키보드 입력 처리 (테스트용으로 임시)
-    private void Update()
-    {
-        if (Keyboard.current.digit1Key.wasPressedThisFrame) SelectSlot(0);
-        if (Keyboard.current.digit2Key.wasPressedThisFrame) SelectSlot(1);
-        if (Keyboard.current.digit3Key.wasPressedThisFrame) SelectSlot(2);
     }
 }
