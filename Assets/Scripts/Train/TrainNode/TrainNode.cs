@@ -1,12 +1,13 @@
 using Photon.Pun;
 using System;
 using System.Collections;
-using System.Linq;
 using UnityEngine;
 
 public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicCallback, // 네트워크 객체 생성 후 데이터 콜백
                                             IDamageable, IRepairable
 {
+    protected Collider _collider;
+
     protected int _maxHp;         // 최대 체력
     protected int _currentHp;     // 현재 체력
 
@@ -37,6 +38,11 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     public int MaxHp => _maxHp;
 
     private bool _isExploding = false;
+
+    private void Awake()
+    {
+        _collider = GetComponent<Collider>();
+    }
 
     public virtual void Init(TrainData data, int level)
     {
@@ -118,6 +124,8 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     }
 
 
+    #region 외부 호출용
+
     // 가장 가까운 창문 위치 반환
     public Transform GetClosestWindow(Vector3 enemyPos)
     {
@@ -147,6 +155,39 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         // 제일 가까운 창문 트랜스폼 반환
         return closestPoint;
     }
+
+    // 콜라이더 중앙 반환 (원거리 적 이동용)
+    public Vector3 GetCenter()
+    {
+        if (_collider != null)
+        {
+            // 콜라이더의 중앙
+            return _collider.bounds.center;
+        }
+
+        // 콜라이더 없으면 그냥 원래 위치
+        return transform.position;
+    }
+
+    // 콜라이더 랜덤 위치 반환 (사격 타겟용)
+    public Vector3 GetRandomPoint()
+    {
+        if (_collider != null)
+        {
+            // 콜라이더 영역 박스
+            Bounds bounds = _collider.bounds;
+
+            // 바운드 박스 안에서 랜덤 좌표 추출
+            float randX = UnityEngine.Random.Range(bounds.min.x, bounds.max.x);
+            float randY = UnityEngine.Random.Range(bounds.min.y, bounds.max.y);
+            float randZ = UnityEngine.Random.Range(bounds.min.z, bounds.max.z);
+
+            return new Vector3(randX, randY, randZ);
+        }
+        // 콜라이더 없으면 그냥 원래 위치
+        return transform.position;
+    }
+    #endregion
 
 
     // 피해
