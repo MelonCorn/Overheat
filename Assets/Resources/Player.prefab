@@ -114,13 +114,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 638469257403297108}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8267650221840263510}
-  m_Father: {fileID: 5418326320911575754}
+  m_Father: {fileID: 2688493219900572474}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5751542554504588881
 MonoBehaviour:
@@ -129,11 +129,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 638469257403297108}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b05c489344271641943a99ae76ae0a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerItemMoveHandler
+  _weaponHolder: {fileID: 8267650221840263510}
+  _moveHandler: {fileID: 5230407840926473868}
+  _equipSpeed: 10
+  _unepuipOffset: 0.05
+  _unepuipPos: {x: 0, y: -0.5, z: 0}
 --- !u!1 &1435600471120788571
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,6 +306,7 @@ MonoBehaviour:
   - {fileID: 1161835146325615844}
   - {fileID: 4411880462178130062}
   - {fileID: 6439853996020436887}
+  - {fileID: 5751542554504588881}
   _camera: {fileID: 2045652762034455185}
   _canvas: {fileID: 1435600471120788571}
   _moveSmoothSpeed: 10
@@ -694,7 +700,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2688493219900572474}
-  - {fileID: 5862607381472711764}
   m_Father: {fileID: 3832948713498122854}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3639046785783528464
@@ -1422,7 +1427,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5862607381472711764}
   m_Father: {fileID: 5418326320911575754}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &6880727270548743675

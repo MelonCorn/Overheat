@@ -8,8 +8,10 @@ public class PlayerItemHandler : MonoBehaviourPun
     [SerializeField] Transform _fpsHandPos; // 1인칭(로컬)
     [SerializeField] Transform _tpvHandPos; // 3인칭(리모트)
 
-    private PlayerInputHandler _inputHandler;
-    private PlayerStatHandler _statHandler;
+
+    private PlayerInputHandler _inputHandler;   // 입력
+    private PlayerStatHandler _statHandler;     // 스탯
+    private PlayerItemMoveHandler _itemMover;   // 아이템 움직임
     private Transform _camera;
 
     // 현재 들고있는 아이템
@@ -24,6 +26,7 @@ public class PlayerItemHandler : MonoBehaviourPun
     {
         _inputHandler = GetComponent<PlayerInputHandler>();
         _statHandler = GetComponent<PlayerStatHandler>();
+        _itemMover = GetComponentInChildren<PlayerItemMoveHandler>();
     }
     private void Start()
     {
@@ -54,11 +57,14 @@ public class PlayerItemHandler : MonoBehaviourPun
         UnequipItem();
     }
 
+
+    #region 아이템 장착
+
     // 아이템 장착
     public void EquipItem(string itemName)
     {
         // 기존 아이템 장착 해제
-        UnequipItem(); 
+        UnequipItem();
 
         // 아이템 이름 비어있으면 장착 해제까지
         if (string.IsNullOrEmpty(itemName)) return;
@@ -146,6 +152,11 @@ public class PlayerItemHandler : MonoBehaviourPun
             _currentItemAnim = null;
         }
     }
+    #endregion
+
+
+
+    #region 아이템 사용
     // 아이템 사용 시도 (단발/클릭)
     private void OnTryUse() => UseItem(false);
 
@@ -193,7 +204,6 @@ public class PlayerItemHandler : MonoBehaviourPun
         }
     }
 
-
     // 포션 사용
     private void UsePotion(PotionData data, int slotIndex, string itemName)
     {
@@ -209,8 +219,6 @@ public class PlayerItemHandler : MonoBehaviourPun
         // 퀵슬롯에서 제거
         QuickSlotManager.Instance.RemoveItem(slotIndex, itemName);
     }
-
-
 
     // 무기 사용
     private void UseWeapon(WeaponData data)
@@ -261,6 +269,8 @@ public class PlayerItemHandler : MonoBehaviourPun
             }
         }
     }
+
+    #endregion
 
 
 
