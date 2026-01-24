@@ -23,8 +23,10 @@ public class PlayerItemMoveHandler : MonoBehaviour
     [SerializeField] float _jumpShock = 0.05f;   // 점프할 때 내려가는 충격
     [SerializeField] float _landShock = 0.15f;   // 착지할 때 내려가는 충격
     [SerializeField] float _fallAmount = 0.08f;  // 공중에 있을 때 올라가는 정도
+    [SerializeField] float _shockSpeed = 15f;    // 충격 발생 시 내려가는 속도
     [SerializeField] float _shockSmooth = 5f;    // 충격 후 복구 속도
 
+    private float _targetShockY = 0f;            // 목표 충격값
     private float _currentShockY = 0f;           // 현재 충격값
     private bool _wasGrounded = true;            // 이전 프레임 땅 체크용
 
@@ -136,32 +138,27 @@ public class PlayerItemMoveHandler : MonoBehaviour
         // 착지 상태
         bool isGrounded = _moveHandler.IsGrounded;
 
-        float targetY = 0f; // 기본 목표는 원점
+        // 최종 목표 Y
+        float finalY = isGrounded ? 0f : _fallAmount;
 
         // 점프 감지
         if (_wasGrounded && isGrounded == false)
         {
             // 점프 충격 아래로
-            _currentShockY = -_jumpShock;
+            _targetShockY = -_jumpShock;
         }
         // 착지 감지
         else if (_wasGrounded == false && isGrounded)
         {
             // 착지 충격 아래로
-            _currentShockY = -_landShock;
+            _targetShockY = -_landShock;
         }
 
-        // 낙하 중
-        if (!isGrounded)
-        {
-            // 땅이 아니면 점점 위로 올라감
-            targetY = _fallAmount;
-        }
+        // 부드럽게 이동
+        _targetShockY = Mathf.Lerp(_targetShockY, finalY, Time.deltaTime * _shockSmooth);           // 목표 지점
+        _currentShockY = Mathf.Lerp(_currentShockY, _targetShockY, Time.deltaTime * _shockSpeed);   // 현재 지점
 
         // 지난 상태 갱신
         _wasGrounded = isGrounded;
-
-        // 부드럽게 이동
-        _currentShockY = Mathf.Lerp(_currentShockY, targetY, Time.deltaTime * _shockSmooth);
     }
 }
