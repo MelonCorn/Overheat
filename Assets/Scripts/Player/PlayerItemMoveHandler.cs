@@ -37,7 +37,7 @@ public class PlayerItemMoveHandler : MonoBehaviour
         // 바로 장착 해제 상태
         _isEquipped = false;
 
-        // 위치도 즉시 갱신
+        // 위치도 즉시 갱신 
         _weaponHolder.localPosition = _startPos; 
     }
 

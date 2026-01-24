@@ -157,8 +157,17 @@ public class QuickSlotManager : MonoBehaviour
     {
         if (index >= 0 && index < QuickSlot.Length)
         {
+            // 현재 번호과 같다면 패스
+            if (CurrentSlotIndex == index) return;
+
+            // 현재 선택된 번호 갱신
             CurrentSlotIndex = index;
+
+            // UI 갱신
             UpdateUI();
+
+            // 손에 든 아이템 갱신
+            RefreshHand();
         }
     }
 
@@ -192,12 +201,6 @@ public class QuickSlotManager : MonoBehaviour
 
             // 아이템 테두리 
             _slotOutlines[i].enabled = (i == CurrentSlotIndex);
-        }
-        
-        if (PlayerHandler.localPlayer != null)
-        {
-            // 현재 슬롯의 아이템 이름 전달
-            PlayerHandler.localPlayer.ChangeQuickSlot(QuickSlot[CurrentSlotIndex]);
         }
     }
 
@@ -268,5 +271,16 @@ public class QuickSlotManager : MonoBehaviour
         UpdateUI();
 
         return itemName;
+    }
+
+
+    // 손에 든 아이템 새로고침
+    private void RefreshHand()
+    {
+        if (PlayerHandler.localPlayer != null)
+        {
+            // 현재 슬롯의 아이템 이름으로 장착 요청
+            PlayerHandler.localPlayer.ChangeQuickSlot(QuickSlot[CurrentSlotIndex]);
+        }
     }
 }
