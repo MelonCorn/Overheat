@@ -227,33 +227,16 @@ public class PlayerItemHandler : MonoBehaviourPun
         // 리모트 발사 애니메이션
         photonView.RPC(nameof(RPC_PlayFireAnim), RpcTarget.Others);
 
-        // 공격 로직
-        // 카메라 중앙에서 발사
-        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
-
-        Debug.Log($"[공격] {data.displayName} 발사!");
-
-        // 레이캐스트
-        if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
-        {
-            // 맞은 대상
-            GameObject target = _hit.collider.gameObject;
-
-            // 수리 도구고
-            // 수리 가능한 대상이면 수리
-            if (data.isRepairTool && target.GetComponentInParent<IRepairable>() is IRepairable repairable)
-            {
-                repairable.TakeRepair(data.damage);
-            }
-            // 수리 도구가 아니거나
-            // 수리 도구인데 적을 때렸을 때 타격
-            else if (target.GetComponentInParent<IDamageable>() is IDamageable damageable)
-            {
-                damageable.TakeDamage(data.damage);
-            }
-        }
+        // 발사
+        FireRaycast(data);
     }
 
+    // 리모드 발사 애니메이션 재생
+    [PunRPC]
+    private void RPC_PlayFireAnim()
+    {
+        if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
+    }
 
     // 발사 레이캐스트
     private void FireRaycast(WeaponData data)
