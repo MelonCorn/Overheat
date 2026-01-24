@@ -101,10 +101,6 @@ public class PlayerInteractHandler : MonoBehaviour
         {
             // 상호작용 실행
             _currentInteractable.OnInteract();
-
-            // 손 새로고침
-            if (QuickSlotManager.Instance != null)
-                QuickSlotManager.Instance.RefreshHand();
         }
     }
 

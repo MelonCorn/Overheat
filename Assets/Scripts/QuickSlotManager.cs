@@ -117,6 +117,12 @@ public class QuickSlotManager : MonoBehaviour
 
         // UI 갱신
         UpdateUI();
+
+        // 변경된 슬롯이 들고 있는 슬롯이면 갱신
+        if (slotIndex == CurrentSlotIndex)
+        {
+            RefreshHand();
+        }
     }
 
     // 사용 가능 상태 확인 (외부용)
@@ -224,6 +230,12 @@ public class QuickSlotManager : MonoBehaviour
 
         // UI 갱신 (사라짐)
         UpdateUI();
+
+        // 변경된 슬롯이 들고 있는 슬롯이면 갱신
+        if (slotIndex == CurrentSlotIndex)
+        {
+            RefreshHand();
+        }
     }
 
 
@@ -271,6 +283,9 @@ public class QuickSlotManager : MonoBehaviour
 
         // UI 갱신
         UpdateUI();
+
+        // 손 비우기
+        RefreshHand();
 
         return itemName;
     }
