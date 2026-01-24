@@ -3,12 +3,12 @@ using static UnityEngine.GraphicsBuffer;
 
 public class PlayerItemMoveHandler : MonoBehaviour
 {
-    [Header("타겟 트랜스폼")]
-    [SerializeField] Transform _handTrans;        // 아이템 스웨이, 충격 객체
-    [SerializeField] Transform _handHolderTrans;  // 아이템 변경 시 움직일 객체
-
     private PlayerInputHandler _inputHandler;     // 입력 상태 확인용
-    private PlayerMovementHandler _moveHandler;   // 이동 상태 확인용          
+    private PlayerMovementHandler _moveHandler;   // 이동 상태 확인용     
+
+    [Header("타겟 트랜스폼")]
+    [SerializeField] Transform _handTrans;        // 아이템 스웨이, 걷기, 충격
+    [SerializeField] Transform _handHolderTrans;  // 아이템 장착     
 
     [Header("장착 설정")]
     [SerializeField] float _equipSpeed = 10f;                          // 아이템 장착 속도
@@ -25,6 +25,18 @@ public class PlayerItemMoveHandler : MonoBehaviour
     [SerializeField] float _fallAmount = 0.08f;  // 공중에 있을 때 올라가는 정도
     [SerializeField] float _shockSpeed = 15f;    // 충격 발생 시 내려가는 속도
     [SerializeField] float _shockSmooth = 5f;    // 충격 후 복구 속도
+
+    [Header("걷기/뛰기 설정")]
+    [SerializeField] float _walkSpeed = 7f;      // 걷는 속도
+    [SerializeField] float _walkAmount = 0.05f;  // 걷는 흔들림
+    [Space]
+    [SerializeField] float _runSpeed = 10f;      // 뛰는 속도
+    [SerializeField] float _runAmount = 0.1f;    // 뛰는 흔들림
+    [Space]
+    [SerializeField] float _walkOffset = -0.05f; // 아래로 살짝 내림
+
+    private float _walkTimer = 0f;               // 누적 타이머
+    private Vector3 _currentWalkPos;             // 현재 걸음 위치
 
     private float _targetShockY = 0f;            // 목표 충격값
     private float _currentShockY = 0f;           // 현재 충격값
@@ -69,13 +81,14 @@ public class PlayerItemMoveHandler : MonoBehaviour
         // 스웨이
         SwayMotion();
 
-        // 좌우
+        // 걷기
+        WalkMotion();
 
         // 충격
         ShockMotion();
 
-        // 최종 계산된 값 적용 : 기준점 + 스웨이 + 충격
-        _handTrans.localPosition = _handPos + _currentSwayPos + new Vector3(0, _currentShockY, 0); ;
+        // 최종 계산된 값 적용 : 기준점 + 스웨이 + 걷기 + 충격
+        _handTrans.localPosition = _handPos + _currentSwayPos + _currentWalkPos + new Vector3(0, _currentShockY, 0); ;
     }
 
     // 장착 상태 변경 (PlayerItemHandler에서 호출)
@@ -127,6 +140,49 @@ public class PlayerItemMoveHandler : MonoBehaviour
 
         // 부드럽게 적용      
         _currentSwayPos = Vector3.Lerp(_currentSwayPos, targetPos, Time.deltaTime * _swaySmooth);
+    }
+
+
+    // 걷기 모션
+    private void WalkMotion()
+    {
+        // 움직임 핸들러, 입력 핸들러 필요
+        if (_moveHandler == null || _inputHandler == null) return;
+
+        // 땅에 있고
+        // 이동 입력이 있을 때만
+        if (_moveHandler.IsGrounded && _inputHandler.MoveInput.magnitude > 0.1f)
+        {
+            // 달리기 상태
+            bool isRunning = _inputHandler.IsSprint;
+            // 속도
+            float speed = isRunning ? _runSpeed : _walkSpeed;
+            // 흔들림
+            float amount = isRunning ? _runAmount : _walkAmount;
+
+            // 누적해서 나중에 이어가게
+            _walkTimer += Time.deltaTime * speed;
+
+            // 8자 궤적
+            // X(좌우)는 Cos 사용해서 둥글게 왔다갔다
+            // Y(위아래)는 Abs Sin 사용해서 좌우 한번 갈때마다 위아래는 두번
+            // _walkOffset을 더해서 아래로 좀 내림
+            float walkX = Mathf.Cos(_walkTimer) * amount;
+            float walkY = Mathf.Abs(Mathf.Sin(_walkTimer)) * amount + _walkOffset;
+
+            // 목표 위치 설정
+            Vector3 targetPos = new Vector3(walkX, walkY, 0);
+
+            // 부드럽게 이동
+            _currentWalkPos = Vector3.Lerp(_currentWalkPos, targetPos, Time.deltaTime * 10f);
+        }
+        // 멈추거나 점프 상태면
+        else
+        {
+            // 일단 부드럽게 원점 돌아감
+            // 대신 나중에 이어하기 가능
+            _currentWalkPos = Vector3.Lerp(_currentWalkPos, Vector3.zero, Time.deltaTime * 10f);
+        }
     }
 
 
