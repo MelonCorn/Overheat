@@ -26,6 +26,8 @@ public class PlayerMovementHandler : MonoBehaviour
     [SerializeField] float _groundCheckDistance = 0.2f;
     [SerializeField] private bool _isGrounded; // 디버그용
 
+    public bool IsGrounded => _isGrounded;
+
     public LayerMask GroundLayer => _groundLayer;
 
     // 속도 데이터

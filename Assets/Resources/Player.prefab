@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 5862607381472711764}
   - component: {fileID: 5751542554504588881}
   m_Layer: 0
-  m_Name: WeaponSway
+  m_Name: HandSway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -134,13 +134,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b05c489344271641943a99ae76ae0a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerItemMoveHandler
-  _weaponSway: {fileID: 5862607381472711764}
-  _weaponHolder: {fileID: 8267650221840263510}
+  _handTrans: {fileID: 5862607381472711764}
+  _handHolderTrans: {fileID: 8267650221840263510}
   _equipSpeed: 10
   _startOffset: {x: 0, y: -0.5, z: 0}
   _swayAmount: 0.01
   _maxSway: 0.04
   _swaySmooth: 4
+  _jumpShock: 0.05
+  _landShock: 0.15
+  _fallAmount: 0.08
+  _shockSmooth: 5
 --- !u!1 &1435600471120788571
 GameObject:
   m_ObjectHideFlags: 0
@@ -745,7 +749,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8267650221840263510}
   m_Layer: 0
-  m_Name: WeaponHolder
+  m_Name: HandHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
