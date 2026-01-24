@@ -3,13 +3,25 @@ using static UnityEngine.GraphicsBuffer;
 
 public class PlayerItemMoveHandler : MonoBehaviour
 {
-    [SerializeField] Transform _weaponHolder;            // 아이템 변경 시 움직일 객체
-    private PlayerMovementHandler _moveHandler;          // 이동 상태 확인용
+    [Header("타겟 트랜스폼")]
+    [SerializeField] Transform _weaponSway;       // 아이템 스웨이, 충격 객체
+    [SerializeField] Transform _weaponHolder;     // 아이템 변경 시 움직일 객체
+
+    private PlayerInputHandler _inputHandler;     // 입력 상태 확인용
+    private PlayerMovementHandler _moveHandler;   // 이동 상태 확인용          
 
     [Header("장착 설정")]
     [SerializeField] float _equipSpeed = 10f;                          // 아이템 장착 속도
-    [SerializeField] Vector3 _startOffset = new Vector3(0, -0.5f, 0);     // 내릴 간격
+    [SerializeField] Vector3 _startOffset = new Vector3(0, -0.5f, 0);  // 내릴 간격
 
+    [Header("스웨이 설정")]
+    [SerializeField] float _swayAmount = 0.02f;   // 강도
+    [SerializeField] float _maxSway = 0.06f;      // 최대
+    [SerializeField] float _swaySmooth = 4f;      // 부드러움
+
+    private Vector3 _currentSwayPos;    // 현재 스웨이 위치
+
+    private Vector3 _swayPos;   // 스웨이 위치
     private Vector3 _equipPos;  // 장착 위치
 
     // 아이템 장착 상태
@@ -18,20 +30,38 @@ public class PlayerItemMoveHandler : MonoBehaviour
 
     private void Awake()
     {
+        _inputHandler = GetComponentInParent<PlayerInputHandler>();
         _moveHandler = GetComponentInParent<PlayerMovementHandler>();
 
 
-        // 시작하면 들고 있을 때 위치 지정
+        // 시작하면
+
+        // 장착 기준점
         if (_weaponHolder != null)
-        {
             _equipPos = _weaponHolder.localPosition;
-        }
+
+        // 스웨이 기준점
+        if (_weaponSway != null)
+            _swayPos = _weaponSway.localPosition;
     }
 
     private void Update()
     {
+        // 둘 중 하나라도 없으면 무시
+        if (_weaponSway == null || _weaponHolder == null) return;
+
         // 장착 모션
         EquipMotion();
+
+        // 스웨이
+        SwayMotion();
+
+        // 좌우
+
+        // 충격
+
+        // 최종 계산된 값 적용
+        _weaponSway.localPosition = _currentSwayPos;
     }
 
     // 장착 상태 변경 (PlayerItemHandler에서 호출)
@@ -62,5 +92,26 @@ public class PlayerItemMoveHandler : MonoBehaviour
 
         // 부드럽게 이동
         _weaponHolder.localPosition = Vector3.Lerp(_weaponHolder.localPosition, target, Time.deltaTime * _equipSpeed);
+    }
+
+    // 스웨이 모션
+    private void SwayMotion()
+    {
+        // 입력 핸들러 필요
+        if (_inputHandler == null) return;
+
+        // 마우스 X,Y
+        float mouseX = _inputHandler.LookInput.x;
+        float mouseY = _inputHandler.LookInput.y;
+
+        // 입력 반대 방향으로
+        float moveX = Mathf.Clamp(mouseX * -_swayAmount, -_maxSway, _maxSway);
+        float moveY = Mathf.Clamp(mouseY * -_swayAmount, -_maxSway, _maxSway);
+
+        // 목표 지점
+        Vector3 targetPos = new Vector3(moveX, moveY, 0);
+
+        // 부드럽게 적용      
+        _currentSwayPos = Vector3.Lerp(_currentSwayPos, targetPos, Time.deltaTime * _swaySmooth);
     }
 }

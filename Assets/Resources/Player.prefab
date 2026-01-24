@@ -134,9 +134,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b05c489344271641943a99ae76ae0a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerItemMoveHandler
+  _weaponSway: {fileID: 5862607381472711764}
   _weaponHolder: {fileID: 8267650221840263510}
   _equipSpeed: 10
-  _startPos: {x: 0, y: -0.5, z: 0}
+  _startOffset: {x: 0, y: -0.5, z: 0}
+  _swayAmount: 0.01
+  _maxSway: 0.04
+  _swaySmooth: 4
 --- !u!1 &1435600471120788571
 GameObject:
   m_ObjectHideFlags: 0
