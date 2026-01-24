@@ -190,13 +190,14 @@ public class QuickSlotManager : MonoBehaviour
                 }
             }
 
+            // 아이템 테두리 
             _slotOutlines[i].enabled = (i == CurrentSlotIndex);
-
-            // 플레이어 아이템 변경
-            if (PlayerHandler.localPlayer != null)
-            {
-                PlayerHandler.localPlayer.ChangeQuickSlot(QuickSlot[i]);
-            }
+        }
+        
+        if (PlayerHandler.localPlayer != null)
+        {
+            // 현재 슬롯의 아이템 이름 전달
+            PlayerHandler.localPlayer.ChangeQuickSlot(QuickSlot[CurrentSlotIndex]);
         }
     }
 

@@ -152,14 +152,11 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     {
         if (QuickSlotManager.Instance == null) return;
 
-        // 상태가 달라졌다면 갱신
-        if (CurrentItem != itemName)
-        {
-            CurrentItem = itemName;
+        // 현재 아이템 갱신
+        CurrentItem = itemName;
 
-            // 내 화면에서도 손 모델을 갱신
-            //UpdateHandModel(CurrentItem);
-        }
+        // 로컬은 바로 장착
+        _itemHandler.EquipItem(CurrentItem);
     }
 
     

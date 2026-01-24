@@ -1,12 +1,13 @@
 using Photon.Pun;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerItemHandler : MonoBehaviourPun
 {
     [Header("아이템 장착 위치)")]
-    [SerializeField] Transform _fpsHandPos; // 1인칭(로컬)
-    [SerializeField] Transform _tpvHandPos; // 3인칭(리모트)
+    [SerializeField] Transform _fpsHolder; // 1인칭(로컬)
+    [SerializeField] Transform _tpsHolder; // 3인칭(리모트)
 
 
     private PlayerInputHandler _inputHandler;   // 입력
@@ -21,6 +22,8 @@ public class PlayerItemHandler : MonoBehaviourPun
 
     private float _lastFireTime;    // 쿨타임 관리용
     private RaycastHit _hit;        // 공격 레이캐스트용
+
+    private Coroutine _equipCoroutine; // 로컬 장착 코루틴
 
     private void Awake()
     {
@@ -63,77 +66,146 @@ public class PlayerItemHandler : MonoBehaviourPun
     // 아이템 장착
     public void EquipItem(string itemName)
     {
-        // 기존 아이템 장착 해제
-        UnequipItem();
-
-        // 아이템 이름 비어있으면 장착 해제까지
-        if (string.IsNullOrEmpty(itemName)) return;
-        if (GameManager.Instance == null) return;
-
-        // 아이템 이름으로 데이터 가져오기
-        ShopItem itemData = GameManager.Instance.FindItemData(itemName);
-
-        // 데이터가 PlayerItemData 타입이면
-        if (itemData is PlayerItemData data && data.prefab != null)
+        // 로컬 플레이어
+        if (photonView.IsMine == true)
         {
-            // 로컬인지 확인하고 부모 결정 (1인칭 / 3인칭)
-            Transform parent = photonView.IsMine == true ? _fpsHandPos : _tpvHandPos;
-            if (parent == null) return;
+            // 장착 코루틴 실행중이면 중단
+            if (_equipCoroutine != null) StopCoroutine(_equipCoroutine);
 
-            // 풀링 과정
-            GameObject itemObj = null;
-
-            // 데이터의 프리팹 풀 스크립트 가져와서
-            PoolableObject prefabPoolable = data.prefab.GetComponent<PoolableObject>();
-
-            // 있으면
-            if (prefabPoolable != null)
-            {
-                // 풀에서 가져오기
-                PoolableObject newObj = PoolManager.Instance.Spawn(prefabPoolable, parent);
-
-                // 반납용 저장
-                _currentItemPoolable = newObj;
-
-                // 생성된 오브젝트
-                itemObj = newObj.gameObject;
-            }
-            else
-            {
-                // 프리팹에 풀 스크립트 없으면 그냥 생성
-                itemObj = Instantiate(data.prefab, parent);
-            }
-
-            // 네트워크 아이템 스크립트
-            NetworkItem networkItem = itemObj.GetComponent<NetworkItem>();
-
-            // 네트워크 아이템이면
-            if (networkItem != null)
-            {
-                // 로컬모드로 전환
-                networkItem.SwitchToLocalMode();
-            }
-            // 네트워크 아이템 아니며
-            else
-            {
-                // 수동 정리 (혹시나해서 넣음)
-                var col = itemObj.GetComponent<Collider>();
-                if (col) col.enabled = false;
-                var pv = itemObj.GetComponent<PhotonView>();
-                if (pv) pv.enabled = false;
-
-                itemObj.transform.localPosition = Vector3.zero;
-                itemObj.transform.localRotation = Quaternion.identity;
-            }
-
-            // 현재 장착 아이템 변경
-            _currentItem = itemObj;
-
-            // 아이템의 애니메이터 가져오기
-            _currentItemAnim = _currentItem.GetComponent<Animator>();
+            // 장착 코루틴 실행
+            _equipCoroutine = StartCoroutine(LocalEquip(itemName));
+        }
+        // 리모트 플레이어
+        else
+        {
+            // 리모트 장착
+            RemoteEquip(itemName);
         }
     }
 
+    // 로컬 아이템 장착 코루틴
+    private IEnumerator LocalEquip(string newItem)
+    {
+        // 기존 아이템 즉시 장착 해제
+        UnequipItem();
+
+        // 빈손이면 여기서 끝
+        if (string.IsNullOrEmpty(newItem))
+        {
+            _equipCoroutine = null;
+            yield break;
+        }
+
+        // 게임매니저 없으면 끝
+        if (GameManager.Instance == null) yield break;
+
+        // 아이템 데이터 가져오기
+        ShopItem itemData = GameManager.Instance.FindItemData(newItem);
+
+        // PlayerItemData이면 새 아이템
+        // 
+        if (itemData is PlayerItemData data && data.prefab != null)
+        {
+            CreateItem(data, _fpsHolder);
+        }
+
+        // 생성 직후 화면 아래로 강제 이동 후 올리기
+        if (_itemMover != null)
+        {
+            // 아래로 강제 이동
+            _itemMover.SnapToStartPos();
+
+            // 혹시 몰라서 1프레임 대기
+            yield return null;
+
+            // 장착 상태 True
+            _itemMover.SetEquipState(true);
+        }
+
+        // 다 실행했으니까 비우기
+        _equipCoroutine = null;
+    }
+
+    // 리모트 아이템 장착
+    private void RemoteEquip(string newItem)
+    {
+        // 아이템 즉시 장착 해제
+        UnequipItem();
+
+        // 빈손이면 여기까지
+        if (string.IsNullOrEmpty(newItem)) return;
+        if (GameManager.Instance == null) return;
+
+        // 아이템 데이터 가져오기
+        ShopItem itemData = GameManager.Instance.FindItemData(newItem);
+
+        // PlayerItemData 타입이면 아이템 생성
+        if (itemData is PlayerItemData data && data.prefab != null)
+        {
+            // 3인칭 위치에 생성
+            CreateItem(data, _tpsHolder);
+        }
+    }
+
+
+    // 아이템 생성
+    private void CreateItem(PlayerItemData data, Transform parent)
+    {
+        // 부모 null이면 패스
+        if (parent == null) return;
+
+        // 풀링 오브젝트
+        GameObject itemObj = null;
+
+        // 데이터의 프리팹 풀 스크립트 가져와서
+        PoolableObject prefabPoolable = data.prefab.GetComponent<PoolableObject>();
+
+        // 있으면
+        if (prefabPoolable != null)
+        {
+            // 풀에서 가져오기
+            PoolableObject newObj = PoolManager.Instance.Spawn(prefabPoolable, parent);
+
+            // 반납용 저장
+            _currentItemPoolable = newObj;
+
+            // 풀링 오브젝트에 생성된 오브젝트 할당
+            itemObj = newObj.gameObject;
+        }
+        else
+        {
+            // 프리팹에 풀 스크립트 없으면 그냥 생성해서 할당
+            itemObj = Instantiate(data.prefab, parent);
+        }
+
+        // 네트워크 아이템 스크립트
+        NetworkItem networkItem = itemObj.GetComponent<NetworkItem>();
+
+        // 네트워크 아이템이면
+        if (networkItem != null)
+        {
+            // 로컬모드로 전환
+            networkItem.SwitchToLocalMode();
+        }
+        // 네트워크 아이템 아니며
+        else
+        {
+            // 수동 정리 (혹시나해서 넣음)
+            var col = itemObj.GetComponent<Collider>();
+            if (col) col.enabled = false;
+            var pv = itemObj.GetComponent<PhotonView>();
+            if (pv) pv.enabled = false;
+
+            itemObj.transform.localPosition = Vector3.zero;
+            itemObj.transform.localRotation = Quaternion.identity;
+        }
+
+        // 현재 장착 아이템 변경
+        _currentItem = itemObj;
+
+        // 아이템의 애니메이터 가져오기
+        _currentItemAnim = _currentItem.GetComponent<Animator>();
+    }
 
     // 아이템 장착 해제
     private void UnequipItem()
