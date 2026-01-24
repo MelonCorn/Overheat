@@ -221,6 +221,12 @@ public class PlayerItemHandler : MonoBehaviourPun
         // 쿨타임 갱신
         _lastFireTime = Time.time;
 
+        // 로컬 발사 애니메이션
+        if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
+
+        // 리모트 발사 애니메이션
+        photonView.RPC(nameof(RPC_PlayFireAnim), RpcTarget.Others);
+
         // 공격 로직
         // 카메라 중앙에서 발사
         Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
@@ -233,40 +239,46 @@ public class PlayerItemHandler : MonoBehaviourPun
             // 맞은 대상
             GameObject target = _hit.collider.gameObject;
 
-            // 수리 도구면
-            if (data.isRepairTool == true)
+            // 수리 도구고
+            // 수리 가능한 대상이면 수리
+            if (data.isRepairTool && target.GetComponentInParent<IRepairable>() is IRepairable repairable)
             {
-                // 수리 가능한 대상인지 확인
-                IRepairable repairable = target.GetComponentInParent<IRepairable>();
-                if (repairable != null)
-                {
-                    // 수리
-                    repairable.TakeRepair(data.damage);
-                }
-                else
-                {
-                    // 수리 도구로 적을 때리면 피해
-                    IDamageable damageable = target.GetComponentInParent<IDamageable>();
-                    if (damageable != null) damageable.TakeDamage(data.damage);
-                }
+                repairable.TakeRepair(data.damage);
             }
-            // 공격 무기면
-            else
+            // 수리 도구가 아니거나
+            // 수리 도구인데 적을 때렸을 때 타격
+            else if (target.GetComponentInParent<IDamageable>() is IDamageable damageable)
             {
-                // 공격 가능한 대상인지 확인
-                IDamageable damageable = target.GetComponentInParent<IDamageable>();
-                if (damageable != null)
-                {
-                    // 타격
-                    damageable.TakeDamage(data.damage);
-                }
+                damageable.TakeDamage(data.damage);
             }
         }
     }
 
 
+    // 발사 레이캐스트
+    private void FireRaycast(WeaponData data)
+    {
+        if (_camera == null) return;
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
 
-   
+        if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
+        {
+            GameObject target = _hit.collider.gameObject;
+            IDamageable damageable = target.GetComponentInParent<IDamageable>();
+
+            if (damageable != null)
+            {
+                damageable.TakeDamage(data.damage);
+            }
+
+            if (data.isRepairTool)
+            {
+                IRepairable repairable = target.GetComponentInParent<IRepairable>();
+                if (repairable != null) repairable.TakeRepair(data.damage);
+            }
+        }
+    }
+
 
 
     // 카메라 설정
