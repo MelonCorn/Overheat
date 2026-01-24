@@ -201,7 +201,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
             {
                 CurrentItem = receiveItem;
 
-                // 아이템 변경
+                // 아이템 장착
+                _itemHandler.EquipItem(CurrentItem);
             }
         }
     }

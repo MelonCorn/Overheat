@@ -217,7 +217,7 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
 
     // 선반에 놓을 때 호출
     // 선반모드
-    public void SwitchToSocketMode()
+    public void SwitchToLocalMode()
     {
         // 소켓보다 콜라이더 크면 안되니까
         if (_collider != null) _collider.enabled = false;

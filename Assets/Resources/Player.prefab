@@ -256,7 +256,6 @@ MonoBehaviour:
   - {fileID: 1161835146325615844}
   - {fileID: 4411880462178130062}
   - {fileID: 6439853996020436887}
-  - {fileID: 1243383332005046132}
   _camera: {fileID: 2045652762034455185}
   _canvas: {fileID: 1435600471120788571}
   _moveSmoothSpeed: 10
@@ -358,7 +357,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1756186601399181371}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa52cf491b4186640953fd49f48708a7, type: 3}
   m_Name: 

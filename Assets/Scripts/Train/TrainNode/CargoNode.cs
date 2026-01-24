@@ -207,7 +207,7 @@ public class CargoNode : TrainNode
                     // 선반 모드로 전환
                     NetworkItem netItem = newObj.GetComponent<NetworkItem>();
                     if (netItem != null)
-                        netItem.SwitchToSocketMode();
+                        netItem.SwitchToLocalMode();
 
                     // 데이터 등록
                     data.VisualObject = newObj.gameObject;
