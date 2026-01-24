@@ -60,8 +60,8 @@ public class PlayerItemMoveHandler : MonoBehaviour
 
         // 충격
 
-        // 최종 계산된 값 적용
-        _weaponSway.localPosition = _currentSwayPos;
+        // 최종 계산된 값 적용 : 기준점 + 스웨이
+        _weaponSway.localPosition = _swayPos + _currentSwayPos;
     }
 
     // 장착 상태 변경 (PlayerItemHandler에서 호출)
