@@ -65,6 +65,9 @@ public class QuickSlotManager : MonoBehaviour
 
                 // 지급받은 아이템 바로 손에 들게
                 SelectSlot(index);
+
+                // 강제 손 갱신
+                RefreshHand();
             }
             else
             {
@@ -159,7 +162,6 @@ public class QuickSlotManager : MonoBehaviour
         {
             // 현재 번호과 같다면 패스
             if (CurrentSlotIndex == index) return;
-
             // 현재 선택된 번호 갱신
             CurrentSlotIndex = index;
 
@@ -275,7 +277,7 @@ public class QuickSlotManager : MonoBehaviour
 
 
     // 손에 든 아이템 새로고침
-    private void RefreshHand()
+    public void RefreshHand()
     {
         if (PlayerHandler.localPlayer != null)
         {

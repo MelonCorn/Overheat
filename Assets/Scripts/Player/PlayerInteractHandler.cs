@@ -96,10 +96,15 @@ public class PlayerInteractHandler : MonoBehaviour
     // 상호작용
     private void Interact()
     {
-        // 상호작용 대상 존재하면 상호작용 실행
+        // 상호작용 대상 존재하면
         if (_currentInteractable != null)
         {
+            // 상호작용 실행
             _currentInteractable.OnInteract();
+
+            // 손 새로고침
+            if (QuickSlotManager.Instance != null)
+                QuickSlotManager.Instance.RefreshHand();
         }
     }
 
