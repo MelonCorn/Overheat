@@ -1,6 +1,5 @@
 using Photon.Pun;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,10 +11,10 @@ public class LoadingManager : MonoBehaviour
     [Header("로딩 UI")]
     [SerializeField] CanvasGroup _canvasGroup;     // 로딩 캔버스 그룹
     [SerializeField] Slider _progressBar;          // 로딩 바
-    [SerializeField] TextMeshProUGUI _loadingText; // 로딩 텍스트
+    [SerializeField] GameObject _loadingText;      // 로딩 텍스트
 
     [Header("로딩 설정")]
-    [SerializeField] float _fadeDuration = 0.5f;
+    [SerializeField] float _fadeDuration = 0.5f;   // 페이드 시간
 
     private void Awake()
     {
@@ -28,6 +27,7 @@ public class LoadingManager : MonoBehaviour
             _canvasGroup.alpha = 0f;
             _canvasGroup.blocksRaycasts = false;
             gameObject.SetActive(false);
+            if (_loadingText != null) _loadingText.SetActive(false);
         }
         else
         {
@@ -94,7 +94,7 @@ public class LoadingManager : MonoBehaviour
 
         // 준비 완료
         _progressBar.gameObject.SetActive(false);
-        if (_loadingText) _loadingText.text = "플레이어 대기 중";
+        if (_loadingText != null) _loadingText.SetActive(true);
     }
 
     // GameManager에서 호출하는 페이드 인
@@ -112,6 +112,7 @@ public class LoadingManager : MonoBehaviour
         gameObject.SetActive(false);
         // 다음 로딩 할 때 바로 보이게 켜기
         _progressBar.gameObject.SetActive(true);
+        _loadingText.SetActive(false);
     }
 
     // 페이드 효과

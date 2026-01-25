@@ -31,7 +31,9 @@ public class LobbyConnector : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        if (PhotonNetwork.IsMasterClient)
-            PhotonNetwork.LoadLevel("Room");
+        if (LoadingManager.Instance != null)
+        {
+            LoadingManager.Instance.RequestLoadScene("Room");
+        }
     }
 }

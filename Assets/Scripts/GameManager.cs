@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     [SerializeField] TextMeshProUGUI _SurviveDayText;      // 생존일
 
     [Header("이동할 씬")]
-    [SerializeField] string _loadSceneName = "GameScene";
+    [SerializeField] string _loadSceneName = "Game";
 
     public bool IsShop => _isShop;
     public bool IsGameOver { get; private set; }
