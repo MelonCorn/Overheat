@@ -181,8 +181,6 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     {
         Debug.Log("으앙 죽음");
 
-        // 게임 데이터에 일단 로컬 플레이어 사망 기록 (스테이지 클리어 후 상점에서 체력 낮은 상태로 부활)
-        GameManager.Instance.LocalPlayerDead(true);
 
         // 입력 차단, 사망 애니메이션 혹은 랙돌
         // 사망 UI, 관전 카메라 등
@@ -193,8 +191,22 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         // 테스트용 임시 차단
         var input = GetComponent<PlayerInputHandler>();
         var move = GetComponent<PlayerMovementHandler>();
+        var cam = GetComponent<PlayerCameraHandler>();
+
         input.enabled = false; // 키보드 입력 차단
-        move.enabled = false;
+        move.enabled = false;  // 이동 차단
+        cam.enabled = false;   // 카메라 차단
+
+        // 플레이어 로컬 카메라 끄기
+        _camera.gameObject.SetActive(false);
+
+        if (GameManager.Instance != null)
+        {
+            // 게임 데이터에 일단 로컬 플레이어 사망 기록 (스테이지 클리어 후 상점에서 체력 낮은 상태로 부활)
+            GameManager.Instance.LocalPlayerDead(true);
+            // 관전 카메라 활성화
+            GameManager.Instance.SpectatorMode();
+        }
     }
 
 

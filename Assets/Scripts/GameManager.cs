@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     [Header("상점 체크")]
     [SerializeField] bool _isShop;
 
+    [Header("관전 카메라")]
+    [SerializeField] GameObject _spectatorCamera;
+
     [Header("유실물 생성 포인트")]
     [SerializeField] Transform _lostItemSpawnPoint;
 
@@ -236,6 +239,11 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     public void LocalPlayerDead(bool active)
     {
         GameData.LocalDead = active;
+    }
+
+    public void SpectatorMode()
+    {
+        if (_spectatorCamera != null) _spectatorCamera.SetActive(true);
     }
 
 
