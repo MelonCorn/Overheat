@@ -398,6 +398,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Zoom",
+                    "type": "Value",
+                    "id": "cef0c8d0-e5dc-49f8-ba1e-fa1da0fdcbcb",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "NextTarget",
                     "type": "Button",
                     "id": "7f1ed792-b0ac-409d-b245-14891fa5a018",
@@ -469,6 +478,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "PrevTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1ade5a41-e7b6-49c3-8541-cdb0c05d76c8",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
