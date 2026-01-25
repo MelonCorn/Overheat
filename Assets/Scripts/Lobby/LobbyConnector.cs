@@ -8,7 +8,8 @@ public class LobbyConnector : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
+        // 이제 비동기 씬 로딩을 위해서 씬 동기화 끄기
+        PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.ConnectUsingSettings();
         joinButton.interactable = false;
     }
