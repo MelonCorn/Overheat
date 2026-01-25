@@ -13,7 +13,8 @@ public class LoadingManager : MonoBehaviour
     [SerializeField] Slider _progressBar;          // 로딩 바
 
     [Header("로딩 설정")]
-    [SerializeField] float _fadeDuration = 0.5f;   // 페이드 시간
+    private float _fadeDuration = 0.5f;   // 페이드 시간
+    public float FadeDuration => _fadeDuration;
 
     private void Awake()
     {
@@ -51,10 +52,19 @@ public class LoadingManager : MonoBehaviour
     {
         // 초기화
         _progressBar.value = 0;
-        _canvasGroup.alpha = 0f;
 
-        // 페이드 아웃
-        yield return StartCoroutine(Fade(0, 1));
+        // 화면 밝을 때
+        if (_canvasGroup.alpha < 0.99f)
+        {
+            // 페이드 아웃 기다리기
+            yield return StartCoroutine(Fade(_canvasGroup.alpha, 1));
+        }
+        else
+        {
+            // RequestFadeOut로 화면 어두워진 상태일 수 있음
+            _canvasGroup.alpha = 1f;
+            _canvasGroup.blocksRaycasts = true;
+        }
 
         // 비동기 로딩 시작
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);

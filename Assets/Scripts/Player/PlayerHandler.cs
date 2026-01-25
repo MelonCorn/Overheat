@@ -89,7 +89,11 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 
             // 퀵슬롯 기초 설정
             if(QuickSlotManager.Instance != null)
+            {
+                // UI 갱신, 손 새로고침
                 QuickSlotManager.Instance.UpdateUI();
+                QuickSlotManager.Instance.RefreshHand();
+            }
         }
         // 리모트 객체일 때
         else

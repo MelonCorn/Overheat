@@ -215,7 +215,7 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         {
             LoadingManager.Instance.RequestFadeOut();
             // 페이드 시간 대기
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         }
 
         // 플레이어 제거
