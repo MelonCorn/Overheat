@@ -3421,7 +3421,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
   m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_NotificationBehavior: 0
+  m_NotificationBehavior: 3
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -3461,8 +3461,8 @@ MonoBehaviour:
   _zoomSpeed: 0.5
   _obstacleLayer:
     serializedVersion: 2
-    m_Bits: 29632
-  _cameraRadius: 0.2
+    m_Bits: 21184
+  _cameraRadius: 0.1
 --- !u!1 &1941993451
 GameObject:
   m_ObjectHideFlags: 0

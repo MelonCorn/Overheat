@@ -98,7 +98,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5862607381472711764}
-  - component: {fileID: 5751542554504588881}
+  - component: {fileID: 4721078788879104366}
   m_Layer: 0
   m_Name: HandSway
   m_TagString: Untagged
@@ -122,7 +122,7 @@ Transform:
   - {fileID: 8267650221840263510}
   m_Father: {fileID: 2688493219900572474}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5751542554504588881
+--- !u!114 &4721078788879104366
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,7 +144,13 @@ MonoBehaviour:
   _jumpShock: 0.05
   _landShock: 0.15
   _fallAmount: 0.08
+  _shockSpeed: 15
   _shockSmooth: 5
+  _walkSpeed: 7
+  _walkAmount: 0.05
+  _runSpeed: 10
+  _runAmount: 0.1
+  _walkOffset: -0.05
 --- !u!1 &1435600471120788571
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,7 +349,7 @@ MonoBehaviour:
   - {fileID: 1161835146325615844}
   - {fileID: 4411880462178130062}
   - {fileID: 6439853996020436887}
-  - {fileID: 5751542554504588881}
+  - {fileID: 4721078788879104366}
   _camera: {fileID: 2045652762034455185}
   _canvas: {fileID: 1435600471120788571}
   _moveSmoothSpeed: 10

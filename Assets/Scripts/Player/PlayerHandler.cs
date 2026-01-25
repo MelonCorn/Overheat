@@ -165,7 +165,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     // 플레이어 피격
     public void TakeDamage(int dmg)
     {
-        photonView.RPC("RPC_Damage", photonView.Owner, dmg);
+        photonView.RPC(nameof(RPC_Damage), photonView.Owner, dmg);
     }
 
     // 클라어언트에게 호출
@@ -186,19 +186,22 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         // 사망 UI, 관전 카메라 등
 
         // 방장에게 사망 알림
-        photonView.RPC("RPC_Die", RpcTarget.MasterClient);
+        photonView.RPC(nameof(RPC_Die), RpcTarget.MasterClient);
 
         // 테스트용 임시 차단
         var input = GetComponent<PlayerInputHandler>();
         var move = GetComponent<PlayerMovementHandler>();
         var cam = GetComponent<PlayerCameraHandler>();
+        var playerInput = GetComponent<PlayerInput>();
 
-        input.enabled = false; // 키보드 입력 차단
-        move.enabled = false;  // 이동 차단
-        cam.enabled = false;   // 카메라 차단
+        if (input != null) input.enabled = false;            // 키보드 입력 차단
+        if (move != null) move.enabled = false;              // 이동 차단
+        if (cam != null)  cam.enabled = false;               // 카메라 차단
+        if (playerInput != null) playerInput.enabled = false;// 플레이어 인풋 차단
 
         // 플레이어 로컬 카메라 끄기
-        _camera.gameObject.SetActive(false);
+        _camera?.gameObject.SetActive(false);
+        _canvas?.gameObject.SetActive(false);
 
         if (GameManager.Instance != null)
         {

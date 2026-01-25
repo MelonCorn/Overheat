@@ -1,13 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.GraphicsBuffer;
 
 public class SpectatorCamera : MonoBehaviour
 {
     [Header("관전 설정")]   
     [SerializeField] float _height = 1.5f;          // 관전 높이
     [SerializeField] float _rotationSpeed = 2.0f;   // 회전 속도 (나중에 감도로 변경)
-    [SerializeField] float _smoothSpeed = 10f;      // 부드러움
 
     [Header("회전 제한 설정")]
     [SerializeField] float _maxPitch = 80f;         // 내려다볼 각도 제한
@@ -35,8 +33,8 @@ public class SpectatorCamera : MonoBehaviour
     private float _yaw = 0f;
     private float _pitch = 0f;
 
-    // 현재 줌 거리
-    private float _currentDistance; 
+    // 줌 현재 거리
+    private float _currentDistance;     
 
     // 컴포넌트
     private PlayerInput _playerInput;
@@ -143,7 +141,7 @@ public class SpectatorCamera : MonoBehaviour
         Vector3 targetPos = pivotPos + (direction * finalDistance);
 
         // 부드럽게 이동
-        transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * _smoothSpeed);
+        transform.position = targetPos;
 
         // 타겟 바라보기
         transform.rotation = rotation;
