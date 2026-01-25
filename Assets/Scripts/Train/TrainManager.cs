@@ -21,9 +21,9 @@ public struct Train         // 소유 열차 정보
 public class TrainManager : MonoBehaviourPunCallbacks
 {
     // 룸 프로퍼티 키값
-    private const string KEY_TRAIN_TYPES = "TrainTypes";        // 타입
-    private const string KEY_TRAIN_LEVELS = "TrainLevels";      // 레벨
-    private const string KEY_TRAIN_CONTENTS = "TrainContents";  // 화물 정보
+    public const string KEY_TRAIN_TYPES = "TrainTypes";        // 타입
+    public const string KEY_TRAIN_LEVELS = "TrainLevels";      // 레벨
+    public const string KEY_TRAIN_CONTENTS = "TrainContents";  // 화물 정보
 
     private static TrainManager _instance;
     public static TrainManager Instance
@@ -355,6 +355,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
     // 꼬리 자르기
     public void CutTail(TrainNode targetNode)
     {
+        // 게임오버 상태에서 혹시나 들어왔을까봐 체크
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver == true) return;
+
         // 터진 열차의 번호
         int index = _currentTrainNodes.IndexOf(targetNode);
 
@@ -605,6 +608,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
     // 룸 프로퍼티 갱신 (열차 배치 순서, 추가)
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
+        // 게임오버 상태면 열차 갱신 중지
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver == true) return;
+
         // 상점 모드이고, 기차 데이터가 변경되었다면
         if (_isShop && propertiesThatChanged.ContainsKey(KEY_TRAIN_TYPES))
         {

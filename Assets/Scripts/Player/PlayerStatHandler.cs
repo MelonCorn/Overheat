@@ -55,12 +55,17 @@ public class PlayerStatHandler : MonoBehaviour
     #region 체력
     public void TakeDamage(int damage)
     {
+        // 체력 없으면 무시
         if (_currentHp <= 0) return;
+
+        // 혹시 몰라서 로컬 사망상태 한 번 더 체크
+        if (GameData.LocalDead == true) return;
+
+        // 게임오버 상태면 무적
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
 
         _currentHp -= damage;
         Debug.Log($"체력 감소: {_currentHp}/{_maxHp}");
-
-        // UIManager.Instance.UpdateHp(_currentHp, _maxHp);
 
         if (_currentHp <= 0)
         {
@@ -85,20 +90,7 @@ public class PlayerStatHandler : MonoBehaviour
     // 사망
     private void Die()
     {
-        Debug.Log("으앙 죽음");
-
-        // 게임 데이터에 일단 로컬 플레이어 사망 기록 (스테이지 클리어 후 상점에서 체력 낮은 상태로 부활)
-        GameManager.Instance.LocalPlayerDead(true);
-
-        // 입력 차단, 사망 애니메이션 혹은 랙돌
-        // 사망 UI, 관전 카메라 등
-        // 테스트용 임시 차단
-        var input = GetComponent<PlayerInputHandler>();
-        var move = GetComponent<PlayerMovementHandler>();
-        input.enabled = false; // 키보드 입력 차단
-        move.enabled = false;
-
-
+        PlayerHandler.localPlayer.Die();
     }
     #endregion
 

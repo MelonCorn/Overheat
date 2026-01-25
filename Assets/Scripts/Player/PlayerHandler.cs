@@ -28,6 +28,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     public Transform CameraTrans => _camera.transform;
     public string CurrentItem = "";
 
+    public bool IsDead { get; private set; }
 
     private void Awake()
     {
@@ -172,6 +173,42 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     private void RPC_Damage(int dmg)
     {
         _statHandler.TakeDamage(dmg);
+    }
+
+
+    // 사망
+    public void Die()
+    {
+        Debug.Log("으앙 죽음");
+
+        // 게임 데이터에 일단 로컬 플레이어 사망 기록 (스테이지 클리어 후 상점에서 체력 낮은 상태로 부활)
+        GameManager.Instance.LocalPlayerDead(true);
+
+        // 입력 차단, 사망 애니메이션 혹은 랙돌
+        // 사망 UI, 관전 카메라 등
+
+        // 방장에게 사망 알림
+        photonView.RPC("RPC_Die", RpcTarget.MasterClient);
+
+        // 테스트용 임시 차단
+        var input = GetComponent<PlayerInputHandler>();
+        var move = GetComponent<PlayerMovementHandler>();
+        input.enabled = false; // 키보드 입력 차단
+        move.enabled = false;
+    }
+
+
+    // 방장에게 사망 알림
+    [PunRPC]
+    private void RPC_Die()
+    {
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        // 사망 체크
+        IsDead = true;
+
+        // 사망한 플레이어 체크
+        GameManager.Instance.CheckAllPlayersDead();
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

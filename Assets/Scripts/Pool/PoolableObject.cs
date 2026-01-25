@@ -16,6 +16,13 @@ public class PoolableObject : MonoBehaviour
     // 사용이 끝나면 반환
     public void Release()
     {
+        // 풀 매니저 없으면 그냥 파괴
+        if (PoolManager.Instance == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (_pool != null)
         {
             _pool.Release(this);

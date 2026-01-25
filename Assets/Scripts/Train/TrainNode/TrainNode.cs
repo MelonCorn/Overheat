@@ -193,7 +193,10 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     // 피해
     public void TakeDamage(int amount)
     {
+        // 체력 없거나
+        // 게임오버 상태면 무시 (연출 중 무적)
         if (_currentHp <= 0) return;
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
 
         _currentHp -= amount;
 
@@ -241,6 +244,26 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     [PunRPC]
     public void ExplodeRPC()
     {
+        // 엔진 파괴 시
+        if (TrainIndex == 0)
+        {
+            // 방장만
+            if (PhotonNetwork.IsMasterClient)
+            {
+                Debug.Log("[엔진 파괴] 동력 상실. 게임 오버 진입.");
+                if (GameManager.Instance != null)
+                {
+                    // 게임오버 호출
+                    GameManager.Instance.GameOver();
+                }
+            }
+
+            // 엔진 터지면 타임라인으로 연쇄 폭발 연출할거기 때문에
+            // 그리고 CutTail하면 애초에 룸 프로퍼티 갱신되어서
+            // 게임오버 시 룸 프로퍼티 초기화와 꼬일 가능성 있음
+            return;
+        }
+
         // 앞차랑 연결 끊기
         if (_prevTrain != null)
         {
@@ -374,6 +397,9 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         int level = (int)data[1];            // 레벨
         TrainType type = (TrainType)data[2]; // 타입
         string content = (string)data[3];    // 화물내용
+
+        // 열차 번호
+        TrainIndex = index;
 
         // 매니저에 등록, Init 요청
         if (TrainManager.Instance != null)

@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -25,6 +26,7 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     [SerializeField] string _loadSceneName = "GameScene";
 
     public bool IsShop => _isShop;
+    public bool IsGameOver { get; private set; }
 
 
     private void Awake()
@@ -226,11 +228,93 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         GameData.LostItems.Clear();
     }
 
+
+
+    #region 게임오버 관련
+
     // 로컬 플레이어 사망
     public void LocalPlayerDead(bool active)
     {
         GameData.LocalDead = active;
     }
+
+
+    // 전멸 체크
+    public void CheckAllPlayersDead()
+    {
+        // 플레이어 1명 이상일 때 체크
+        if (ActivePlayers.Count <= 0) return;
+
+        // 활성화된 플레이어 순회하면서 생존자 체크
+        // 한 명이라도 생존 시 무시
+        foreach (var player in ActivePlayers)
+            if (player.IsDead == false) return;
+
+        // 전부 다 사망해서 통과하면
+        GameOver(); // 게임오버
+    }
+
+    // 게임오버 발동 (외부용)
+    public void GameOver()
+    {
+        // 방장만
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        if (TrainManager.Instance != null)
+        {
+            // 룸 프로퍼티 초기화
+            ResetRoomProperties();
+        }
+
+        Debug.Log("게임 오버! 대기실로 이동합니다.");
+
+        // 모두에게 게임오버 알림
+        photonView.RPC(nameof(RPC_GameOver), RpcTarget.All);
+    }
+
+
+    // 게임오버 알림
+    [PunRPC]
+    private void RPC_GameOver()
+    {
+        // 게임오버
+        IsGameOver = true;
+
+
+        // 나중에 코루틴으로 만들어서
+        // 게임오버 상태 먼저 하고나서 타임라인 재생
+        // 재생 끝나고 나서 룸프로퍼티, 데이터 초기화 등 과정 실행
+
+        // 게임 데이터 리셋
+        GameData.Reset();
+
+        // 파괴되지 않는 싱글톤 정리
+        if (QuickSlotManager.Instance != null) Destroy(QuickSlotManager.Instance.gameObject);
+        if(ItemManager.Instance != null) Destroy(ItemManager.Instance.gameObject);
+
+        // 씬 이동
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // 룸 프로퍼티 초기화
+            ResetRoomProperties();
+            // 대기실로 이동
+            PhotonNetwork.LoadLevel("Room");
+        }
+    }
+
+    // 룸 프로퍼티 초기화
+    public void ResetRoomProperties()
+    {
+        ExitGames.Client.Photon.Hashtable resetProps = new ExitGames.Client.Photon.Hashtable
+        {
+            { TrainManager.KEY_TRAIN_TYPES, null },
+            { TrainManager.KEY_TRAIN_LEVELS, null },
+            { TrainManager.KEY_TRAIN_CONTENTS, null }
+        };
+
+        PhotonNetwork.CurrentRoom.SetCustomProperties(resetProps);
+    }
+    #endregion
 
 
     // 아이템 데이터 검색
