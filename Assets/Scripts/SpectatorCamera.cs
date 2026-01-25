@@ -4,11 +4,16 @@ using static UnityEngine.GraphicsBuffer;
 
 public class SpectatorCamera : MonoBehaviour
 {
-    [Header("관전 설정")]
-    [SerializeField] float _distance = 6.0f;
-    [SerializeField] float _height = 2.5f;
-    [SerializeField] float _rotationSpeed = 2.0f;
-    [SerializeField] float _smoothSpeed = 10f;
+    [Header("관전 설정")]   
+    [SerializeField] float _height = 1.5f;          // 관전 높이
+    [SerializeField] float _rotationSpeed = 2.0f;   // 회전 속도 (나중에 감도로 변경)
+    [SerializeField] float _smoothSpeed = 10f;      // 부드러움
+
+    [Header("Zoom 설정")]
+    [SerializeField] float _defualtDistance = 6.0f; // 기본 거리
+    [SerializeField] float _minDistance = 2.0f;     // 최소 거리
+    [SerializeField] float _maxDistance = 12.0f;    // 최대 거리
+    [SerializeField] float _zoomSpeed = 0.5f;       // 줌 속도
 
     // 타겟
     private PlayerHandler _targetPlayer;
