@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkPool))]
-public class GameManager : MonoBehaviourPun, IPunObservable
+public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public static GameManager Instance;
     
@@ -32,12 +33,16 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     [Header("이동할 씬")]
     [SerializeField] string _loadSceneName = "Game";
 
+
+
+    private bool _isLocalLoad = false;      // 로컬 로딩 체크용
+    private bool _isGameStart = false;      // 게임 시작 확인용
     public bool IsShop => _isShop;
     public bool IsGameOver { get; private set; }
 
     private PlayerSpawner _spawner;         // 플레이어 스포너
-    private int _loadedPlayerCount = 0;     // 로딩 완료된 플레이어 수
 
+    private HashSet<int> _loadedActorNumbers = new HashSet<int>();  // 준비 완료된 플레이어
 
     private void Awake()
     {
@@ -86,6 +91,8 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         // 방장에게 로딩 다끝났다고 알림
         photonView.RPC(nameof(RPC_SceneLoaded), RpcTarget.MasterClient);
 
+        // 로컬 로딩 체크
+        _isLocalLoad = true;
 
         // 씬 변경 시 새로운 GameManager
         if (PhotonNetwork.IsMasterClient == true)
@@ -117,13 +124,23 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         // 방장만
         if (PhotonNetwork.IsMasterClient == false) return;
 
-        // 준비완료 플레이어 증가
-        _loadedPlayerCount++;
+        // 준비완료 플레이어 등록
+        _loadedActorNumbers.Add(info.Sender.ActorNumber);
 
-        Debug.Log($"[로딩 체크] {_loadedPlayerCount} / {PhotonNetwork.CurrentRoom.PlayerCount} 명 완료");
+        // 모든 플레이어 준비 상태 확인
+        CheckAllPlayersReady();
+    }
+
+    // 모든 플레이어 준비 상태 확인
+    private void CheckAllPlayersReady()
+    {
+        // 게임 시작했으면 체크 패스
+        if (_isGameStart == true) return;
+
+        Debug.Log($"[로딩 체크] {_loadedActorNumbers.Count} / {PhotonNetwork.CurrentRoom.PlayerCount} 명 완료");
 
         // 현재 방 인원수만큼 로딩이 완료되면
-        if (_loadedPlayerCount >= PhotonNetwork.CurrentRoom.PlayerCount)
+        if (_loadedActorNumbers.Count >= PhotonNetwork.CurrentRoom.PlayerCount)
         {
             // 씬 준비 완료 알림
             photonView.RPC(nameof(RPC_AllPlayersReady), RpcTarget.All);
@@ -134,6 +151,12 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void RPC_AllPlayersReady()
     {
+        // 중복 콜 무시
+        if (_isGameStart == true) return;
+
+        // 게임 시작 상태로 변경
+        _isGameStart = true;
+
         // 대기 UI 끄기
         if (_waitingPanel != null) _waitingPanel.SetActive(false);
 
@@ -517,4 +540,32 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         }
     }
 
+
+    // 플레이어가 방에서 나갔을 때
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        // 방장만
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        // 나간 사람이 로딩 완료 명단에 있었다면
+        if (_loadedActorNumbers.Contains(otherPlayer.ActorNumber))
+        {
+            //  제거
+            _loadedActorNumbers.Remove(otherPlayer.ActorNumber);
+        }
+
+        // 나간 사람 때문에 인원수가 줄어서 다시 체크
+        CheckAllPlayersReady();
+    }
+
+    // 방장이 바꼈을 때
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        // 로컬 로딩이 끝났고, 게임 시작 안했을 때
+        if (_isLocalLoad == true && _isGameStart == false)
+        {
+            // 새로운 방장에게 준비 됐다고 다시 보내기
+            photonView.RPC(nameof(RPC_SceneLoaded), RpcTarget.MasterClient);
+        }
+    }
 }

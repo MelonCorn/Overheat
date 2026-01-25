@@ -63,11 +63,7 @@ public class EnemySpawner : MonoBehaviourPun
 
         // 랜덤하게 적 타입 결정 (50:50)
         // 나중에 스테이지 난이도에 따라 확률 조정 가능
-        //bool isRange = Random.value > 0.5f;
-
-        // 테스트용
-        bool isRange = true;
-        //bool isRange = false;
+        bool isRange = Random.value > 0.5f;
 
         // 스폰 포인트 선언
         Vector3 spawnPos = Vector3.zero;

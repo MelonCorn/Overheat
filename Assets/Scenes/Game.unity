@@ -1569,7 +1569,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &759135627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1577,14 +1577,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 759135626}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 969187aede595444bb9ee328f99016d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   _meleeEnemy: {fileID: 5153021981749270405, guid: d5000d49449974545835a59bd2ca16f7, type: 3}
   _rangeEnemy: {fileID: 7662809541345423709, guid: fde0a6a32c2d83e4aada12b21885503a, type: 3}
-  _spawnInterval: 1000
+  _spawnInterval: 7
   _maxEnemyCount: 15
   _spawnWidth: 20
   _flyMinHeight: 1
@@ -2390,8 +2390,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c2ed712e0e6081468183a7f1bd86d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
-  _baseDistance: 200
-  _distancePerLevel: 0
+  _baseDistance: 3000
+  _distancePerLevel: 300
   _progressSlider: {fileID: 514796227}
 --- !u!4 &1396107598
 Transform:
