@@ -12,13 +12,17 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     
     public List<PlayerHandler> ActivePlayers = new List<PlayerHandler>();
 
-    [Header("상점 체크")]
+    [Header("씬 체크")]
     [SerializeField] bool _isShop;
+    [SerializeField] bool _isWaitingRoom;
 
-    [Header("관전 카메라")]
+    [Header("대기 패널 (인게임/상점)")]
+    [SerializeField] GameObject _waitingPanel;
+
+    [Header("관전 카메라 (인게임)")]
     [SerializeField] GameObject _spectatorCamera;
 
-    [Header("유실물 생성 포인트")]
+    [Header("유실물 생성 포인트 (상점)")]
     [SerializeField] Transform _lostItemSpawnPoint;
 
     [Header("텍스트")]
@@ -30,6 +34,9 @@ public class GameManager : MonoBehaviourPun, IPunObservable
 
     public bool IsShop => _isShop;
     public bool IsGameOver { get; private set; }
+
+    private PlayerSpawner _spawner;         // 플레이어 스포너
+    private int _loadedPlayerCount = 0;     // 로딩 완료된 플레이어 수
 
 
     private void Awake()
@@ -49,10 +56,38 @@ public class GameManager : MonoBehaviourPun, IPunObservable
         PhotonNetwork.PrefabPool = customPool;
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
-        // 씬 변경 시 새로운 GameManager
+        yield return null;
 
+        // 네트워크 메세지 허용
+        PhotonNetwork.IsMessageQueueRunning = true;
+
+        // 일단 스포너 찾기
+        _spawner = FindAnyObjectByType<PlayerSpawner>();
+
+        // 대기실일 경우
+        if (_isWaitingRoom)
+        {
+            // 로딩 매니저에게 페이드인 요청
+            if (LoadingManager.Instance != null)
+                LoadingManager.Instance.RequestFadeIn();
+
+            // 바로 플레이어 생성
+            if (_spawner != null) _spawner.PlayerSpawn();
+
+            // 대기실은 여기까지
+            yield break;
+        }
+
+        // 인게임/상점은 대기 패널 온
+        if (_waitingPanel != null) _waitingPanel.SetActive(true);
+
+        // 방장에게 로딩 다끝났다고 알림
+        photonView.RPC(nameof(RPC_SceneLoaded), RpcTarget.MasterClient);
+
+
+        // 씬 변경 시 새로운 GameManager
         if (PhotonNetwork.IsMasterClient == true)
         {
             // 상점이면
@@ -73,29 +108,129 @@ public class GameManager : MonoBehaviourPun, IPunObservable
     }
 
     #region 씬 변경
-    // 열차 출발 요청
+
+
+    // 씬 로딩 완료 (방장이 수신)
+    [PunRPC]
+    private void RPC_SceneLoaded(PhotonMessageInfo info)
+    {
+        // 방장만
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        // 준비완료 플레이어 증가
+        _loadedPlayerCount++;
+
+        Debug.Log($"[로딩 체크] {_loadedPlayerCount} / {PhotonNetwork.CurrentRoom.PlayerCount} 명 완료");
+
+        // 현재 방 인원수만큼 로딩이 완료되면
+        if (_loadedPlayerCount >= PhotonNetwork.CurrentRoom.PlayerCount)
+        {
+            // 씬 준비 완료 알림
+            photonView.RPC(nameof(RPC_AllPlayersReady), RpcTarget.All);
+        }
+    }
+    
+    // 씬 준비완료 모든 사람들에게 뿌림
+    [PunRPC]
+    private void RPC_AllPlayersReady()
+    {
+        // 대기 UI 끄기
+        if (_waitingPanel != null) _waitingPanel.SetActive(false);
+
+        // 씬 시작
+        StartCoroutine(SceneStart());
+    }
+
+
+    // 씬 시작
+    // 열차 생성 대기 -> 페이드 인 -> 타임라인 재생 -> 페이드 아웃 -> 플레이어 스폰 -> 페이드 인 -> 게임 시작
+    private IEnumerator SceneStart()
+    {
+        // 열차 생성 대기
+        if (TrainManager.Instance != null)
+        {
+            yield return new WaitUntil(() => TrainManager.Instance.IsTrainReady);
+        }
+
+        // 페이드 인
+        if (LoadingManager.Instance != null)
+        {
+            LoadingManager.Instance.RequestFadeIn();
+        }
+
+        // 타임라인 재생
+
+        // 페이드 아웃
+        //if (LoadingManager.Instance != null)
+        //{
+        //    LoadingManager.Instance.RequestFadeOut();
+        //}
+
+        // 플레이어 스폰
+        if (_spawner != null) _spawner.PlayerSpawn();
+
+        // 페이드 인
+        //if (LoadingManager.Instance != null)
+        //{
+        //    LoadingManager.Instance.RequestFadeIn();
+        //}
+
+        // 유실물 생성 (방장만)
+        if (PhotonNetwork.IsMasterClient == true) StartCoroutine(SpawnLostItems());
+    }
+
+
+
+    // 씬 전환 요청
     public void RequestChangeScene()
     {
-        // 방장이면 바로 출발
-        if (PhotonNetwork.IsMasterClient)
-        {
-            ChangeScene();
-        }
-        // 방장이 아니면 출발 요청
+        if (PhotonNetwork.IsMasterClient == true)
+            RPC_StartChangeScene();
         else
-        {
-            photonView.RPC(nameof(RPC_RequestChangeScene), RpcTarget.MasterClient);
-        }
+            photonView.RPC(nameof(RPC_StartChangeScene), RpcTarget.MasterClient);
     }
 
     // 출발 요청
     [PunRPC]
-    private void RPC_RequestChangeScene()
+    private void RPC_StartChangeScene()
     {
         if (PhotonNetwork.IsMasterClient == false) return;
 
-        ChangeScene();
+        // 씬 전환 코루틴 뿌리기
+        photonView.RPC(nameof(RPC_ChangeScene), RpcTarget.All);
     }
+
+
+    [PunRPC] // 씬 전환 코루틴 뿌리기
+    private void RPC_ChangeScene()
+    {
+        StartCoroutine(ChangeSceneCoroutine());
+    }
+
+    // 씬 전환 코루틴 (모두)
+    private IEnumerator ChangeSceneCoroutine()
+    {
+        // 페이드 아웃
+        if (LoadingManager.Instance != null)
+        {
+            LoadingManager.Instance.RequestFadeOut();
+            // 페이드 시간 대기
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // 플레이어 제거
+        if (PlayerHandler.localPlayer != null)
+        {
+            PhotonNetwork.Destroy(PlayerHandler.localPlayer.gameObject);
+        }
+
+        // 방장만 씬 전환 명령
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ChangeScene();
+        }
+    }
+
 
     // 씬 이동 (방장만)
     private void ChangeScene()
@@ -116,8 +251,18 @@ public class GameManager : MonoBehaviourPun, IPunObservable
             SaveLostItems();
         }
 
-        // 모두 다 같이 이동
-        PhotonNetwork.LoadLevel(_loadSceneName);
+        // 이제 비동기로딩하면서 씬 전환
+        photonView.RPC(nameof(RPC_LoadSceneAsync), RpcTarget.All, _loadSceneName);
+    }
+
+    // 모두가 받을 비동기 씬 전환
+    [PunRPC]
+    private void RPC_LoadSceneAsync(string sceneName)
+    {
+        if (LoadingManager.Instance != null)
+        {
+            LoadingManager.Instance.RequestLoadScene(sceneName);
+        }
     }
     #endregion
 

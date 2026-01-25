@@ -43,6 +43,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 
     private void OnEnable()
     {
+        if (GameManager.Instance == null) return;
+
         // 활성화된 플레이어 중 이 플레이어가 없다면
         if (GameManager.Instance.ActivePlayers.Contains(this) == false)
         {
@@ -53,12 +55,20 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 
     private void OnDisable()
     {
+        if (GameManager.Instance == null) return;
+
         // 플레이어 리스트에서 제거
         GameManager.Instance.ActivePlayers.Remove(this);
     }
 
     private void Start()
     {
+        // OnEnable에서 못해씅면 한번 더 시도
+        if (GameManager.Instance != null && GameManager.Instance.ActivePlayers.Contains(this) == false)
+        {
+            GameManager.Instance.ActivePlayers.Add(this);
+        }
+
         // 로컬 객체일 때
         if (photonView.IsMine == true)
         {

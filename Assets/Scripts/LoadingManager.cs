@@ -11,7 +11,6 @@ public class LoadingManager : MonoBehaviour
     [Header("로딩 UI")]
     [SerializeField] CanvasGroup _canvasGroup;     // 로딩 캔버스 그룹
     [SerializeField] Slider _progressBar;          // 로딩 바
-    [SerializeField] GameObject _loadingText;      // 로딩 텍스트
 
     [Header("로딩 설정")]
     [SerializeField] float _fadeDuration = 0.5f;   // 페이드 시간
@@ -27,7 +26,6 @@ public class LoadingManager : MonoBehaviour
             _canvasGroup.alpha = 0f;
             _canvasGroup.blocksRaycasts = false;
             gameObject.SetActive(false);
-            if (_loadingText != null) _loadingText.SetActive(false);
         }
         else
         {
@@ -38,6 +36,10 @@ public class LoadingManager : MonoBehaviour
     // 씬 로딩 요청
     public void RequestLoadScene(string sceneName)
     {
+        // 네트워크 메시지 큐 일시정지
+        // LoadLevel이 아닌 수동으로 씬을 불러올 경우 자동으로 해주지 않음
+        PhotonNetwork.IsMessageQueueRunning = false;
+
         // 활성화
         gameObject.SetActive(true);
 
@@ -53,10 +55,6 @@ public class LoadingManager : MonoBehaviour
 
         // 페이드 아웃
         yield return StartCoroutine(Fade(0, 1));
-
-        // 네트워크 메시지 큐 일시정지
-        // 로딩 중에 패킷 꼬임 방지하면 좋다고 함
-        PhotonNetwork.IsMessageQueueRunning = false;
 
         // 비동기 로딩 시작
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
@@ -82,25 +80,28 @@ public class LoadingManager : MonoBehaviour
             {
                 // 꽉채우기
                 _progressBar.value = Mathf.Lerp(_progressBar.value, 1f, timer);
-
                 // 씬 전환 허용
                 if (_progressBar.value >= 0.99f)
                     op.allowSceneActivation = true;
             }
         }
 
-        // 씬 전환 완료시 네트워크 재개
-        PhotonNetwork.IsMessageQueueRunning = true;
-
         // 준비 완료
         _progressBar.gameObject.SetActive(false);
-        if (_loadingText != null) _loadingText.SetActive(true);
     }
 
-    // GameManager에서 호출하는 페이드 인
+
+
+    #region 페이드
+    // GameManager에서 호출하는 페이드 인, 아웃
     public void RequestFadeIn()
     {
         StartCoroutine(FadeIn());
+    }
+    public void RequestFadeOut()
+    {
+        gameObject.SetActive(true);
+        StartCoroutine(FadeOut());
     }
 
     private IEnumerator FadeIn()
@@ -112,12 +113,17 @@ public class LoadingManager : MonoBehaviour
         gameObject.SetActive(false);
         // 다음 로딩 할 때 바로 보이게 켜기
         _progressBar.gameObject.SetActive(true);
-        _loadingText.SetActive(false);
+    }
+    private IEnumerator FadeOut()
+    {
+        // 페이드 아웃
+        yield return StartCoroutine(Fade(0, 1));
     }
 
     // 페이드 효과
     private IEnumerator Fade(float start, float end)
     {
+        Debug.Log($"페이드 {start} to  {end}");
         float timer = 0f;
         _canvasGroup.alpha = start;
 
@@ -138,4 +144,7 @@ public class LoadingManager : MonoBehaviour
         // 밝아지면 클릭 허용
         _canvasGroup.blocksRaycasts = (end > 0.5f);
     }
+    #endregion
+
+
 }

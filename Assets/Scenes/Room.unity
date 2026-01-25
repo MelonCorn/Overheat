@@ -310,6 +310,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   ActivePlayers: []
   _isShop: 0
+  _isWaitingRoom: 1
+  _waitingPanel: {fileID: 0}
+  _spectatorCamera: {fileID: 0}
   _lostItemSpawnPoint: {fileID: 0}
   _goldText: {fileID: 0}
   _SurviveDayText: {fileID: 0}
@@ -661,6 +664,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cargo_Train
       objectReference: {fileID: 0}
+    - target: {fileID: 8054259242214271907, guid: 809fed2a0f5b063469cc82d96cf22ea4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8555217796217155076, guid: 809fed2a0f5b063469cc82d96cf22ea4, type: 3}
       propertyPath: _sockets.Array.size
       value: 0
@@ -691,6 +698,10 @@ PrefabInstance:
     - target: {fileID: 150980348517921138, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
       propertyPath: m_Name
       value: Engine_Train
+      objectReference: {fileID: 0}
+    - target: {fileID: 150980348517921138, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 486193984599303235, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
       propertyPath: m_LocalPosition.x
