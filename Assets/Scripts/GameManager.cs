@@ -177,6 +177,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitUntil(() => TrainManager.Instance.IsTrainReady);
         }
 
+        // 열차 생성되고 대기 UI 끄기
+        if (_waitingPanel != null) _waitingPanel.SetActive(false);
+
         // 상점일 때
         if (IsShop == true && _timelineManager != null)
         {
@@ -184,9 +187,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             // 페이드 인 -> 도착 타임라인 -> 페이드 아웃
             yield return StartCoroutine(PlayTimeline(TimelineType.ShopArrival));
         }
-
-        // 열차 생성되고 페이드인 하면서 대기 UI 끄기
-        if (_waitingPanel != null) _waitingPanel.SetActive(false);
 
         // 플레이어 스폰
         if (_spawner != null) _spawner.PlayerSpawn();
@@ -244,6 +244,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         }
 
+        // 유실물 저장, 비활성화
+        CleanupLostItems();
+
         // 모든 플레이어 비활성화
         // 플레이어 리스트 복사해서 사용
         // Disable될 때 빠지기 때문에 터짐
@@ -256,18 +259,24 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
 
+        if (QuickSlotManager.Instance != null)
+        {
+            // 퀵슬롯 UI 비활성화
+            QuickSlotManager.Instance.SetUIActive(false);
+        }
+
         // 타임라인 재생
         if (_timelineManager != null)
         {
             // 타임라인 타입
             TimelineType targetType = TimelineType.None;
-
+        
             // 현재 씬에 따라 재생할 타임라인 결정
             if (_isWaitingRoom || _isShop)
                 targetType = TimelineType.Start;        // 대기실, 상점 -> 출발
             else
                 targetType = TimelineType.GameClear;    // 인게임 -> 상점 (클리어)
-
+        
             // 타임라인 재생 대기 (페이드인 -> 타임라인 재생 -> 페이드 아웃)
             yield return StartCoroutine(PlayTimeline(targetType));
         }
@@ -291,13 +300,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             Debug.Log("방을 잠궜습니다.");
             PhotonNetwork.CurrentRoom.IsOpen = false;       // 참가 불가
             PhotonNetwork.CurrentRoom.IsVisible = false;    // 목록에서도 안보이게
-        }
-        // 룸 닫혀잇으면 게임중이니까
-        else
-        {
-            // 유실물 저장
-            // 나중에 유실물 많을 수도 있으니 코루틴으로 대기해야 할 수도 있음
-            SaveLostItems();
         }
 
         // 이제 비동기로딩하면서 씬 전환
@@ -369,37 +371,52 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     #region 유실물
 
-    // 바닥 유실물 저장
-    private void SaveLostItems()
+    // 바닥 유실물 저장, 비활성화
+    private void CleanupLostItems()
     {
-        // 일단 싹 비우고
-        GameData.LostItems.Clear();
+        // 씬의 모든 아이템 검색
+        NetworkItem[] lostItems = FindObjectsByType<NetworkItem>(FindObjectsSortMode.None);
 
-        // 씬에 있는 모든 NetworkItem 찾기
-        NetworkItem[] floorItems = FindObjectsByType<NetworkItem>(FindObjectsSortMode.None);
-
-        // 아이템마다 체크
-        foreach (var item in floorItems)
+        // 방장은 유실물 데이터 리스트 초기화
+        if (PhotonNetwork.IsMasterClient == true)
         {
-            // 활성화 상태고
-            // 이름 유효하고
-            // PhotonView 켜져 있는 아이템만
-            if (item.gameObject.activeInHierarchy &&
-                string.IsNullOrEmpty(item.ItemName) == false &&
-                item.photonView.enabled)
-            {
-                // 아이템 데이터 가져와서
-                ShopItem data = FindItemData(item.ItemName);
-
-                // 데이터가 연료면 패스
-                if (data != null && data is FuelData) continue;
-
-                // 유실물에 추가
-                GameData.LostItems.Add(item.ItemName);
-            }
+            GameData.LostItems.Clear();
+            Debug.Log("[유실물] 저장 및 청소 시작");
         }
 
-        Debug.Log($"[유실물 저장] 바닥에서 {GameData.LostItems.Count}개의 유실물 챙김");
+        // 아이템 순회
+        foreach (var item in lostItems)
+        {
+            // 혹시 null이면 패스
+            if (item == null) continue;
+
+            // 방장은 유실물 저장
+            if (PhotonNetwork.IsMasterClient == true)
+            {
+                // 저장 조건 체크 (활성화, 이름 존재, 포톤뷰 켜짐)
+                if (item.gameObject.activeInHierarchy &&
+                    string.IsNullOrEmpty(item.ItemName) == false &&
+                    item.photonView.enabled)
+                {
+                    // 데이터 확인
+                    ShopItem data = FindItemData(item.ItemName);
+
+                    // 연료 아니면 저장
+                    if (data == null || (data is FuelData) == false)
+                    {
+                        GameData.LostItems.Add(item.ItemName);
+                    }
+                }
+            }
+
+            // 아이템 비활성화
+            item.gameObject.SetActive(false);
+        }
+
+        if (PhotonNetwork.IsMasterClient == true)
+        {
+            Debug.Log($"[유실물] {GameData.LostItems.Count}개 저장하고 바닥 청소 완료");
+        }
     }
 
     // 유실물 생성 코루틴
