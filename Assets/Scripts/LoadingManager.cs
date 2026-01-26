@@ -50,8 +50,12 @@ public class LoadingManager : MonoBehaviour
 
     private IEnumerator LoadScene(string sceneName)
     {
-        // 초기화
-        _progressBar.value = 0;
+        // 로딩바 초기화
+        if (_progressBar != null)
+        {
+            _progressBar.gameObject.SetActive(true);
+            _progressBar.value = 0;
+        }
 
         // 화면 밝을 때
         if (_canvasGroup.alpha < 0.99f)
@@ -111,6 +115,8 @@ public class LoadingManager : MonoBehaviour
     public void RequestFadeOut()
     {
         gameObject.SetActive(true);
+        // 페이드 중엔 로딩바 숨기기 (씬 전환이 아닌 단순 페이드일 수도 있음)
+        if (_progressBar != null) _progressBar.gameObject.SetActive(false);
         StartCoroutine(FadeOut());
     }
 
@@ -121,8 +127,6 @@ public class LoadingManager : MonoBehaviour
 
         // 다 끝나면 비활성화
         gameObject.SetActive(false);
-        // 다음 로딩 할 때 바로 보이게 켜기
-        _progressBar.gameObject.SetActive(true);
     }
     private IEnumerator FadeOut()
     {

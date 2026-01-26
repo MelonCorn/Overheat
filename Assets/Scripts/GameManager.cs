@@ -207,6 +207,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 씬 전환 요청
     public void RequestChangeScene()
     {
+        Debug.Log("씬 전환 요청");
         if (PhotonNetwork.IsMasterClient == true)
             RPC_StartChangeScene();
         else
@@ -219,37 +220,50 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (PhotonNetwork.IsMasterClient == false) return;
 
+        Debug.Log("씬 전환 코루틴 뿌리기");
         // 씬 전환 코루틴 뿌리기
         photonView.RPC(nameof(RPC_ChangeScene), RpcTarget.All);
     }
 
 
-    [PunRPC] // 씬 전환 코루틴 뿌리기
+    [PunRPC] // 씬 전환 코루틴 뿌리기 (모두)
     private void RPC_ChangeScene()
     {
+        Debug.Log("씬 전환 코루틴 실행 (모두)");
         StartCoroutine(ChangeSceneCoroutine());
     }
 
     // 씬 전환 코루틴 (모두)
     private IEnumerator ChangeSceneCoroutine()
     {
+        Debug.Log("씬 전환 코루틴 시작 (모두)");
         // 페이드 아웃
         if (LoadingManager.Instance != null)
         {
+            Debug.Log("씬 전환 페이드 아웃 시작(모두)");
             LoadingManager.Instance.RequestFadeOut();
             // 페이드 시간 대기
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
+
+            Debug.Log("씬 전환 페이드 아웃 끝(모두)");
         }
 
-        // 플레이어 제거
-        if (PlayerHandler.localPlayer != null)
+        // 모든 플레이어 비활성화
+        // 플레이어 리스트 복사해서 사용
+        // Disable될 때 빠지기 때문에 터짐
+        foreach (var player in ActivePlayers.ToArray())
         {
-            PhotonNetwork.Destroy(PlayerHandler.localPlayer.gameObject);
+            if (player != null)
+            {
+                // 파괴는 네트워크 에러 확률 존재
+                player.gameObject.SetActive(false);
+            }
         }
 
         // 방장만 씬 전환 명령
         if (PhotonNetwork.IsMasterClient)
         {
+            Debug.Log("씬 전환 (방장)");
             ChangeScene();
         }
     }
@@ -274,6 +288,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             SaveLostItems();
         }
 
+        Debug.Log("비동기로딩 뿌리기 (방장)");
         // 이제 비동기로딩하면서 씬 전환
         photonView.RPC(nameof(RPC_LoadSceneAsync), RpcTarget.All, _loadSceneName);
     }
@@ -282,6 +297,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     private void RPC_LoadSceneAsync(string sceneName)
     {
+        Debug.Log("비동기로딩 시작 (모두)");
         if (LoadingManager.Instance != null)
         {
             LoadingManager.Instance.RequestLoadScene(sceneName);
@@ -443,12 +459,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 방장만
         if (PhotonNetwork.IsMasterClient == false) return;
 
-        if (TrainManager.Instance != null)
-        {
-            // 룸 프로퍼티 초기화
-            ResetRoomProperties();
-        }
-
         Debug.Log("게임 오버! 대기실로 이동합니다.");
 
         // 모두에게 게임오버 알림
@@ -478,8 +488,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 씬 이동
         if (PhotonNetwork.IsMasterClient)
         {
-            // 룸 프로퍼티 초기화
-            ResetRoomProperties();
             // 대기실로 비동기 씬 로드
             photonView.RPC(nameof(RPC_LoadSceneAsync), RpcTarget.All, "Room");
         }

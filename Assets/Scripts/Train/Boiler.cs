@@ -92,7 +92,6 @@ public class Boiler : MonoBehaviour, IInteractable
             // 방장
             if (PhotonNetwork.IsMasterClient == true)
             {
-                // 룸프로퍼티 초기화
                 return "열차 가동 !";
             }
             // 참가자
@@ -135,6 +134,9 @@ public class Boiler : MonoBehaviour, IInteractable
         {
             if (PhotonNetwork.IsMasterClient == true)
             {
+                // 룸 프로퍼티 초기화
+                GameManager.Instance.ResetRoomProperties();
+
                 Debug.Log("대기실에서 게임 시작 요청");
                 GameManager.Instance.RequestChangeScene();
             }
