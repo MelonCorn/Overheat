@@ -21,7 +21,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject _waitingPanel;
 
     [Header("관전 카메라 (인게임)")]
-    [SerializeField] GameObject _spectatorCamera;
+    [SerializeField] SpectatorCamera _spectatorCamera;
+
+    [Header("적 스포너 (인게임)")]
+    [SerializeField] EnemySpawner _enemySpawner;
 
     [Header("유실물 생성 포인트 (상점)")]
     [SerializeField] Transform _lostItemSpawnPoint;
@@ -465,7 +468,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 관전모드로 전환
     public void SpectatorMode()
     {
-        if (_spectatorCamera != null) _spectatorCamera.SetActive(true);
+        if (_spectatorCamera != null) _spectatorCamera.gameObject.SetActive(true);
     }
 
 
@@ -583,6 +586,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 적 청소
     private void CleanupEnemy()
     {
+        // 적 스포너 비활성화
+        if (_enemySpawner != null) _enemySpawner.enabled = false;
+
         // 적 스크립트 가진 모든 객체 수집
         var enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
 
@@ -607,6 +613,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             // 퀵슬롯 UI 비활성화
             QuickSlotManager.Instance.SetUIActive(false);
+        }
+
+        // 관전 카메라 비활성화
+        if (_spectatorCamera != null && _spectatorCamera.gameObject.activeSelf)
+        {
+            _spectatorCamera.gameObject.SetActive(false);
         }
 
 

@@ -23,6 +23,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     // 파괴 타겟 레이어
     protected LayerMask _localPlayerLayer;   // 로컬플레이어
     protected LayerMask _itemLayer;         // 아이템
+    protected LayerMask _enemyLayer;        // 적
 
     private LayerMask _explosionMask;       // 폭발 체크용
 
@@ -348,23 +349,35 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
             // 충돌한 물체의 레이어 (비트 값으로 변환)
             int hitLayerMask = 1 << hit.gameObject.layer;
 
-            // 로컬 플레이어
-            if ((hitLayerMask & _localPlayerLayer) != 0)
-            {
-                Debug.Log($"로컬플레이어 감지");
-                // 로컬 플레이어인지 확인 (레이어로 이미 걸렀는데 혹시 몰라서 이중 체크)
-                PlayerHandler player = hit.GetComponentInParent<PlayerHandler>();
+            // IDamageable 가져와보기
+            IDamageable target = hit.GetComponentInParent<IDamageable>();
 
-                if (player != null && player == PlayerHandler.localPlayer)
+            // IDamageable 객체
+            if (target != null)
+            {
+                // 로컬 플레이어
+                if ((hitLayerMask & _localPlayerLayer) != 0)
                 {
-                    Debug.Log($"[사망] 아. 폭발에 휘말림");
-                    player.TakeDamage(999999);
+                    // 확실하게 플레이어고, 로컬 플레이어면
+                    if (target is PlayerHandler player && player == PlayerHandler.localPlayer)
+                    {
+                        Debug.Log($"[사망] 열차 폭발에 휘말림");
+                        target.TakeDamage(999999); // 즉사
+                    }
+                }
+                // 적 (방장이)
+                else if ((hitLayerMask & _enemyLayer) != 0)
+                {
+                    if (PhotonNetwork.IsMasterClient == true)
+                    {
+                        Debug.Log($"[파괴] 적({hit.name}) 폭사 처리");
+                        target.TakeDamage(999999); // 즉사
+                    }
                 }
             }
             // 아이템
             else if ((hitLayerMask & _itemLayer) != 0)
             {
-                Debug.Log($"버려진 아이템");
                 // 아이템의 PhotonView 확인
                 PhotonView itemPhotonview = hit.GetComponentInParent<PhotonView>();
 

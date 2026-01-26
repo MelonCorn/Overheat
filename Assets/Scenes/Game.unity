@@ -4165,7 +4165,8 @@ MonoBehaviour:
   _isShop: 0
   _isWaitingRoom: 0
   _waitingPanel: {fileID: 1764434020}
-  _spectatorCamera: {fileID: 1898154537}
+  _spectatorCamera: {fileID: 1898154543}
+  _enemySpawner: {fileID: 759135627}
   _lostItemSpawnPoint: {fileID: 912058149}
   _goldText: {fileID: 44768187}
   _SurviveDayText: {fileID: 341828667}
@@ -4302,8 +4303,8 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 1
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0

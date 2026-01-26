@@ -38,14 +38,16 @@ public class SpectatorCamera : MonoBehaviour
 
     // 컴포넌트
     private PlayerInput _playerInput;
+    private AudioListener _audioListener;
 
     // 레이캐스트
     RaycastHit _hit;
 
     private void Awake()
     {
-        // PlayerInput 컴포넌트 가져오기
+        // 컴포넌트 가져오기
         _playerInput = GetComponent<PlayerInput>();
+        _audioListener = GetComponent<AudioListener>();
 
         // 시작 시 비활성화
         gameObject.SetActive(false);
@@ -53,6 +55,9 @@ public class SpectatorCamera : MonoBehaviour
 
     private void OnEnable()
     {
+        // 메인 카메라 리스너 비활성화
+        SetMainCameraAudioListener(false);
+
         // 인스펙터에서 디폴트맵 바꿔놓긴 했는데 확실하게
         _playerInput.SwitchCurrentActionMap("Spectator");
 
@@ -84,6 +89,9 @@ public class SpectatorCamera : MonoBehaviour
         _playerInput.actions["PrevTarget"].performed -= OnPrevTarget;
         _playerInput.actions["Zoom"].performed -= OnZoomPerformed;
         _playerInput.actions["Zoom"].canceled -= OnZoomCanceled;
+
+        // 메인 카메라 리스너 활성화
+        SetMainCameraAudioListener(true);
     }
 
 
@@ -227,4 +235,15 @@ public class SpectatorCamera : MonoBehaviour
     #endregion
 
 
+    // 메인 카메라 오디오 리스너 상태 변경
+    private void SetMainCameraAudioListener(bool active)
+    {
+        if (_audioListener != null) _audioListener.enabled = !active;
+
+        if (Camera.main != null)
+        {
+            var mainListener = Camera.main.GetComponent<AudioListener>();
+            if (mainListener != null) mainListener.enabled = active;
+        }
+    }
 }
