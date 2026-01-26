@@ -91,6 +91,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
             if(QuickSlotManager.Instance != null)
             {
                 // UI 갱신, 손 새로고침
+                QuickSlotManager.Instance.SetUIActive(true);
                 QuickSlotManager.Instance.UpdateUI();
                 QuickSlotManager.Instance.RefreshHand();
             }
@@ -195,9 +196,21 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     {
         Debug.Log("으앙 죽음");
 
+        // 템 뿌려요
+        _interactHandler?.DropAllItems();
 
-        // 입력 차단, 사망 애니메이션 혹은 랙돌
-        // 사망 UI, 관전 카메라 등
+        // 퀵슬롯 비활성화
+        if (QuickSlotManager.Instance != null)
+        {
+            // UI 비활성화
+            // 손 새로고침
+            // 1번 슬롯 들게
+            QuickSlotManager.Instance.SetUIActive(false);
+            QuickSlotManager.Instance.RefreshHand();
+            QuickSlotManager.Instance.SelectSlot(0);
+        }
+
+        // 사망 애니메이션 혹은 랙돌
 
         // 테스트용 임시 차단
         var input = GetComponent<PlayerInputHandler>();

@@ -3458,6 +3458,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10076361cde2e0941be18e4fc8c1cfc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QuickSlotManager
+  _quickSlotUI: {fileID: 1632657131}
   _slotImages:
   - {fileID: 1332703871}
   - {fileID: 728471369}

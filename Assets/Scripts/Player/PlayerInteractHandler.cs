@@ -115,42 +115,61 @@ public class PlayerInteractHandler : MonoBehaviour
         // 꺼낸 게 없으면 중단
         if (string.IsNullOrEmpty(itemName)) return;
 
+        // 아이템 버리기 (생성)
+        SpawnItemNetwork(itemName);
+    }
+
+
+    // 모든 아이템 드랍 (사망 시)
+    public void DropAllItems()
+    {
+        if (QuickSlotManager.Instance == null) return;
+
+        // 퀵슬롯 만큼 순회
+        for (int i = 0; i < QuickSlotManager.Instance.QuickSlot.Length; i++)
+        {
+            // 매니저한테 i번째 아이템 요구
+            string itemName = QuickSlotManager.Instance.PopItem(i);
+
+            // 아이템이 있다면 바닥에 생성
+            if (string.IsNullOrEmpty(itemName) == false)
+            {
+                SpawnItemNetwork(itemName);
+            }
+        }
+    }
+
+
+    // 네트워크 아이템 생성
+    private void SpawnItemNetwork(string itemName)
+    {
         // 아이템 데이터 찾기
         if (ItemManager.Instance.ItemDict.TryGetValue(itemName, out ShopItem data))
         {
-            // PlayerItemData 타입인지 확인
+            // 데이터가 플레이어 아이템 맞으면
             if (data is PlayerItemData itemData)
             {
-                // 레이 시작점
+                // 위치 계산
                 Vector3 rayOrigin = transform.position + (Vector3.up * 1.0f);
 
-                // 생성 지점 (기본은 레이 시작점)
-                Vector3 spawnPos = rayOrigin;
+                // 기본값으로 본인 위치
+                Vector3 spawnPos = transform.position;
 
-                // 레이캐스트 아래로 10 길이 땅 레이어만
+                // 바닥 체크
                 if (Physics.Raycast(rayOrigin, Vector3.down, out _hit, 10.0f, _movementHandler.GroundLayer))
                 {
-                    // 생성 지점은 히트한 위치
                     spawnPos = _hit.point;
                 }
-                else
-                {
-                    // 바닥이 너무 멀면 내 위치
-                    spawnPos = transform.position;
-                }
 
-                // itemName 포장
+                // 랜덤하게 조금 흩뿌리기
+                Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0f, Random.Range(-0.5f, 0.5f));
+
+                // 아이템 이름 박싱
                 object[] initData = new object[] { itemName };
 
-                // 네트워크 객체 생성
-                PhotonNetwork.Instantiate(itemData.prefab.name, spawnPos, Quaternion.Euler(0, transform.eulerAngles.y, 0), 0 , initData);
-
-                Debug.Log($"{itemName} 버리기(네트워크 생성) 성공!");
+                // 생성
+                PhotonNetwork.Instantiate(itemData.prefab.name, spawnPos + randomOffset, Quaternion.Euler(0, transform.eulerAngles.y, 0), 0, initData);
             }
-        }
-        else
-        {
-            Debug.LogError($"아이템 데이터를 찾을 수 없습니다: {itemName}");
         }
     }
 }

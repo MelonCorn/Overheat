@@ -18,8 +18,9 @@ public class QuickSlotManager : MonoBehaviour
     public bool[] IsPredicting => _isPredicting;
 
     [Header("퀵슬롯 UI 설정")]
-    [SerializeField] Image[] _slotImages;   // 퀵슬롯 각 이미지
-    [SerializeField] Sprite _defaultSprite; // 빈칸 스프라이트
+    [SerializeField] GameObject _quickSlotUI;   // 퀵슬롯 UI 그룹
+    [SerializeField] Image[] _slotImages;       // 퀵슬롯 각 이미지
+    [SerializeField] Sprite _defaultSprite;     // 빈칸 스프라이트
     [SerializeField] Outline[] _slotOutlines;   // 퀵슬롯 각 아웃라인
 
     [Header("테스트용 스타터팩")]
@@ -299,5 +300,36 @@ public class QuickSlotManager : MonoBehaviour
             // 현재 슬롯의 아이템 이름으로 장착 요청
             PlayerHandler.localPlayer.ChangeQuickSlot(QuickSlot[CurrentSlotIndex]);
         }
+    }
+
+
+    // UI 활성화 상태 변경
+    public void SetUIActive(bool isActive)
+    {
+        if (_quickSlotUI != null)
+        {
+            _quickSlotUI.SetActive(isActive);
+        }
+    }
+
+    // 사망시 아이템 드랍용
+    public string PopItem(int index)
+    {
+        // 범위, 널 체크
+        if (index < 0 || index >= QuickSlot.Length) return null;
+        if (string.IsNullOrEmpty(QuickSlot[index])) return null;
+
+        // 아이템 이름 백업
+        string itemName = QuickSlot[index];
+
+        // 데이터 삭제
+        QuickSlot[index] = null;
+        IsPredicting[index] = false;
+
+        // UI 갱신
+        UpdateUI();
+
+        // 뱉기
+        return itemName;
     }
 }

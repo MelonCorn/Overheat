@@ -158,11 +158,14 @@ public class ShopManager : MonoBehaviourPun
             // 생성 위치
             Vector3 spawnPos = _itemSpawnPoint != null ? _itemSpawnPoint.position : Vector3.zero;
 
+            // 좀 흩뿌리기
+            Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0f, Random.Range(-0.5f, 0.5f));
+
             // itemName 포장
             object[] initData = new object[] { playerItem.itemName };
 
             // 네트워크 객체 생성
-            PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos, Quaternion.identity, 0, initData);
+            PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos + randomOffset, Quaternion.identity, 0, initData);
         }
     }
 }
