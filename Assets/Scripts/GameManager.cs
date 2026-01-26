@@ -244,6 +244,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         }
 
+        // 적 비활성화
+        CleanupEnemy();
+
         // 유실물 저장, 비활성화
         CleanupLostItems();
 
@@ -258,13 +261,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 player.gameObject.SetActive(false);
             }
         }
-
-        if (QuickSlotManager.Instance != null)
-        {
-            // 퀵슬롯 UI 비활성화
-            QuickSlotManager.Instance.SetUIActive(false);
-        }
-
         // 타임라인 재생
         if (_timelineManager != null)
         {
@@ -520,6 +516,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         }
 
+        // 적 비활성화
+        CleanupEnemy();
+
         // 플레이어 전부 치우고
         foreach (var player in ActivePlayers.ToArray())
         {
@@ -581,9 +580,36 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
 
+    // 적 청소
+    private void CleanupEnemy()
+    {
+        // 적 스크립트 가진 모든 객체 수집
+        var enemies = FindObjectsByType<EnemyBase>(FindObjectsSortMode.None);
+
+        // 적 순회
+        foreach (var enemy in enemies)
+        {
+            if (enemy != null)
+            {
+                // 비활성화
+                enemy.gameObject.SetActive(false);
+            }
+        }
+
+        Debug.Log($"[적 청소] {enemies.Length} 마리의 적을 화면에서 치웠습니다.");
+    }
+
+
     // 타임라인 재생 코루틴
     private IEnumerator PlayTimeline(TimelineType type)
     {
+        if (QuickSlotManager.Instance != null)
+        {
+            // 퀵슬롯 UI 비활성화
+            QuickSlotManager.Instance.SetUIActive(false);
+        }
+
+
         // 해당 타입 디렉터 가져오기
         PlayableDirector director = _timelineManager.GetDirector(type);
 

@@ -20,7 +20,7 @@ MonoBehaviour:
   prefab: {fileID: 901158581646923471, guid: 3b0e7e3ab4d4dbb49aae975df50dcb4f, type: 3}
   damage: 10
   range: 50
-  fireRate: 0.5
+  fireRate: 0.2
   isAuto: 0
   hitLayer:
     serializedVersion: 2
