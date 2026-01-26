@@ -17,6 +17,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] bool _isShop;
     [SerializeField] bool _isWaitingRoom;
 
+    [Header("대기UI (대기실)")]
+    [SerializeField] GameObject _waitingCanvas;
+
     [Header("대기 패널 (인게임/상점)")]
     [SerializeField] GameObject _waitingPanel;
 
@@ -250,11 +253,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 대기실 아닐 때
         if(_isWaitingRoom == false)
         {
-            // 적 비활성화
+            // 적 청소
             CleanupEnemy();
 
-            // 유실물 저장, 비활성화
+            // 적 투사체 청소
+            CleanupEnemyProjectile();
+
+            // 유실물 청소
             CleanupLostItems();
+        }
+        else
+        {
+            _waitingCanvas?.SetActive(false);
         }
 
         // 모든 플레이어 비활성화
@@ -268,6 +278,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 player.gameObject.SetActive(false);
             }
         }
+
         // 타임라인 재생
         if (_timelineManager != null)
         {
@@ -528,8 +539,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         }
 
-        // 적 비활성화
+        // 적 청소
         CleanupEnemy();
+        // 적 투사체 청소
+        CleanupEnemyProjectile();
         // 아이템 청소
         CleanupLostItems();
 
@@ -616,6 +629,24 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log($"[적 청소] {enemies.Length} 마리의 적을 화면에서 치웠습니다.");
     }
 
+    // 적 투사체 청소
+    private void CleanupEnemyProjectile()
+    {
+        // 적 스크립트 가진 모든 객체 수집
+        var enemyProjectiles = FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None);
+
+        // 적 순회
+        foreach (var projectile in enemyProjectiles)
+        {
+            if (projectile != null)
+            {
+                // 비활성화
+                projectile.gameObject.SetActive(false);
+            }
+        }
+
+        Debug.Log($"[적 투사체 청소] {enemyProjectiles.Length} 개의 적 투사체를 화면에서 치웠습니다.");
+    }
 
     // 타임라인 재생 코루틴
     private IEnumerator PlayTimeline(TimelineType type)

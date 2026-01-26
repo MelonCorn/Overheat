@@ -4164,6 +4164,7 @@ MonoBehaviour:
   ActivePlayers: []
   _isShop: 0
   _isWaitingRoom: 0
+  _waitingCanvas: {fileID: 0}
   _waitingPanel: {fileID: 1764434020}
   _spectatorCamera: {fileID: 1898154543}
   _enemySpawner: {fileID: 759135627}
@@ -4450,7 +4451,7 @@ MonoBehaviour:
   _zoomSpeed: 0.5
   _obstacleLayer:
     serializedVersion: 2
-    m_Bits: 21184
+    m_Bits: 4800
   _cameraRadius: 0.1
 --- !u!1 &1940545902
 GameObject:
