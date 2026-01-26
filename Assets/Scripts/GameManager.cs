@@ -207,14 +207,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 씬 전환 요청
     public void RequestChangeScene()
     {
-        Debug.Log("씬 전환 요청");
         if (PhotonNetwork.IsMasterClient == true)
             RPC_StartChangeScene();
         else
             photonView.RPC(nameof(RPC_StartChangeScene), RpcTarget.MasterClient);
     }
 
-    // 출발 요청
+    // 출발 요청 (방장이 수신)
     [PunRPC]
     private void RPC_StartChangeScene()
     {
@@ -226,26 +225,21 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
 
-    [PunRPC] // 씬 전환 코루틴 뿌리기 (모두)
+    [PunRPC] // 씬 전환 코루틴 뿌리기 (모두 수신)
     private void RPC_ChangeScene()
     {
-        Debug.Log("씬 전환 코루틴 실행 (모두)");
         StartCoroutine(ChangeSceneCoroutine());
     }
 
-    // 씬 전환 코루틴 (모두)
+    // 씬 전환 코루틴
     private IEnumerator ChangeSceneCoroutine()
     {
-        Debug.Log("씬 전환 코루틴 시작 (모두)");
-        // 페이드 아웃
         if (LoadingManager.Instance != null)
         {
-            Debug.Log("씬 전환 페이드 아웃 시작(모두)");
+            // 페이드 아웃
             LoadingManager.Instance.RequestFadeOut();
             // 페이드 시간 대기
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
-
-            Debug.Log("씬 전환 페이드 아웃 끝(모두)");
         }
 
         // 모든 플레이어 비활성화
@@ -263,7 +257,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 방장만 씬 전환 명령
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("씬 전환 (방장)");
             ChangeScene();
         }
     }
@@ -285,19 +278,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             // 유실물 저장
+            // 나중에 유실물 많을 수도 있으니 코루틴으로 대기해야 할 수도 있음
             SaveLostItems();
         }
 
-        Debug.Log("비동기로딩 뿌리기 (방장)");
         // 이제 비동기로딩하면서 씬 전환
         photonView.RPC(nameof(RPC_LoadSceneAsync), RpcTarget.All, _loadSceneName);
     }
 
-    // 모두가 받을 비동기 씬 전환
+    // 비동기 씬 전환 (모두 수신)
     [PunRPC]
     private void RPC_LoadSceneAsync(string sceneName)
     {
-        Debug.Log("비동기로딩 시작 (모두)");
         if (LoadingManager.Instance != null)
         {
             LoadingManager.Instance.RequestLoadScene(sceneName);
@@ -459,8 +451,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 방장만
         if (PhotonNetwork.IsMasterClient == false) return;
 
-        Debug.Log("게임 오버! 대기실로 이동합니다.");
-
         // 모두에게 게임오버 알림
         photonView.RPC(nameof(RPC_GameOver), RpcTarget.All);
     }
@@ -470,29 +460,37 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     private void RPC_GameOver()
     {
-        // 게임오버
+        StartCoroutine(GameOverCoroutine());
+    }
+
+    private IEnumerator GameOverCoroutine()
+    {
+        Debug.Log("게임 오버 ! 대기실로 이동");
+
+        // 게임오버 상태 변경
         IsGameOver = true;
 
+        if (LoadingManager.Instance != null)
+        {
+            // 페이드 아웃
+            LoadingManager.Instance.RequestFadeOut();
+            // 페이드 시간 대기
+            yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
+        }
 
-        // 나중에 코루틴으로 만들어서
-        // 게임오버 상태 먼저 하고나서 타임라인 재생
-        // 재생 끝나고 나서 룸프로퍼티, 데이터 초기화 등 과정 실행
-
-        // 게임 데이터 리셋
+        // 데이터 초기화
         GameData.Reset();
 
         // 파괴되지 않는 싱글톤 정리
         if (QuickSlotManager.Instance != null) Destroy(QuickSlotManager.Instance.gameObject);
-        if(ItemManager.Instance != null) Destroy(ItemManager.Instance.gameObject);
+        if (ItemManager.Instance != null) Destroy(ItemManager.Instance.gameObject);
 
-        // 씬 이동
-        if (PhotonNetwork.IsMasterClient)
+        // 씬 이동 (방장)
+        if (PhotonNetwork.IsMasterClient == true)
         {
-            // 대기실로 비동기 씬 로드
+            // 이제 다 같이 대기실로 이동
             photonView.RPC(nameof(RPC_LoadSceneAsync), RpcTarget.All, "Room");
         }
-
-
     }
 
     // 룸 프로퍼티 초기화
@@ -507,6 +505,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         PhotonNetwork.CurrentRoom.SetCustomProperties(resetProps);
     }
+
     #endregion
 
 
