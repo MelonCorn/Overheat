@@ -23,13 +23,11 @@ public class PlayerStatHandler : MonoBehaviour
 
     private void Start()
     {
-        _currentHp = _maxHp;
-        _currentStamina = _maxStamina;
-
+        // 상점 && 로컬 사망 상태 시
         if (GameManager.Instance.IsShop && GameData.LocalDead)
         {
-            // 체력 10%로 생성
-            _currentHp = (int)(_maxHp * 0.1f);
+            // 체력 10%로
+            GameData.LocalCurrentHp = (int)(_maxHp * 0.1f);
 
             // 부활했으니 사망 상태 Off
             GameManager.Instance.LocalPlayerDead(false);
@@ -37,9 +35,14 @@ public class PlayerStatHandler : MonoBehaviour
             Debug.Log("부상 상태로 부활했습니다. (체력 10%)");
         }
 
+        // 플레이어 생성 시 저장된 로컬 체력 데이터로 생성
+        _currentHp = GameData.LocalCurrentHp;
+        _currentStamina = _maxStamina;
+
         // UI 한 번 갱신
         UpdateUI();
     }
+
     private void Update()
     {
         // 기력 회복
@@ -76,6 +79,9 @@ public class PlayerStatHandler : MonoBehaviour
             _currentHp = 0;
             Die();
         }
+
+        // 로컬 체력 데이터 저장
+        GameData.LocalCurrentHp = _currentHp;
     }
 
     // 체력 회복
@@ -89,6 +95,9 @@ public class PlayerStatHandler : MonoBehaviour
             _currentHp = _maxHp;
 
         Debug.Log($"체력 회복: {_currentHp}");
+
+        // 로컬 체력 데이터 저장
+        GameData.LocalCurrentHp = _currentHp;
     }
 
     // 사망

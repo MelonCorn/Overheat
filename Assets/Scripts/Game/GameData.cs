@@ -8,6 +8,7 @@ public static class GameData
 
     public static bool HasStarterItem = false;  // 스타터팩 지급 여부
     public static bool LocalDead = false;       // 로컬 사망
+    public static int LocalCurrentHp = 100;
 
     public static List<string> LostItems = new List<string>();  // 씬 전환 유실물
 
@@ -18,12 +19,8 @@ public static class GameData
         Gold = 0;
         SurviveDay = 1;
         LocalDead = false;
+        LocalCurrentHp = 100;
         HasStarterItem = false;
         LostItems.Clear();
-    }
-
-    public static void LogData()
-    {
-        Debug.Log($"로컬 데이터 리셋 : Gold/{Gold} , SurviveDay/{SurviveDay} , LocalDead/{LocalDead} , HasStarterItem/{HasStarterItem}");
     }
 }
