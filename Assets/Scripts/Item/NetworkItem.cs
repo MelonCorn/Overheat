@@ -38,10 +38,24 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
 
         // 비주얼 다시 켜기
         SetVisual(true);
-        
+
+        // 기본 상태는 "Item" 레이어
+        SetLayer(false);
+
         // 이전 선반용으로 사용되었을 수 있기 때문에 켜줌
         if (_collider != null) _collider.enabled = true;
         if (_pv != null) _pv.enabled = true;
+    }
+    
+    // 비활성화될 때 (보험용 / RPC 누락 대비)
+    private void OnDisable()
+    {
+        // 예측 중인데 확정도 못 받았다면
+        if (_isPredicting && !_isConfirmed)
+        {
+            // 롤백
+            RollbackItem();
+        }
     }
 
     // 비주얼 세팅 (스크립트는 돌아야 하기 때문)
@@ -53,6 +67,7 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         Debug.Log($"아이템 비주얼 세팅 : {isActive}");
     }
 
+    #region 픽업
 
     // 아이템 픽업 시
     public void OnPickItem(int slotIndex)
@@ -113,7 +128,7 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
             SetVisual(false);
         }
     }
-    
+
     // 픽업 살짝 늦어서 아이템 롤백
     private void RollbackItem()
     {
@@ -129,7 +144,9 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
             _slotIndex = -1;
         }
     }
+    #endregion
 
+    #region 파괴
     // 파괴 코루틴
     private IEnumerator DestroyCoroutine()
     {
@@ -160,16 +177,9 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         }
     }
 
-    // 비활성화될 때 (보험용 / RPC 누락 대비)
-    private void OnDisable()
-    {
-        // 예측 중인데 확정도 못 받았다면
-        if (_isPredicting && !_isConfirmed)
-        {
-            // 롤백
-            RollbackItem();
-        }
-    }
+    #endregion
+
+
 
     // 생성 시 네트워크 데이터 풀어서 이름 적용
     public void OnPhotonInstantiate(PhotonMessageInfo info)
@@ -228,5 +238,31 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         // 위치 초기화
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
+    }
+
+
+    // 레이어 변경 (로컬인지)
+    public void SetLayer(bool isLocal)
+    {
+        // 렌더러 전부 가져오기
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+
+        // 로컬이면 LocalItem
+        // 아니면 Item
+        int targetLayer = isLocal ?
+                          LayerMask.NameToLayer("LocalItem") :
+                          LayerMask.NameToLayer("Item");
+
+        // 내 자신 레이어 변경
+        gameObject.layer = targetLayer;
+
+        // 렌더러들 레이어 변경
+        if (renderers != null)
+        {
+            foreach (var renderer in renderers)
+            {
+                if (renderer != null) renderer.gameObject.layer = targetLayer;
+            }
+        }
     }
 }

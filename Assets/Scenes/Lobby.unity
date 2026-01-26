@@ -496,7 +496,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LoadingManager
   _canvasGroup: {fileID: 698427112}
   _progressBar: {fileID: 2080234834}
-  _fadeDuration: 0.5
 --- !u!4 &177452523
 Transform:
   m_ObjectHideFlags: 0

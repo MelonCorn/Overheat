@@ -186,8 +186,14 @@ public class PlayerItemHandler : MonoBehaviourPun
         {
             // 로컬모드로 전환
             networkItem.SwitchToLocalMode();
+
+            // 로컬 체크 (내꺼고, 부모가 1인칭 홀더일 때)
+            bool isLocalMode = photonView.IsMine && parent == _fpsHolder;
+
+            // 로컬 레이어로 변경
+            networkItem.SetLayer(isLocalMode);
         }
-        // 네트워크 아이템 아니며
+        // 네트워크 아이템 아니면
         else
         {
             // 수동 정리 (혹시나해서 넣음)
