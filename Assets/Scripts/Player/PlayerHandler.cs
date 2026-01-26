@@ -9,6 +9,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     private PlayerStatHandler _statHandler;
     private PlayerInteractHandler _interactHandler;
     private PlayerItemHandler _itemHandler;
+    private AudioListener _audioListener;
 
     [Header("로컬 켤 것")]
     [SerializeField] MonoBehaviour[] _scripts; // PlayerInputHandler 같은 것들
@@ -35,6 +36,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         _statHandler = GetComponent<PlayerStatHandler>();
         _interactHandler = GetComponent<PlayerInteractHandler>();
         _itemHandler = GetComponent<PlayerItemHandler>();
+        _audioListener = GetComponentInChildren<AudioListener>();
 
         // 스폰위치, 회전 넣고 시작
         _networkPosition = transform.position;
@@ -55,6 +57,10 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 
     private void OnDisable()
     {
+        if(photonView.IsMine == true)
+            // 메인 카메라 오디오 리스너 켜기 
+            SetMainCameraAudioListener(true);
+
         if (GameManager.Instance == null) return;
 
         // 플레이어 리스트에서 제거
@@ -87,8 +93,11 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
             // 카메라 설정
             SetCamera();
 
+            // 메인 카메라 오디오 리스너 끄기 
+            SetMainCameraAudioListener(false);
+
             // 퀵슬롯 기초 설정
-            if(QuickSlotManager.Instance != null)
+            if (QuickSlotManager.Instance != null)
             {
                 // UI 갱신, 손 새로고침
                 QuickSlotManager.Instance.SetUIActive(true);
@@ -153,6 +162,9 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         // 카메라 끄기
         if (_camera != null) _camera.SetActive(false);
         if (_canvas != null) _canvas.SetActive(false);
+
+        // 혹시 몰라서 끔
+        if (_audioListener != null) _audioListener.enabled = false;
     }
 
 
@@ -161,6 +173,19 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     {
         _interactHandler.SetCamera(_camera.transform);
         _itemHandler.SetCamera(_camera.transform);
+    }
+
+    // 메인 카메라 오디오 리스터 상태 전환
+    private void SetMainCameraAudioListener(bool active)
+    {
+        if (_audioListener != null) _audioListener.enabled = !active;
+
+        // 플레이어 있으면 끄고 없으면 켜고
+        if (Camera.main != null)
+        {
+            var mainListener = Camera.main.GetComponent<AudioListener>();
+            if (mainListener != null) mainListener.enabled = active;
+        }
     }
 
     // 퀵슬롯 변경 시
