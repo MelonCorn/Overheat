@@ -42,6 +42,9 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
         // 클리어 시 무시
         if (_isStageClear == true) return;
 
+        // 게임 매니저 없거나, 게임오버 상태면 무시
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver == true) return;
+
         // 열차 매니저 없거나, 준비가 덜되었다면 무시
         if (TrainManager.Instance == null || TrainManager.Instance.IsTrainReady == false) return;
         // 거리 계산
@@ -96,8 +99,6 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
 
         Debug.Log("오늘 하루도 생존!");
 
-        // 네트워크 열차 객체 싹 지우고 
-        if (TrainManager.Instance != null) TrainManager.Instance.ClearNetworkTrains();
         // 씬 변경 요청
         if (GameManager.Instance != null) GameManager.Instance.RequestChangeScene();
     }
