@@ -133,7 +133,6 @@ public class LoadingManager : MonoBehaviour
     // 페이드 효과
     private IEnumerator Fade(float start, float end)
     {
-        Debug.Log($"페이드 {start} to  {end}");
         float timer = 0f;
         _canvasGroup.alpha = start;
 

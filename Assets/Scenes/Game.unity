@@ -2390,8 +2390,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c2ed712e0e6081468183a7f1bd86d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
-  _baseDistance: 3000
-  _distancePerLevel: 300
+  _baseDistance: 200
+  _distancePerLevel: 20
   _progressSlider: {fileID: 514796227}
 --- !u!4 &1396107598
 Transform:
@@ -2499,8 +2499,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2752,7 +2752,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_TargetDisplay: 0
 --- !u!1 &1636169197
 GameObject:

@@ -58,10 +58,14 @@ public class PlayerStatHandler : MonoBehaviour
         // 체력 없으면 무시
         if (_currentHp <= 0) return;
 
+        // 대기실, 상점에선 무시
+        if (GameManager.Instance.IsWaitingRoom == true) return;
+        if (GameManager.Instance.IsShop == true) return;
+
         // 혹시 몰라서 로컬 사망상태 한 번 더 체크
         if (GameData.LocalDead == true) return;
 
-        // 게임오버 상태면 무적
+        // 게임오버 상태면 무적 또 체크
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
 
         _currentHp -= damage;

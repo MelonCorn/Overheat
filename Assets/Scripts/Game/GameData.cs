@@ -1,5 +1,5 @@
-
 using System.Collections.Generic;
+using UnityEngine;
 
 public static class GameData
 {
@@ -20,5 +20,10 @@ public static class GameData
         LocalDead = false;
         HasStarterItem = false;
         LostItems.Clear();
+    }
+
+    public static void LogData()
+    {
+        Debug.Log($"로컬 데이터 리셋 : Gold/{Gold} , SurviveDay/{SurviveDay} , LocalDead/{LocalDead} , HasStarterItem/{HasStarterItem}");
     }
 }

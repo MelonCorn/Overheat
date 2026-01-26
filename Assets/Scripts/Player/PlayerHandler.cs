@@ -199,9 +199,6 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         // 입력 차단, 사망 애니메이션 혹은 랙돌
         // 사망 UI, 관전 카메라 등
 
-        // 방장에게 사망 알림
-        photonView.RPC(nameof(RPC_Die), RpcTarget.MasterClient);
-
         // 테스트용 임시 차단
         var input = GetComponent<PlayerInputHandler>();
         var move = GetComponent<PlayerMovementHandler>();
@@ -224,6 +221,9 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
             // 관전 카메라 활성화
             GameManager.Instance.SpectatorMode();
         }
+
+        // 방장에게 사망 알림
+        photonView.RPC(nameof(RPC_Die), RpcTarget.MasterClient);
     }
 
 

@@ -2,7 +2,6 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -38,6 +37,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private bool _isLocalLoad = false;      // 로컬 로딩 체크용
     private bool _isGameStart = false;      // 게임 시작 확인용
     public bool IsShop => _isShop;
+    public bool IsWaitingRoom => _isWaitingRoom;
     public bool IsGameOver { get; private set; }
 
     private PlayerSpawner _spawner;         // 플레이어 스포너
@@ -290,6 +290,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
 
+    #region 골드, 생존일
+
     // 골드 추가
     public void AddGold(int amount)
     {
@@ -336,7 +338,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         _SurviveDayText?.SetText($"{GameData.SurviveDay} 일차");
     }
 
+    #endregion
 
+
+    #region 유실물
 
     // 바닥 유실물 저장
     private void SaveLostItems()
@@ -399,6 +404,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         GameData.LostItems.Clear();
     }
 
+    #endregion
 
 
     #region 게임오버 관련
@@ -406,6 +412,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 로컬 플레이어 사망
     public void LocalPlayerDead(bool active)
     {
+        Debug.Log($"로컬 사망 상태 전환 {active}");
         GameData.LocalDead = active;
     }
 
@@ -473,9 +480,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             // 룸 프로퍼티 초기화
             ResetRoomProperties();
-            // 대기실로 이동
-            PhotonNetwork.LoadLevel("Room");
+            // 대기실로 비동기 씬 로드
+            photonView.RPC(nameof(RPC_LoadSceneAsync), RpcTarget.All, "Room");
         }
+
+
     }
 
     // 룸 프로퍼티 초기화
@@ -509,6 +518,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         return null;
     }
 
+
+    #region Pun 콜백
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -568,4 +579,5 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             photonView.RPC(nameof(RPC_SceneLoaded), RpcTarget.MasterClient);
         }
     }
+    #endregion
 }
