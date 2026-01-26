@@ -247,11 +247,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         }
 
-        // 적 비활성화
-        CleanupEnemy();
+        // 대기실 아닐 때
+        if(_isWaitingRoom == false)
+        {
+            // 적 비활성화
+            CleanupEnemy();
 
-        // 유실물 저장, 비활성화
-        CleanupLostItems();
+            // 유실물 저장, 비활성화
+            CleanupLostItems();
+        }
 
         // 모든 플레이어 비활성화
         // 플레이어 리스트 복사해서 사용
@@ -468,7 +472,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 관전모드로 전환
     public void SpectatorMode()
     {
-        if (_spectatorCamera != null) _spectatorCamera.gameObject.SetActive(true);
+        if (_spectatorCamera != null)
+        {
+            _spectatorCamera.gameObject.SetActive(true);
+            _spectatorCamera.transform.position = PlayerHandler.localPlayer.CameraTrans.position;
+            _spectatorCamera.transform.rotation = PlayerHandler.localPlayer.CameraTrans.rotation;
+        }
     }
 
 
@@ -521,6 +530,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         // 적 비활성화
         CleanupEnemy();
+        // 아이템 청소
+        CleanupLostItems();
 
         // 플레이어 전부 치우고
         foreach (var player in ActivePlayers.ToArray())
