@@ -428,7 +428,7 @@ public class EnemyMelee : EnemyBase
 
         // 최종 타겟 설정
         _target = bestTarget;
-        _targetPlayerHandler = _target.GetComponent<PlayerHandler>();
+        if(_target != null) _targetPlayerHandler = _target.GetComponent<PlayerHandler>();
     }
 
     // 범위 내 공격 시도
