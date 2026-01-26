@@ -52,6 +52,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
     [Header("열차 목록")]
     [SerializeField] List<TrainData> trains;
 
+    [Header("열차 부모")]
+    [SerializeField] Transform _trainGroup;
+
     // 검색용 열차 목록
     public Dictionary<TrainType, TrainData> TrainDict { get; private set; }
 
@@ -245,7 +248,10 @@ public class TrainManager : MonoBehaviourPunCallbacks
             if (_isShop == true)
             {
                 // 로컬 생성
-                newTrainNode = Instantiate(trainData.prefab);
+                if(_trainGroup != null)
+                    newTrainNode = Instantiate(trainData.prefab, _trainGroup);
+                else
+                    newTrainNode = Instantiate(trainData.prefab);
 
                 // 상점에서는 PhotonView 필요 없어서 지움
                 var pv = newTrainNode.GetComponent<PhotonView>();
@@ -289,8 +295,14 @@ public class TrainManager : MonoBehaviourPunCallbacks
                     initData[2] = (int)type; // Enum -> int로
                     initData[3] = content; 
 
+
                     // 네트워크 객체 생성
                     GameObject newTrainObj = PhotonNetwork.InstantiateRoomObject(trainData.prefab.name, Vector3.zero, Quaternion.identity, 0, initData);
+
+                    // 열차 그룹 하위 객체로
+                    if (_trainGroup != null) newTrainObj.transform.SetParent(_trainGroup);
+
+                    // 열차의 노드 스크립트
                     newTrainNode = newTrainObj.GetComponent<TrainNode>();
                 }
 
@@ -306,6 +318,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
     // 생성된 네트워크 열차 객체 동기화용
     public void RegisterNetworkTrain(TrainNode node, int index, TrainType type, int level, string content)
     {
+        // 클라이언트도 열차 생성 시 그룹의 하위 객체로
+        if (_trainGroup != null) node.transform.SetParent(_trainGroup);
+
         // 리스트 공간 확보 (2번보다 3번이 먼저 왔을 경우)
         while (_currentTrainNodes.Count <= index)
         {

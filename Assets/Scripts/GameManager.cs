@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Playables;
 
 [RequireComponent(typeof(NetworkPool))]
 public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
@@ -41,6 +42,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public bool IsGameOver { get; private set; }
 
     private PlayerSpawner _spawner;         // 플레이어 스포너
+    private TimelineManager _timelineManager;// 타임라인 매니저
 
     private HashSet<int> _loadedActorNumbers = new HashSet<int>();  // 준비 완료된 플레이어
 
@@ -70,16 +72,20 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         // 일단 스포너 찾기
         _spawner = FindAnyObjectByType<PlayerSpawner>();
-
-        // 로딩 매니저에게 페이드인 요청
-        if (LoadingManager.Instance != null)
-            LoadingManager.Instance.RequestFadeIn();
+        // 타임라인 매니저도
+        _timelineManager = FindAnyObjectByType<TimelineManager>();
 
         // 대기실일 경우
         if (_isWaitingRoom)
         {
             // 바로 플레이어 생성
             if (_spawner != null) _spawner.PlayerSpawn();
+
+            yield return new WaitForSeconds(0.3f);
+
+            // 로딩 매니저에게 페이드인 요청
+            if (LoadingManager.Instance != null)
+                LoadingManager.Instance.RequestFadeIn();
 
             // 대기실은 여기까지
             yield break;
@@ -163,7 +169,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
 
     // 씬 시작
-    // 열차 생성 대기 -> 페이드 인 -> 타임라인 재생 -> 페이드 아웃 -> 플레이어 스폰 -> 페이드 인 -> 게임 시작
     private IEnumerator SceneStart()
     {
         // 열차 생성 대기
@@ -172,33 +177,28 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitUntil(() => TrainManager.Instance.IsTrainReady);
         }
 
-        // 페이드 인
-        if (LoadingManager.Instance != null)
+        // 상점일 때
+        if (IsShop == true && _timelineManager != null)
         {
-            LoadingManager.Instance.RequestFadeIn();
+            // 상점 도착 타임라인 재생
+            // 페이드 인 -> 도착 타임라인 -> 페이드 아웃
+            yield return StartCoroutine(PlayTimeline(TimelineType.ShopArrival));
         }
 
         // 열차 생성되고 페이드인 하면서 대기 UI 끄기
         if (_waitingPanel != null) _waitingPanel.SetActive(false);
 
-        // 타임라인 재생
-
-        // 페이드 아웃
-        //if (LoadingManager.Instance != null)
-        //{
-        //    LoadingManager.Instance.RequestFadeOut();
-        //    // 페이드 시간 대기
-        //    yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
-        //}
-
         // 플레이어 스폰
         if (_spawner != null) _spawner.PlayerSpawn();
 
-        // 페이드 인
-        //if (LoadingManager.Instance != null)
-        //{
-        //    LoadingManager.Instance.RequestFadeIn();
-        //}
+        // 스폰 잠깐 대기
+        yield return new WaitForSeconds(0.3f);
+
+        if (LoadingManager.Instance != null)
+        {
+            // 페이드 아웃
+            LoadingManager.Instance.RequestFadeIn();
+        }
 
         // 유실물 생성 (방장만)
         if (PhotonNetwork.IsMasterClient == true) StartCoroutine(SpawnLostItems());
@@ -254,6 +254,22 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 // 파괴는 네트워크 에러 확률 존재
                 player.gameObject.SetActive(false);
             }
+        }
+
+        // 타임라인 재생
+        if (_timelineManager != null)
+        {
+            // 타임라인 타입
+            TimelineType targetType = TimelineType.None;
+
+            // 현재 씬에 따라 재생할 타임라인 결정
+            if (_isWaitingRoom || _isShop)
+                targetType = TimelineType.Start;        // 대기실, 상점 -> 출발
+            else
+                targetType = TimelineType.GameClear;    // 인게임 -> 상점 (클리어)
+
+            // 타임라인 재생 대기 (페이드인 -> 타임라인 재생 -> 페이드 아웃)
+            yield return StartCoroutine(PlayTimeline(targetType));
         }
 
         // 방장만 씬 전환 명령
@@ -487,6 +503,19 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         }
 
+        // 플레이어 전부 치우고
+        foreach (var player in ActivePlayers.ToArray())
+        {
+            if (player != null) player.gameObject.SetActive(false);
+        }
+
+        // 게임오버 타임라인 재생
+        if (_timelineManager != null)
+        {
+            // 타임라인 재생 완료 대기 (페이드 인 -> 파괴 타임라인 재생 -> 페이드 아웃)
+            yield return StartCoroutine(PlayTimeline(TimelineType.GameOver));
+        }
+
         // 데이터 초기화
         GameData.Reset();
 
@@ -532,6 +561,45 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
         return null;
+    }
+
+
+    // 타임라인 재생 코루틴
+    private IEnumerator PlayTimeline(TimelineType type)
+    {
+        // 해당 타입 디렉터 가져오기
+        PlayableDirector director = _timelineManager.GetDirector(type);
+
+        // 없으면 패스
+        if (director == null) yield break;
+
+        // 타임라인 재생될 카메라나 오브젝트 미리 켜기 (필요하다면)
+        director.gameObject.SetActive(true);
+
+        // 페이드 인
+        if (LoadingManager.Instance != null)
+        {
+            LoadingManager.Instance.RequestFadeIn();
+        }
+
+        // 타임라인 재생
+        director.Play();
+
+        // 타임라인 재생시간에서 페이드 아웃 빼서
+        // 페이드 아웃 일찍 실행
+        float timelineDuration = (float)director.duration - LoadingManager.Instance.FadeDuration;
+        // 페이드 시간보다 타임라인 재생 시간이 짧으면 즉시
+        float waitBeforeFade = Mathf.Max(0f, timelineDuration);
+
+        // 타임라인 재생시간 동안 끝날 때까지 대기
+        yield return new WaitForSeconds(waitBeforeFade);
+
+        // 다시 페이드 아웃
+        if (LoadingManager.Instance != null)
+        {
+            LoadingManager.Instance.RequestFadeOut();
+            yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
+        }
     }
 
 
