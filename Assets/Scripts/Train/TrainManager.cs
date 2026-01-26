@@ -394,27 +394,6 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
     }
 
-
-    // 씬 이동 전 열차 네트워크 객체 싹 정리
-    public void ClearNetworkTrains()
-    {
-        // 방장만
-        if (PhotonNetwork.IsMasterClient == false) return;
-
-        foreach (var node in _currentTrainNodes)
-        {
-            if (node != null)   // 혹시 몰라서
-            {
-                PhotonNetwork.Destroy(node.gameObject);
-            }
-        }
-
-        // 리스트 비우기
-        // 안해도 되는데 혹시나 씬 이동 늦어지면 null 뜰 것 같음
-        _currentTrainNodes.Clear();
-        _currentTrains.Clear();
-    }
-
     // 전체 리스트 위치 정렬 (인게임용)
     private void AlignAll()
     {
