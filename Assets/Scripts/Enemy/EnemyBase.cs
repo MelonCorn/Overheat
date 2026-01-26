@@ -23,7 +23,7 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
 
     protected Collider _collider;       // 콜라이더
     
-    protected Transform _targetPlayer;        // 타겟 (플레이어나 열차임)
+    protected Transform _target;        // 타겟 (플레이어나 열차임)
     protected float _lastAttackTime;    // 공격 쿨타임
         
     // 네트워크 트랜스폼

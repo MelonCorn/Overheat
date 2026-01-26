@@ -31,6 +31,7 @@ public class EnemyMelee : EnemyBase
 
     private State _state = State.Approach;  // 현재 상태
     private Transform _targetWindow;        // 침투할 창문
+    private PlayerHandler _targetPlayerHandler; // 타겟 플레이어의 플레이어 핸들러
 
     private float _lastRetargetTime;        // 마지막 리타겟 시간
 
@@ -251,6 +252,21 @@ public class EnemyMelee : EnemyBase
             return;
         }
 
+        // 타겟 유효 검사
+        if (_target != null)
+        {
+            // 타겟이 없거나
+            // 죽었거나
+            // 비활성화 상태라면
+            if (_targetPlayerHandler == null ||
+                _targetPlayerHandler.IsDead == true ||
+                _targetPlayerHandler.gameObject.activeInHierarchy == false)
+            {
+                // 타겟 해제 후 재탐색
+                _target = null; 
+            }
+        }
+
         // 공격 쿨타임 체크
         if (Time.time >= _lastAttackTime + _attackRate)
         {
@@ -270,15 +286,15 @@ public class EnemyMelee : EnemyBase
             _lastRetargetTime = Time.time;
         }
 
-        // 이동
-        if (_targetPlayer != null)
+        // 거리 체크 후 이동
+        if (_target != null)
         {
-            float distance = Vector3.Distance(transform.position, _targetPlayer.position);
+            float distance = Vector3.Distance(transform.position, _target.position);
 
             // 타겟이 너무 멀어지면 포기 (재탐색)
             if (distance > _chaseRadius)
             {
-                _targetPlayer = null;
+                _target = null;
                 return;
             }
 
@@ -296,7 +312,7 @@ public class EnemyMelee : EnemyBase
 
                 // 멈춰있을 때도 플레이어를 바라보게
                 // y 제외 방향
-                Vector3 dir = (_targetPlayer.position - transform.position).normalized;
+                Vector3 dir = (_target.position - transform.position).normalized;
                 dir.y = 0;
                 // 회전
                 if (dir != Vector3.zero) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * _rotSpeed);
@@ -306,7 +322,7 @@ public class EnemyMelee : EnemyBase
             {
                 // 이동
                 if (_agent.isStopped) _agent.isStopped = false;
-                _agent.SetDestination(_targetPlayer.position);
+                _agent.SetDestination(_target.position);
             }
         }
     }
@@ -363,9 +379,9 @@ public class EnemyMelee : EnemyBase
 
         _agent.velocity = finalDir * _chaseSpeed;
 
-        if (_targetPlayer != null)
+        if (_target != null)
         {
-            _agent.SetDestination(_targetPlayer.position);
+            _agent.SetDestination(_target.position);
         }
 
         // 이거 쓰면 링크 EndPos로 끌려감
@@ -394,8 +410,8 @@ public class EnemyMelee : EnemyBase
         {
             // 플레이어 null 이면 패스
             if (player == null) continue;
-            // 나중에 사망 상태 생기면
-            // if (player.IsDead) continue;
+            // 사망 상태 패스
+            if (player.IsDead) continue;
 
             // 플레이어와 자신의 거리
             float distance = Vector3.Distance(transform.position, player.transform.position);
@@ -411,7 +427,8 @@ public class EnemyMelee : EnemyBase
         }
 
         // 최종 타겟 설정
-        _targetPlayer = bestTarget;
+        _target = bestTarget;
+        _targetPlayerHandler = _target.GetComponent<PlayerHandler>();
     }
 
     // 범위 내 공격 시도
@@ -422,7 +439,9 @@ public class EnemyMelee : EnemyBase
 
         foreach (var player in players)
         {
-            if (player == null) continue; // or player.IsDead check
+            // 플레이어 상태 체크 후 패스
+            if (player == null) continue;
+            if (player.IsDead) continue;
 
             // 거리 체크
             float distance = Vector3.Distance(transform.position, player.transform.position);
@@ -431,7 +450,7 @@ public class EnemyMelee : EnemyBase
             if (distance <= _attackRange)
             {
                 // 타겟 변경
-                _targetPlayer = player.transform;
+                _target = player.transform;
 
                 // 공격 실행
                 Attack(player);

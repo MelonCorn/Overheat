@@ -75,8 +75,12 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         int itemIndex = LayerMask.NameToLayer("Item");
         if (itemIndex != -1) _itemLayer = 1 << itemIndex;
 
+        // Enemy 레이어 설정
+        int enemyIndex = LayerMask.NameToLayer("Enemy");
+        if (enemyIndex != -1) _enemyLayer = 1 << enemyIndex;
+
         // 비트 OR 연산으로 동시에 감지
-        _explosionMask = _localPlayerLayer | _itemLayer;
+        _explosionMask = _localPlayerLayer | _itemLayer | _enemyLayer;
     }
 
     // 업그레이드
