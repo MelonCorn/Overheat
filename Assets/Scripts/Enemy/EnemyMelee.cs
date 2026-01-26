@@ -472,8 +472,12 @@ public class EnemyMelee : EnemyBase
         // 창문 넘기, 링크 건너기
         StopAllCoroutines();
 
-        // 정지
-        _agent.isStopped = true;
+        // 에이전트 켜져있고
+        // NavMesh 위에 있을 때
+        if (_agent != null && _agent.isActiveAndEnabled && _agent.isOnNavMesh)
+        {
+            _agent.isStopped = true;
+        }
 
         // 에이전트 리셋
         ResetAgent();
