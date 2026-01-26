@@ -71,13 +71,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 일단 스포너 찾기
         _spawner = FindAnyObjectByType<PlayerSpawner>();
 
+        // 로딩 매니저에게 페이드인 요청
+        if (LoadingManager.Instance != null)
+            LoadingManager.Instance.RequestFadeIn();
+
         // 대기실일 경우
         if (_isWaitingRoom)
         {
-            // 로딩 매니저에게 페이드인 요청
-            if (LoadingManager.Instance != null)
-                LoadingManager.Instance.RequestFadeIn();
-
             // 바로 플레이어 생성
             if (_spawner != null) _spawner.PlayerSpawn();
 
@@ -157,9 +157,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 게임 시작 상태로 변경
         _isGameStart = true;
 
-        // 대기 UI 끄기
-        if (_waitingPanel != null) _waitingPanel.SetActive(false);
-
         // 씬 시작
         StartCoroutine(SceneStart());
     }
@@ -181,12 +178,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             LoadingManager.Instance.RequestFadeIn();
         }
 
+        // 열차 생성되고 페이드인 하면서 대기 UI 끄기
+        if (_waitingPanel != null) _waitingPanel.SetActive(false);
+
         // 타임라인 재생
 
         // 페이드 아웃
         //if (LoadingManager.Instance != null)
         //{
         //    LoadingManager.Instance.RequestFadeOut();
+        //    // 페이드 시간 대기
+        //    yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         //}
 
         // 플레이어 스폰

@@ -110,11 +110,16 @@ public class LoadingManager : MonoBehaviour
     // GameManager에서 호출하는 페이드 인, 아웃
     public void RequestFadeIn()
     {
+        if (gameObject.activeSelf == false)
+            gameObject.SetActive(true);
+
         StartCoroutine(FadeIn());
     }
     public void RequestFadeOut()
     {
-        gameObject.SetActive(true);
+        if (gameObject.activeSelf == false)
+            gameObject.SetActive(true);
+
         // 페이드 중엔 로딩바 숨기기 (씬 전환이 아닌 단순 페이드일 수도 있음)
         if (_progressBar != null) _progressBar.gameObject.SetActive(false);
         StartCoroutine(FadeOut());
