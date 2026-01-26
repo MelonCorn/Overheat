@@ -372,6 +372,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 string.IsNullOrEmpty(item.ItemName) == false &&
                 item.photonView.enabled)
             {
+                // 아이템 데이터 가져와서
+                ShopItem data = FindItemData(item.ItemName);
+
+                // 데이터가 연료면 패스
+                if (data != null && data is FuelData) continue;
+
+                // 유실물에 추가
                 GameData.LostItems.Add(item.ItemName);
             }
         }
@@ -426,6 +433,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         GameData.LocalDead = active;
     }
 
+    // 관전모드로 전환
     public void SpectatorMode()
     {
         if (_spectatorCamera != null) _spectatorCamera.SetActive(true);
@@ -456,7 +464,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 모두에게 게임오버 알림
         photonView.RPC(nameof(RPC_GameOver), RpcTarget.All);
     }
-
 
     // 게임오버 알림
     [PunRPC]
