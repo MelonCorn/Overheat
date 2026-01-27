@@ -22,6 +22,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
     [SerializeField] Button _leaveButton;   // 방 나가기 버튼
     [SerializeField] Button _closeButton;   // 닫기(확인) 버튼
 
+    [Header("퇴장 패널")]
+    [SerializeField] GameObject _exitBlind; // 퇴장 가리개
+    
     // 설정값 저장용 키
     private const string KEY_SENSITIVITY = "MouseSensitivity";
     private const string KEY_SCREEN_MODE = "ScreenMode";
@@ -61,8 +64,10 @@ public class SettingManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        // UI 초기화
+        // 환경설정 UI 초기화
         InitUI();
+
+        if (_exitBlind != null) _exitBlind.SetActive(false);
     }
 
     private void Update()
@@ -78,12 +83,10 @@ public class SettingManager : MonoBehaviourPunCallbacks
     // 씬 로드 시 실행
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 씬이 바뀌면 무조건 세팅 패널 닫기
+        // 씬이 바뀌면 무조건 패널 닫기
         _isOpen = false;
-        if (_settingUI != null)
-        {
-            _settingUI.SetActive(false);
-        }
+        if (_settingUI != null) _settingUI.SetActive(false);
+        if(_exitBlind != null)  _exitBlind.SetActive(false);
     }
 
     #region 세팅
@@ -279,6 +282,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
     {
         // 방 연결 해제
         PhotonNetwork.LeaveRoom();
+
+        // 네트워크 객체 파괴되는거 보이기 싫으니까 가림
+        if (_exitBlind != null) _exitBlind.SetActive(true);
 
         // 바로 창 닫아버리기
         ToggleSettingPanel();

@@ -4442,7 +4442,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpectatorCamera
   _height: 1.5
-  _rotationSpeed: 2
+  _sensitivityCali: 1
   _maxPitch: 80
   _minPitch: -60
   _defaultDistance: 6
