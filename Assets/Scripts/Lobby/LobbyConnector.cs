@@ -10,7 +10,18 @@ public class LobbyConnector : MonoBehaviourPunCallbacks
     {
         // 이제 비동기 씬 로딩을 위해서 씬 동기화 끄기
         PhotonNetwork.AutomaticallySyncScene = false;
-        PhotonNetwork.ConnectUsingSettings();
+
+        if (PhotonNetwork.IsConnected)
+        {
+            // 이미 연결되어 있다면 바로 로비 진입 시도
+            PhotonNetwork.JoinLobby();
+        }
+        else
+        {
+            // 연결 안 되어 있다면 연결 시도
+            PhotonNetwork.ConnectUsingSettings();
+        }
+
         joinButton.interactable = false;
     }
 
