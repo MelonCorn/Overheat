@@ -53,6 +53,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
 
     private void Update()
     {
+        // esc 입력으로 패널 상태 변경
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             // 세팅 패널 상태 변경
@@ -118,35 +119,45 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 화면모드 드롭다운 초기화 (고정 드롭다운)
         // 화면모드 불러오기, 기본값 창전체
         int currentMode = PlayerPrefs.GetInt("ScreenMode", 1);
-        // 화면모드 드롭다운 설정
-        _screenModeDropdown.value = currentMode;
-        // 화면모드 드롭다운 새로고침
-        _screenModeDropdown.RefreshShownValue();
-        // 화면모드 드롭다운 값 변경 이벤트 연결
-        _screenModeDropdown.onValueChanged.AddListener((index) =>  SetScreenMode(index));
+        if(_screenModeDropdown != null)
+        {
+            // 화면모드 드롭다운 설정
+            _screenModeDropdown.value = currentMode;
+            // 화면모드 드롭다운 새로고침
+            _screenModeDropdown.RefreshShownValue();
+            // 화면모드 드롭다운 값 변경 이벤트 연결
+            _screenModeDropdown.onValueChanged.AddListener((index) => SetScreenMode(index));
+        }
 
         // 감도 슬라이더 초기화
         // 현재 감도
         float currentSensitivity = MouseSensitivity;
-        _sensitivitySlider.minValue = 1f;  // 최소 감도
-        _sensitivitySlider.maxValue = 100f;// 최대 감도
-        // 슬라이더 값 설정
-        _sensitivitySlider.value = currentSensitivity;
-        UpdateSensitivityText(currentSensitivity);
 
-        // 슬라이더 값 변경 이벤트
-        _sensitivitySlider.onValueChanged.AddListener((value) =>
+        if(_sensitivitySlider != null)
         {
-            SetSensitivity(value);          // 감도 변경
-            UpdateSensitivityText(value);   // 텍스트 변경
-        });
+            _sensitivitySlider.minValue = 1f;    // 최소 감도
+            _sensitivitySlider.maxValue = 100f;  // 최대 감도
+            // 슬라이더 값 설정
+            _sensitivitySlider.value = currentSensitivity;
+
+            // 슬라이더 값 변경 이벤트
+            _sensitivitySlider.onValueChanged.AddListener((value) =>
+            {
+                SetSensitivity(value);          // 감도 변경
+                UpdateSensitivityText(value);   // 텍스트 변경
+            });
+        }
+
+        // 한 번 갱신
+        UpdateSensitivityText(currentSensitivity);
     }
 
     // 감도 텍스트 변경
     private void UpdateSensitivityText(float value)
     {
+        // 점하나 내리고 소수점 한 자리로 반올림
         if (_sensitivityText != null)
-            _sensitivityText.text = $"{value:0.0}";
+            _sensitivityText.text = $"{(value * 0.1f):0.0}";
     }
 
     // 닫기 버튼용
@@ -162,7 +173,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
     {
         // 상태 반전
         _isOpen = !_isOpen;
-        _settingUI.SetActive(_isOpen);
+        _settingUI?.SetActive(_isOpen);
 
         // 현재 입력 제어권을 가진 객체 찾기
         IInputControllable currentController = GetCurrentController();
@@ -238,7 +249,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         // 타이틀 씬으로 이동 (로비)
-        LoadingManager.Instance.RequestLoadScene(_titleSceneName);
+        LoadingManager.Instance?.RequestLoadScene(_titleSceneName);
     }
 
 #endregion
