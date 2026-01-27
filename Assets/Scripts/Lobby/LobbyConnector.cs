@@ -46,18 +46,18 @@ public class LobbyConnector : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("[Lobby] 콜백 수신: OnConnectedToMaster -> JoinLobby() 호출");
+        Debug.Log("[Lobby] 콜백 OnConnectedToMaster");
         PhotonNetwork.JoinLobby();
     }
 
     public override void OnJoinedLobby()
     {
-        Debug.Log("[Lobby] 콜백 수신: OnJoinedLobby -> 버튼 활성화 완료!");
+        Debug.Log("[Lobby] 콜백 OnJoinedLobby");
         joinButton.interactable = true;
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.LogWarning($"[Lobby] 연결 끊김! 이유: {cause}");
+        Debug.LogWarning($"[Lobby] 연결 끊김. 이유: {cause}");
     }
 
     public void ClickJoin()

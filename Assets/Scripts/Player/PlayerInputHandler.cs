@@ -125,6 +125,12 @@ public class PlayerInputHandler : MonoBehaviour, IInputControllable
     // 입력 모드 변경
     public void SetInputActive(bool active)
     {
+        // 파괴된 오브젝트인지 확인
+        if (this == null) return;
+
+        // 게임오브젝트가 꺼져있거나 스크립트가 비활성화 상태면 무시
+        if (isActiveAndEnabled == false) return;
+
         if (active)
         {
             // 플레이어 맵으로 변경

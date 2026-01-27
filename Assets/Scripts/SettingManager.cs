@@ -47,6 +47,18 @@ public class SettingManager : MonoBehaviourPunCallbacks
             Destroy(gameObject);
         }
     }
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     private void Start()
     {
         // UI 초기화
@@ -63,6 +75,16 @@ public class SettingManager : MonoBehaviourPunCallbacks
         }
     }
 
+    // 씬 로드 시 실행
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 씬이 바뀌면 무조건 세팅 패널 닫기
+        _isOpen = false;
+        if (_settingUI != null)
+        {
+            _settingUI.SetActive(false);
+        }
+    }
 
     #region 세팅
 
@@ -202,12 +224,11 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // Off로 변경 시
         else
         {
-            // 인터페이스는 null 체크 안된다고 해서
-            MonoBehaviour controllerScript = currentController as MonoBehaviour;
-
-            // 커서 잠금은 컨트롤러 있을 때만
-            if (currentController != null && controllerScript != null)
+            // 인터페이스를 이용한 체크이기 때문에 내부에 따로 널체크 함
+            // null 아니고 활성화되어있을때
+            if (currentController != null)
             {
+                // 커서 잠금은 컨트롤러 있을 때만
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
 
