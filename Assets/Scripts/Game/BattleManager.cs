@@ -24,6 +24,14 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if(Instance == this)
+        {
+            Instance = null;
+        }
+    }
+
     private void Start()
     {
         // 스테이지 목표 설정 (테스트용 1레벨)

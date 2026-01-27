@@ -202,8 +202,11 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // Off로 변경 시
         else
         {
+            // 인터페이스는 null 체크 안된다고 해서
+            MonoBehaviour controllerScript = currentController as MonoBehaviour;
+
             // 커서 잠금은 컨트롤러 있을 때만
-            if (currentController != null)
+            if (currentController != null && controllerScript != null)
             {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
@@ -264,9 +267,33 @@ public class SettingManager : MonoBehaviourPunCallbacks
     // 방 나가기 성공 콜백
     public override void OnLeftRoom()
     {
+        // 커서 보이기
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // 싱글톤 정리
+        CleanupSingleTons();
+
         // 타이틀 씬으로 이동 (로비)
         LoadingManager.Instance?.RequestLoadScene(_titleSceneName);
     }
 
-#endregion
+    // 인게임에서만 쓰는 싱글톤들 파괴
+    private void CleanupSingleTons()
+    {
+        // 파괴 대상 매니저들
+        DestroySingleton(ItemManager.Instance);
+        DestroySingleton(QuickSlotManager.Instance);
+    }
+
+    // 제네릭 파괴 함수
+    private void DestroySingleton<T>(T instance) where T : MonoBehaviour
+    {
+        if (instance != null)
+        {
+            Destroy(instance.gameObject);
+        }
+    }
+
+    #endregion
 }

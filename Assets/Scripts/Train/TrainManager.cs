@@ -106,6 +106,14 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            _instance = null;
+        }
+    }
+
     private IEnumerator Start()
     {
         // ªÛ¡°

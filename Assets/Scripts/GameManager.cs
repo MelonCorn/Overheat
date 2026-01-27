@@ -69,6 +69,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.PrefabPool = customPool;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+
     private IEnumerator Start()
     {
         yield return null;
