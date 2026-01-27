@@ -1,11 +1,9 @@
 using Photon.Pun;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static UnityEditor.IMGUI.Controls.PrimitiveBoundsHandle;
 
 public class SettingManager : MonoBehaviourPunCallbacks
 {
@@ -19,6 +17,10 @@ public class SettingManager : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Dropdown _screenModeDropdown;  // 화면모드 드롭다운
     [SerializeField] Slider _sensitivitySlider;         // 마우스 감도 슬라이더
     [SerializeField] TextMeshProUGUI _sensitivityText;  // 현재 마우스 감도 텍스트
+
+    [Header("버튼")]
+    [SerializeField] Button _leaveButton;   // 방 나가기 버튼
+    [SerializeField] Button _closeButton;   // 닫기(확인) 버튼
 
     // 설정값 저장용 키
     private const string KEY_SENSITIVITY = "MouseSensitivity";
@@ -119,7 +121,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 화면모드 드롭다운 초기화 (고정 드롭다운)
         // 화면모드 불러오기, 기본값 창전체
         int currentMode = PlayerPrefs.GetInt("ScreenMode", 1);
-        if(_screenModeDropdown != null)
+        if (_screenModeDropdown != null)
         {
             // 화면모드 드롭다운 설정
             _screenModeDropdown.value = currentMode;
@@ -133,7 +135,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 현재 감도
         float currentSensitivity = MouseSensitivity;
 
-        if(_sensitivitySlider != null)
+        if (_sensitivitySlider != null)
         {
             _sensitivitySlider.minValue = 1f;    // 최소 감도
             _sensitivitySlider.maxValue = 100f;  // 최대 감도
@@ -150,6 +152,11 @@ public class SettingManager : MonoBehaviourPunCallbacks
 
         // 한 번 갱신
         UpdateSensitivityText(currentSensitivity);
+
+        // 퇴장 버튼 연결
+        if (_leaveButton != null) _leaveButton.onClick.AddListener(OnClickLeaveRoom);
+        // 닫기 버튼에 세팅 패널 토글 연결
+        if (_closeButton != null) _closeButton.onClick.AddListener(ToggleSettingPanel);
     }
 
     // 감도 텍스트 변경
@@ -163,7 +170,8 @@ public class SettingManager : MonoBehaviourPunCallbacks
     // 닫기 버튼용
     public void CloseSetting()
     {
-        gameObject.SetActive(false);
+        // 세팅 패널 상태 변경
+        ToggleSettingPanel();
     }
     #endregion
 
@@ -181,6 +189,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // On으로 변경 시
         if (_isOpen == true)
         {
+            // UI 상태 변경
+            UpdateUIState();
+
             // 커서 보이기
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -202,6 +213,20 @@ public class SettingManager : MonoBehaviourPunCallbacks
             }
         }
     }
+
+
+    // UI 상태 변경
+    private void UpdateUIState()
+    {
+        // 로비인지 방인지 체크
+        bool isRoom = PhotonNetwork.InRoom;
+
+        // 퇴장 버튼 상태 변경
+        if (_leaveButton != null)
+            _leaveButton.gameObject.SetActive(isRoom);
+    }
+
+
     // 현재 입력 객체 가져오기
     private IInputControllable GetCurrentController()
     {
@@ -231,18 +256,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 방 연결 해제
         PhotonNetwork.LeaveRoom();
 
-        // 버튼 중복 클릭 방지로 버튼 UI 비활성화 해도될듯
-    }
+        // 바로 창 닫아버리기
+        ToggleSettingPanel();
 
-    // 게임 종료 버튼
-    public void OnClickQuitGame()
-    {
-        Application.Quit();
-
-        // 에디터에서는 종료 시 플레이 풀기
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
     }
 
     // 방 나가기 성공 콜백

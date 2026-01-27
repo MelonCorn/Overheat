@@ -36,4 +36,16 @@ public class LobbyConnector : MonoBehaviourPunCallbacks
             LoadingManager.Instance.RequestLoadScene("Room");
         }
     }
+
+    // 게임 종료 버튼
+    public void OnClickQuitGame()
+    {
+        Application.Quit();
+
+        // 에디터에서는 종료 시 플레이 풀기
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
+
 }
