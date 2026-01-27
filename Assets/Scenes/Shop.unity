@@ -630,8 +630,8 @@ MonoBehaviour:
     descText: {fileID: 0}
     statNameText: {fileID: 1946685328}
     statValueText: {fileID: 1080018856}
-  _upgradePrefab: {fileID: 0}
-  _trainUpgradeParent: {fileID: 0}
+  _upgradePrefab: {fileID: 2315962386366536301, guid: e1eed056b7aa2914990373b5e8a56136, type: 3}
+  _trainUpgradeParent: {fileID: 1859387065}
 --- !u!4 &349975659
 Transform:
   m_ObjectHideFlags: 0
@@ -4237,7 +4237,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 445987710}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
@@ -4249,7 +4249,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1411699816
 MonoBehaviour:
@@ -5873,19 +5873,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1411699813}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 1921475039}
+      - m_Target: {fileID: 1046602428}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
@@ -5896,6 +5884,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 445987710}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1921475042
 MonoBehaviour:

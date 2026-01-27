@@ -123,7 +123,7 @@ public class ShopManager : MonoBehaviourPun
 
     // 아이템 정보 숨기기
     public void HideItemInfo()
-    {
+    { 
         _itemInfoUI.Hide();
     }
 
@@ -303,22 +303,51 @@ public class ShopManager : MonoBehaviourPun
     {
         if (_trainUpgradeParent == null || TrainManager.Instance == null) return;
 
-        // 기존 프리팹 싹 밀기
-        foreach (Transform child in _trainUpgradeParent) Destroy(child.gameObject);
+        // 기존 프리팹 싹 밀기 (혹시 몰라서 역순)
+        for (int i = _trainUpgradeParent.childCount - 1; i >= 0; i--)
+        {
+            Transform child = _trainUpgradeParent.GetChild(i);
+            PoolableObject poolObj = child.GetComponent<PoolableObject>();
 
-        var myTrains = TrainManager.Instance.CurrentTrains;
-        var dict = TrainManager.Instance.TrainDict;
+            if (poolObj != null)
+            {
+                // 풀로 반환
+                poolObj.Release();
+            }
+            else
+            {
+                // 혹시나 풀 안붙어있으면 없으면 파괴
+                Destroy(child.gameObject);
+            }
+        }
 
-        // 현재 열차 개수만큼 슬롯 생성
-        for (int i = 0; i < myTrains.Count; i++)
+        var trains = TrainManager.Instance.CurrentTrains;   // 현재 열차
+        var trainDict = TrainManager.Instance.TrainDict;    // 열차 딕셔너리 (타입이 키, 데이터가 밸류)
+
+        PoolableObject poolPrefab = _upgradePrefab.GetComponent<PoolableObject>();
+
+        // 풀 오브젝트 아님 ㄷㄷ
+        if (poolPrefab == null) return;
+
+        // 현재 열차 순회
+        for (int i = 0; i < trains.Count; i++)
         {
             // {type, level}
-            Train info = myTrains[i];
+            Train info = trains[i];
 
-            if (dict.TryGetValue(info.type, out TrainData data))
+            // 딕셔너리에서 타입에 데이터 가져오기
+            if (trainDict.TryGetValue(info.type, out TrainData data))
             {
-                // 생성
-                ShopUpgradeData slot = Instantiate(_upgradePrefab, _trainUpgradeParent);
+                // 풀에서 가져오기
+                PoolableObject spawnedObj = PoolManager.Instance.Spawn(poolPrefab, _trainUpgradeParent);
+
+                // 정면보기
+                spawnedObj.transform.localRotation = Quaternion.identity;
+                // 월드 스페이스 캔버스라 이거 안해주면 겁나 크게 나옴
+                spawnedObj.transform.localScale = Vector3.one;
+
+                // 스크립트 가져와서
+                ShopUpgradeData slot = spawnedObj.GetComponent<ShopUpgradeData>();
 
                 // 초기화
                 slot.Init(this, data, i, info.level);

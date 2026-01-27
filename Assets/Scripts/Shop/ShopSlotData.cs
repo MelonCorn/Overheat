@@ -64,5 +64,6 @@ public class ShopSlotData : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         if (_data == null) return;
 
         _shopManager?.HideItemInfo();
+        _shopManager?.HideTrainInfo();
     }
 }

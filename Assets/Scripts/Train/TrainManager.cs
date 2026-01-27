@@ -200,7 +200,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
             }
 
             // 구독자들에게 새로고침 알림
-            OnTrainListUpdated.Invoke();
+            OnTrainListUpdated?.Invoke();
 
             // 상점 로직으로 끝
             yield break;
@@ -717,17 +717,20 @@ public class TrainManager : MonoBehaviourPunCallbacks
     // 열차 업그레이드 요청 (상점용)
     public void RequestUpgradeTrain(int index)
     {
+        Debug.Log($"열차 업그레이드 요청 : {index} 번");
         // 범위 체크
         if (index < 0 || index >= _currentTrains.Count) return;
 
         // 방장이면 바로 실행
         if (PhotonNetwork.IsMasterClient == true)
         {
+            Debug.Log($"열차 업그레이드 실행");
             TrainUpgrade(index);
         }
         // 아니면 방장에게 요청
         else
         {
+            Debug.Log($"방장에게 열차 업그레이드 요청");
             photonView.RPC(nameof(RPC_UpgradeTrain), RpcTarget.MasterClient, index);
         }
     }

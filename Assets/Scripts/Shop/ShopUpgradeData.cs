@@ -27,6 +27,8 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
         // 버튼 기능: 클릭 시 업그레이드 팝업 열기
         if (_upgradeButton != null)
         {
+            // 풀링 오브젝트라 싹 비우기
+            _upgradeButton.onClick.RemoveAllListeners();
             _upgradeButton.onClick.AddListener(OnClickSlot);
         }
     }
