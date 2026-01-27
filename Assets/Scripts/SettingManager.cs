@@ -35,6 +35,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
 
     // 패널 상태
     private bool _isOpen = false;
+    private bool _isChangingMode = false;
 
     private void Awake()
     {
@@ -114,14 +115,34 @@ public class SettingManager : MonoBehaviourPunCallbacks
     }
     private IEnumerator SetScreenModeCoroutine(int index)
     {
-        // 드롭다운 버벅이는거 때문에 UI 먼저 갱신
-        Canvas.ForceUpdateCanvases();
+        // 모드 전환 중 중단
+        if(_isChangingMode) yield break;
 
-        // 드롭다운 UI가 닫히고 텍스트가 갱신될 시간용
-        yield return new WaitForEndOfFrame();
+        // 모드 전환 중
+        _isChangingMode = true;
 
-        // 모드 변경 실행
+        // 드롭다운 닫힐 시간
+        yield return null;
+
+        // 전체화면에서 창전체나 창모드갈 때 OS 독점모드 풀어서 버벅인다고함
+        if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen && index != 0)
+        {
+            // 강제로 창모드로 먼저 변경
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+
+            // OS가 창 다시 그릴 때까지 대기
+            yield return null;
+            yield return null;
+        }
+
+        // 진짜 모드 설정
         SetScreenMode(index);
+
+        // 설정 적용 후 안정화
+        yield return null;
+
+        // 모드 전환 풀기
+        _isChangingMode = false;
     }
 
     // 화면 모드 설정
