@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -35,7 +36,7 @@ public class ShopSlotData : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private void OnClickSlot()
     {
         // 데이터로 결제 요청
-        _shopManager.TryPurchaseItem(_data);
+        _shopManager?.TryPurchaseItem(_data);
 
         // 버튼 선택되는거 바로 풀기
         EventSystem.current.SetSelectedGameObject(null);
@@ -43,11 +44,25 @@ public class ShopSlotData : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        _shopManager.ShowItemInfo(_data);
+        if (_data == null) return;
+
+        // 타입에 맞게 팝업 호출
+        // 열차
+        if (_data is TrainData)
+        {
+            _shopManager?.ShowTrainInfo(_data);
+        }
+        // 아이템
+        else
+        {
+            _shopManager?.ShowItemInfo(_data);
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        _shopManager.HideItemInfo();
+        if (_data == null) return;
+
+        _shopManager?.HideItemInfo();
     }
 }

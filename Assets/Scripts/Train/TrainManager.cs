@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -55,6 +56,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
     [Header("열차 부모")]
     [SerializeField] Transform _trainGroup;
 
+
+    public event Action OnTrainListUpdated; // 열차 새로고침 알림
+
     // 검색용 열차 목록
     public Dictionary<TrainType, TrainData> TrainDict { get; private set; }
 
@@ -82,6 +86,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
     }
 
     public List<TrainNode> TrainNodes => _currentTrainNodes;    // 외부 참조용 열차 노드들
+    public List<Train> CurrentTrains => _currentTrains;         // 외부 참조용 열차 타입,레벨
 
 
     // 열차 준비 상태
@@ -193,6 +198,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
             {
                 SpawnTrain((TrainType)types[i], levels[i], contents[i]);
             }
+
+            // 구독자들에게 새로고침 알림
+            OnTrainListUpdated.Invoke();
 
             // 상점 로직으로 끝
             yield break;
@@ -704,6 +712,65 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
         // 열차 생성
         StartCoroutine(SpawnTrainCoroutine());
+    }
+
+    // 열차 업그레이드 요청 (상점용)
+    public void RequestUpgradeTrain(int index)
+    {
+        // 범위 체크
+        if (index < 0 || index >= _currentTrains.Count) return;
+
+        // 방장이면 바로 실행
+        if (PhotonNetwork.IsMasterClient == true)
+        {
+            TrainUpgrade(index);
+        }
+        // 아니면 방장에게 요청
+        else
+        {
+            photonView.RPC(nameof(RPC_UpgradeTrain), RpcTarget.MasterClient, index);
+        }
+    }
+
+
+    // 방장에게 업그레이드 요청
+    [PunRPC]
+    private void RPC_UpgradeTrain(int index)
+    {
+        // 항상 이런건 방장 체크
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        TrainUpgrade(index);
+    }
+
+    // 실제 업그레이드 로직 (방장만)
+    private void TrainUpgrade(int index)
+    {
+        // index 열차 {type, level}
+        Train target = _currentTrains[index];
+
+        // 타입에 맞는 데이터 가져오기
+        if (TrainDict.TryGetValue(target.type, out TrainData data) == false) return;
+
+        // 만렙 체크
+        if (data.IsMaxLevel(target.level)) return;
+
+        // 비용 체크
+        int price = data.GetBasicStat(target.level).upgradePrice;
+
+        // 골드 사용 시도
+        if (GameManager.Instance.TryUseGold(price))
+        {
+            // 레벨 업
+            target.level++;
+            // 레벨 덮어씌우기
+            _currentTrains[index] = target;
+
+            // 룸 프로퍼티 갱신
+            UpdateRoomProperties();
+
+            // OnRoomPropertiesUpdate 호출 후 ShopManager 갱신
+        }
     }
     #endregion
 }

@@ -479,6 +479,8 @@ GameObject:
   - component: {fileID: 1892342759535587699}
   - component: {fileID: 7769290011864300069}
   - component: {fileID: 4610525577279185712}
+  - component: {fileID: 2315962386366536301}
+  - component: {fileID: 2523727686749711329}
   m_Layer: 5
   m_Name: ShopTrainUpgradeUI
   m_TagString: Untagged
@@ -547,6 +549,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2315962386366536301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7536369195324986640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d7807cecabec94a9e031964aa2a4c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShopUpgradeData
+  _icon: {fileID: 0}
+  _nameText: {fileID: 8436672908729589089}
+  _levelText: {fileID: 4825857845404468174}
+  _upgradeButton: {fileID: 5260341981321828563}
+--- !u!114 &2523727686749711329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7536369195324986640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9144f30be0a8ad548bd61183051509fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PoolableObject
 --- !u!1 &8770479193916301588
 GameObject:
   m_ObjectHideFlags: 0

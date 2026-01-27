@@ -32,10 +32,10 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
     }
     private void OnClickSlot()
     {
-        // 매니저에게 "내(Index) 업그레이드 창 띄워줘" 요청
-        _shopManager.ShowTrainUpgradeInfo(_trainIndex);
+        // 열차 업그레이드 시도
+        _shopManager?.TryUpgradeTrain(_trainIndex);
 
-        // 버튼 선택 해제 (UI 하이라이트 제거)
+        // 버튼 선택되는거 바로 풀기
         EventSystem.current.SetSelectedGameObject(null);
     }
 

@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,15 +23,35 @@ public class ShopManager : MonoBehaviourPun
     [SerializeField] ShopInfoPanel _trainInfoUI;         // 열차용 패널 묶음
     [SerializeField] ShopInfoPanel _trainUpgradeInfoUI;  // 열차용 업그레이드 패널 묶음
 
+    [Header("열차 업그레이드 설정")]
+    [SerializeField] ShopUpgradeData _upgradePrefab;    // 열차 업그레이드 리스트용 프리팹
+    [SerializeField] Transform _trainUpgradeParent;     // 열차 리스트 부모
+
     private void Start()
     {
         // 시작하면 상점 항목들 생성
         GenerateSlots();
 
+        if (TrainManager.Instance != null)
+        {
+            // 시작하자마자 한번
+            RefreshTrainList();
+
+            // 열차 룸 프로퍼티 변경될 때마다 실행
+            TrainManager.Instance.OnTrainListUpdated += RefreshTrainList;
+        }
+
         // 일단 정보 패널 비활성화
         if (_itemInfoUI != null) _itemInfoUI.Hide();
         if (_trainInfoUI != null) _trainInfoUI.Hide();
         if (_trainUpgradeInfoUI != null) _trainUpgradeInfoUI.Hide();
+    }
+    private void OnDestroy()
+    {
+        if (TrainManager.Instance != null)
+        {
+            TrainManager.Instance.OnTrainListUpdated -= RefreshTrainList;
+        }
     }
 
     // 항목 생성
@@ -91,6 +112,9 @@ public class ShopManager : MonoBehaviourPun
         }
     }
 
+   
+
+    #region 상점 호버
     // 아이템 정보 켜기
     public void ShowItemInfo(ShopItem itemData)
     {
@@ -118,7 +142,44 @@ public class ShopManager : MonoBehaviourPun
     // 열차 업그레이드 정보 켜기
     public void ShowTrainUpgradeInfo(int index)
     {
+        if (TrainManager.Instance == null) return;
 
+        // 열차 가져오기
+        var trains = TrainManager.Instance.CurrentTrains;
+
+        // 범위 체크
+        if (index < 0 || index >= trains.Count) return;
+
+        // 데이터 확보
+        Train info = trains[index];
+
+        // 열차 딕셔너리 검색해서 데이터 가져오기
+        if (TrainManager.Instance.TrainDict.TryGetValue(info.type, out TrainData data) == false) return;
+
+        // 패널 기본 정보 켜기
+        _trainUpgradeInfoUI.Show(data);
+
+        // 스탯 리스트 문자열 합치기
+        var statList = data.GetUpgradeInfos(info.level);
+
+        // 스트링빌더로 줄바꿈 쌓기
+        StringBuilder nameBuilder = new StringBuilder();
+        StringBuilder valueBuilder = new StringBuilder();
+
+        // 스탯별로
+        foreach (var stat in statList)
+        {
+            // 이름 줄바꿈 추가
+            nameBuilder.AppendLine(stat.name);
+            // 값 줄바꿈 추가
+            valueBuilder.AppendLine(stat.value);
+        }
+
+        // 텍스트 설정
+        if (_trainUpgradeInfoUI.statNameText)
+            _trainUpgradeInfoUI.statNameText.SetText(nameBuilder);
+        if (_trainUpgradeInfoUI.statValueText)
+            _trainUpgradeInfoUI.statValueText.SetText(valueBuilder);
     }
 
     // 열차 업그레이드 정보 숨기기
@@ -126,6 +187,9 @@ public class ShopManager : MonoBehaviourPun
     {
         _trainUpgradeInfoUI.Hide();
     }
+
+    #endregion
+
 
 
 
@@ -226,6 +290,42 @@ public class ShopManager : MonoBehaviourPun
             PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos + randomOffset, Quaternion.identity, 0, initData);
         }
     }
+
+    // 업그레이드 버튼에 연결할 것
+    public void TryUpgradeTrain(int index)
+    {
+        TrainManager.Instance.RequestUpgradeTrain(index);
+    }
+
+
+    // 열차 갱신 시 리스트 버튼 새로고침
+    public void RefreshTrainList()
+    {
+        if (_trainUpgradeParent == null || TrainManager.Instance == null) return;
+
+        // 기존 프리팹 싹 밀기
+        foreach (Transform child in _trainUpgradeParent) Destroy(child.gameObject);
+
+        var myTrains = TrainManager.Instance.CurrentTrains;
+        var dict = TrainManager.Instance.TrainDict;
+
+        // 현재 열차 개수만큼 슬롯 생성
+        for (int i = 0; i < myTrains.Count; i++)
+        {
+            // {type, level}
+            Train info = myTrains[i];
+
+            if (dict.TryGetValue(info.type, out TrainData data))
+            {
+                // 생성
+                ShopUpgradeData slot = Instantiate(_upgradePrefab, _trainUpgradeParent);
+
+                // 초기화
+                slot.Init(this, data, i, info.level);
+            }
+        }
+    }
+
 }
 
 
@@ -246,6 +346,11 @@ public class ShopInfoPanel
     public TextMeshProUGUI priceText;   // 가격
     public TextMeshProUGUI descText;    // 설명
 
+
+    [Header("업그레이드용")]
+    public TextMeshProUGUI statNameText;    // 스탯 이름
+    public TextMeshProUGUI statValueText;   // 스탯 수치
+
     // 정보 갱신,켜기
     public void Show(ShopItem data)
     {
@@ -256,9 +361,13 @@ public class ShopInfoPanel
 
         // 데이터 채우기 (null 체크 포함)
         if (iconImage != null) iconImage.sprite = data.icon;
-        if (nameText != null) nameText.text = data.displayName;
-        if (priceText != null) priceText.text = $"{data.price:N0} G";
-        if (descText != null) descText.text = data.desc;
+        if (nameText != null) nameText.SetText(data.displayName);
+        if (priceText != null) priceText.SetText($"{data.price:N0} G");
+        if (descText != null) descText.SetText(data.desc);
+
+
+        if (statNameText != null) descText.SetText("");
+        if (statValueText != null) descText.SetText("");
     }
 
     // 끄기
