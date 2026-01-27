@@ -26,6 +26,9 @@ public class TrainData : ShopItem
         return levelDatas[index];
     }
 
+    // 최대 레벨 반환
+    public int GetMaxLevel() => levelDatas.Count;
+
     // 최대 레벨 체크
     public bool IsMaxLevel(int level)
     {

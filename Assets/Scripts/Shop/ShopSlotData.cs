@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ShopSlotData : MonoBehaviour
+public class ShopSlotData : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI")]
     [SerializeField] Image _icon;
@@ -31,7 +31,6 @@ public class ShopSlotData : MonoBehaviour
         _button.onClick.AddListener(OnClickSlot);
     }
 
-
     // 클릭
     private void OnClickSlot()
     {
@@ -40,5 +39,15 @@ public class ShopSlotData : MonoBehaviour
 
         // 버튼 선택되는거 바로 풀기
         EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        _shopManager.ShowItemInfo(_data);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        _shopManager.HideItemInfo();
     }
 }

@@ -116,12 +116,9 @@ public class ShopManager : MonoBehaviourPun
     }
 
     // 열차 업그레이드 정보 켜기
-    public void ShowTrainUpgradeInfo(ShopItem itemData)
+    public void ShowTrainUpgradeInfo(int index)
     {
-        if(itemData is TrainData trainData)
-        {
-        }
-        _trainUpgradeInfoUI.Show(itemData);
+
     }
 
     // 열차 업그레이드 정보 숨기기

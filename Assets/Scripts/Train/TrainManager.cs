@@ -613,7 +613,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 게임오버 상태면 열차 갱신 중지
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver == true) return;
 
-        // 상점 모드이고, 기차 데이터가 변경되었다면
+        // 상점 모드이고, 열차 데이터가 변경되었다면
         if (_isShop && propertiesThatChanged.ContainsKey(KEY_TRAIN_TYPES))
         {
             // 열차 새로고침
