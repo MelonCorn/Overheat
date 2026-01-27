@@ -17,7 +17,8 @@ public class ShopTerminal : MonoBehaviour, IInteractable
     [SerializeField] Button _exitButton;
 
     [Header("단말기 UI")]
-    [SerializeField] CanvasGroup _terminalCanvasGroup;        // 사용 상태 아니면 상호작용 상태 off
+    [SerializeField] Canvas _terminalCanvas;                // 단말기 캔버스
+    [SerializeField] CanvasGroup _terminalCanvasGroup;      // 사용 상태 아니면 레이캐스트 블록 상태 off
 
     public static bool IsUsing = false;             // 사용 상태
 
@@ -52,21 +53,37 @@ public class ShopTerminal : MonoBehaviour, IInteractable
         // 사용 상태로 전환
         IsUsing = true;
         // 단말기 UI 상호작용 가능
-        _terminalCanvasGroup.interactable = true;
+        _terminalCanvasGroup.blocksRaycasts = true;
+        // 퀵슬롯 끄기
+        QuickSlotManager.Instance.SetUIActive(false);
 
         if (PlayerHandler.localPlayer != null)
         {
-            // 플레이어 입력 UI로 전환
+            // 플레이어 입력
             var input = PlayerHandler.localPlayer.GetComponent<PlayerInputHandler>();
-            if (input) input.SetInputActive(false);
-
-            // 플레이어 얼음
+            // 플레이어 움직임
             var move = PlayerHandler.localPlayer.GetComponent<PlayerMovementHandler>();
-            if (move) move.enabled = false;
-
-            // 카메라 납치
+            // 플레이어 카메라
             var cam = PlayerHandler.localPlayer.GetComponent<PlayerCameraHandler>();
-            if (cam) cam.MoveCameraToTarget(_viewPoint, _moveDuration);
+            // 플레이어 아이템 움직임
+
+            // 카메라 등록 안되어 있으면
+            if (_terminalCanvas.worldCamera == null)
+            {
+                // 플레이어의 카메라 등록
+                _terminalCanvas.worldCamera = cam.LocalCamera;
+            }
+            // 단말기 캔버스에 카메라 등록 되어있으면
+            else
+            {
+                // 플레이어 입력 UI로 전환
+                if (input) input.SetInputActive(false);
+                // 플레이어 얼음
+                if (move) move.enabled = false;
+                // 카메라 납치
+                if (cam) cam.MoveCameraToTarget(_viewPoint, _moveDuration);
+
+            }
         }
 
         // 마우스 커서 풀기
@@ -82,7 +99,7 @@ public class ShopTerminal : MonoBehaviour, IInteractable
         IsUsing = false;
 
         // 단말기 UI 상호작용 불가능
-        _terminalCanvasGroup.interactable = false;
+        _terminalCanvasGroup.blocksRaycasts = false;
 
         if (PlayerHandler.localPlayer != null)
         {
@@ -98,10 +115,13 @@ public class ShopTerminal : MonoBehaviour, IInteractable
             var move = PlayerHandler.localPlayer.GetComponent<PlayerMovementHandler>();
             if (move) move.enabled = true;
         }
-
+        
         // 마우스 커서 잠그기
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        // 퀵슬롯 켜기
+        QuickSlotManager.Instance.SetUIActive(false);
     }
 
     public string GetInteractText(out bool canInteract)

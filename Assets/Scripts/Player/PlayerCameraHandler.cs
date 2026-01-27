@@ -19,6 +19,8 @@ public class PlayerCameraHandler : MonoBehaviour
     [SerializeField] float _topClamp = -90f;        // 위 제한
     [SerializeField] float _bottomClamp = 90f;      // 아래 제한
 
+    public Camera LocalCamera => _camera;
+
     private float _xRotation = 0f; // 현재 수직 회전
 
     private bool _isTab;
@@ -185,6 +187,9 @@ public class PlayerCameraHandler : MonoBehaviour
 
         // 아이템 다시 보이게
         _handHolder.SetActive(true);
+
+        // 아이템 들리게 손 새로고침 
+        QuickSlotManager.Instance.RefreshHand();
     }
     #endregion
 

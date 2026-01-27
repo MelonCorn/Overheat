@@ -23,10 +23,14 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     [SerializeField] float _rotSmoothSpeed = 10f;  // 회전
     [SerializeField] float _teleportDistance = 5f; // 순간이동
 
+    [Header("플레이어 에임 오브젝트")]
+    [SerializeField] GameObject _aimObj;        // 에임
+
     private Vector3 _networkPosition;       // 네트워크 위치
     private Quaternion _networkRotation;    // 네트워크 회전
 
     public Transform CameraTrans => _camera.transform;
+    public GameObject LocalAim => _aimObj;
     public string CurrentItem = "";
 
     public bool IsDead { get; private set; }
@@ -80,6 +84,10 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         {
             // 로컬 플레이어 등록
             localPlayer = this;
+
+            // 로컬 렌더러 끄기
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers) renderer.enabled = false;
 
             // 켤 스크립트 켜기
             EnableLocalComponents();

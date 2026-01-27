@@ -133,11 +133,17 @@ public class PlayerInputHandler : MonoBehaviour, IInputControllable
 
         if (active)
         {
+            // 플레이어 에임 활성화
+            PlayerHandler.localPlayer.LocalAim.SetActive(true);
+
             // 플레이어 맵으로 변경
             _input.SwitchCurrentActionMap("Player");
         }
         else
         {
+            // 플레이어 에임 비활성화
+            PlayerHandler.localPlayer.LocalAim.SetActive(false);
+
             // UI 모드로 변경
             _input.SwitchCurrentActionMap("UI");
 
