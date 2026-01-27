@@ -394,8 +394,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8679dfe8f58d2f2449b0b4ea19e0c213, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraHandler
+  _camera: {fileID: 6880727270548743675}
   _cameraHolder: {fileID: 5418326320911575754}
-  _mouseSensitivity: 15
+  _handHolder: {fileID: 3639046785783528464}
   _topClamp: -88
   _bottomClamp: 88
 --- !u!114 &1161835146325615844

@@ -1,7 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
-using System.Collections;
 
 public class ShopManager : MonoBehaviourPun
 {

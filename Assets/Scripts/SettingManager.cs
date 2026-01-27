@@ -80,6 +80,10 @@ public class SettingManager : MonoBehaviourPunCallbacks
             // 세팅 패널 상태 변경
             ToggleSettingPanel();
         }
+
+
+        // 화면 변화 감지 (AltEnter)
+        CheckScreenChange();
     }
 
     // 씬 로드 시 실행
@@ -121,8 +125,14 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 모드 전환 중
         _isChangingMode = true;
 
+        // UI 강제 갱신
+        Canvas.ForceUpdateCanvases();
+
         // 드롭다운 닫힐 시간
-        yield return null;
+        // 전체화면 거의 바로
+        // 나머지 1프레임
+        if (index == 0) yield return new WaitForEndOfFrame();
+        else yield return null;
 
         // 전체화면에서 창전체나 창모드갈 때 OS 독점모드 풀어서 버벅인다고함
         if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen && index != 0)
@@ -243,6 +253,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 현재 입력 제어권을 가진 객체 찾기
         IInputControllable currentController = GetCurrentController();
 
+        // 상점 이용 중인지
+        bool isShopUsing = ShopTerminal.IsUsing;
+
         // On으로 변경 시
         if (_isOpen == true)
         {
@@ -253,23 +266,30 @@ public class SettingManager : MonoBehaviourPunCallbacks
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
-            // 입력 끄기
-            currentController?.SetInputActive(false);
+            // 입력 끄기 (상점 이용 안할 때)
+            if (isShopUsing == false)
+            {
+                currentController?.SetInputActive(false);
+            }
         }
         // Off로 변경 시
         else
         {
-            // 인터페이스를 이용한 체크이기 때문에 내부에 따로 널체크 함
-            // null 아니고 활성화되어있을때
-            if (currentController != null)
+            // 입력 켜기 (상점 이용 안할 때)
+            if (isShopUsing == false)
             {
-                // 커서 잠금은 컨트롤러 있을 때만
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                // 인터페이스를 이용한 체크이기 때문에 내부에 따로 널체크 함
+                // null 아니고 활성화되어있을때
+                if (currentController != null)
+                {
+                    // 커서 잠금은 컨트롤러 있을 때만
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
 
-                // 입력 켜기 (인터페이스 사용)
-                currentController.SetInputActive(true);
-            }
+                    // 입력 켜기 (인터페이스 사용)
+                    currentController.SetInputActive(true);
+                }
+            }   
         }
     }
 
@@ -283,6 +303,39 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 퇴장 버튼 상태 변경
         if (_leaveButton != null)
             _leaveButton.gameObject.SetActive(isRoom);
+    }
+
+    // 알트 엔터로 화면 강제 변환 시 계속 체크
+    private void CheckScreenChange()
+    {
+        // 실제 모드
+        int currentIndex = 0;
+
+        switch (Screen.fullScreenMode)
+        {
+            case FullScreenMode.ExclusiveFullScreen:
+                currentIndex = 0; // 전체화면
+                break;
+            case FullScreenMode.FullScreenWindow:
+                currentIndex = 1; // 창 전체
+                break;
+            case FullScreenMode.Windowed:
+                currentIndex = 2; // 창모드
+                break;
+            default:
+                currentIndex = 2; // 혹시 모를 뭔가
+                break;
+        }
+
+        // 드롭다운 UI가 실제와 다르면 (Alt+Enter)
+        if (_screenModeDropdown != null && _screenModeDropdown.value != currentIndex)
+        {
+            // UI 표기만 변경
+            _screenModeDropdown.SetValueWithoutNotify(currentIndex);
+
+            // 상태 저장까지
+            PlayerPrefs.SetInt(KEY_SCREEN_MODE, currentIndex);
+        }
     }
 
 

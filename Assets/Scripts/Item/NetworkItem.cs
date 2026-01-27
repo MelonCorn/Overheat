@@ -63,8 +63,6 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
     {
         if (_collider != null) _collider.enabled = isActive;
         foreach (var rend in _renderers) rend.enabled = isActive;
-
-        Debug.Log($"아이템 비주얼 세팅 : {isActive}");
     }
 
     #region 픽업
