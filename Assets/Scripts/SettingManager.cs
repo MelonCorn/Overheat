@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -111,7 +112,17 @@ public class SettingManager : MonoBehaviourPunCallbacks
         MouseSensitivity = value;
         PlayerPrefs.SetFloat(KEY_SENSITIVITY, value);
     }
+    private IEnumerator SetScreenModeCoroutine(int index)
+    {
+        // 드롭다운 버벅이는거 때문에 UI 먼저 갱신
+        Canvas.ForceUpdateCanvases();
 
+        // 드롭다운 UI가 닫히고 텍스트가 갱신될 시간용
+        yield return new WaitForEndOfFrame();
+
+        // 모드 변경 실행
+        SetScreenMode(index);
+    }
 
     // 화면 모드 설정
     public void SetScreenMode(int index)
@@ -153,7 +164,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
             // 화면모드 드롭다운 새로고침
             _screenModeDropdown.RefreshShownValue();
             // 화면모드 드롭다운 값 변경 이벤트 연결
-            _screenModeDropdown.onValueChanged.AddListener((index) => SetScreenMode(index));
+            _screenModeDropdown.onValueChanged.AddListener((index) => StartCoroutine(SetScreenModeCoroutine(index)));
         }
 
         // 감도 슬라이더 초기화
