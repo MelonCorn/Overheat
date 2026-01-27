@@ -1,6 +1,8 @@
 using Photon.Pun;
 using Photon.Realtime;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviourPun
 {
@@ -11,13 +13,24 @@ public class ShopManager : MonoBehaviourPun
     [SerializeField] Transform _itemSpawnPoint;
 
     [Header("상점 품목 버튼 설정")]
-    [SerializeField] ShopSlotData _slotPrefab;        // 항목 버튼 프리팹
-    [SerializeField] Transform _slotParent;       // 버튼 부모 트랜스폼
+    [SerializeField] ShopSlotData _slotPrefab;      // 항목 버튼 프리팹
+    [SerializeField] Transform _slotItemParent;     // 아이템 부모 트랜스폼
+    [SerializeField] Transform _slotTrainParent;    // 열차 부모 트랜스폼
+
+    [Header("아이템 정보 UI")]
+    [SerializeField] ShopInfoPanel _itemInfoUI;          // 아이템용 패널 묶음
+    [SerializeField] ShopInfoPanel _trainInfoUI;         // 열차용 패널 묶음
+    [SerializeField] ShopInfoPanel _trainUpgradeInfoUI;  // 열차용 업그레이드 패널 묶음
 
     private void Start()
     {
         // 시작하면 상점 항목들 생성
         GenerateSlots();
+
+        // 일단 정보 패널 비활성화
+        if (_itemInfoUI != null) _itemInfoUI.Hide();
+        if (_trainInfoUI != null) _trainInfoUI.Hide();
+        if (_trainUpgradeInfoUI != null) _trainUpgradeInfoUI.Hide();
     }
 
     // 항목 생성
@@ -59,8 +72,17 @@ public class ShopManager : MonoBehaviourPun
     // 슬롯 버튼 생성
     private void CreateSlot(ShopItem itemData)
     {
-        // 생성
-        ShopSlotData slot = Instantiate(_slotPrefab, _slotParent);
+        // 부모
+        Transform parentTrans = null;
+
+        // 부모 지정
+        if (itemData is PlayerItemData)
+            parentTrans = _slotItemParent;
+        else
+            parentTrans = _slotTrainParent;
+
+        // 버튼 생성
+        ShopSlotData slot = Instantiate(_slotPrefab, parentTrans);
 
         if (slot != null)
         {
@@ -68,6 +90,46 @@ public class ShopManager : MonoBehaviourPun
             slot.Init(this, itemData);
         }
     }
+
+    // 아이템 정보 켜기
+    public void ShowItemInfo(ShopItem itemData)
+    {
+        _itemInfoUI.Show(itemData);
+    }
+
+    // 아이템 정보 숨기기
+    public void HideItemInfo()
+    {
+        _itemInfoUI.Hide();
+    }
+
+    // 열차 정보 켜기
+    public void ShowTrainInfo(ShopItem itemData)
+    {
+        _trainInfoUI.Show(itemData);
+    }
+
+    // 열차 정보 숨기기
+    public void HideTrainInfo()
+    {
+        _trainInfoUI.Hide();
+    }
+
+    // 열차 업그레이드 정보 켜기
+    public void ShowTrainUpgradeInfo(ShopItem itemData)
+    {
+        if(itemData is TrainData trainData)
+        {
+        }
+        _trainUpgradeInfoUI.Show(itemData);
+    }
+
+    // 열차 업그레이드 정보 숨기기
+    public void HideTrainUpgradeInfo()
+    {
+        _trainUpgradeInfoUI.Hide();
+    }
+
 
 
     // 상점 구매 버튼
@@ -166,5 +228,45 @@ public class ShopManager : MonoBehaviourPun
             // 네트워크 객체 생성
             PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos + randomOffset, Quaternion.identity, 0, initData);
         }
+    }
+}
+
+
+
+
+
+
+
+// 상점 패널용 클래스
+
+[System.Serializable]
+public class ShopInfoPanel
+{
+    [Header("UI 연결")]
+    public GameObject panelObj;         // 패널 전체
+    public Image iconImage;             // 아이콘
+    public TextMeshProUGUI nameText;    // 이름
+    public TextMeshProUGUI priceText;   // 가격
+    public TextMeshProUGUI descText;    // 설명
+
+    // 정보 갱신,켜기
+    public void Show(ShopItem data)
+    {
+        if (panelObj == null) return;
+
+        // 패널 켜기
+        panelObj.SetActive(true);
+
+        // 데이터 채우기 (null 체크 포함)
+        if (iconImage != null) iconImage.sprite = data.icon;
+        if (nameText != null) nameText.text = data.displayName;
+        if (priceText != null) priceText.text = $"{data.price:N0} G";
+        if (descText != null) descText.text = data.desc;
+    }
+
+    // 끄기
+    public void Hide()
+    {
+        if (panelObj != null) panelObj.SetActive(false);
     }
 }
