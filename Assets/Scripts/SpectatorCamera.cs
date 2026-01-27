@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SpectatorCamera : MonoBehaviour
+public class SpectatorCamera : MonoBehaviour, IInputControllable
 {
+    public static SpectatorCamera Instance;
+
     [Header("관전 설정")]   
     [SerializeField] float _height = 1.5f;          // 관전 높이
-    [SerializeField] float _rotationSpeed = 2.0f;   // 회전 속도 (나중에 감도로 변경)
+    [SerializeField] float _sensitivityCali = 10f;  // 감도 보정치
 
     [Header("회전 제한 설정")]
     [SerializeField] float _maxPitch = 80f;         // 내려다볼 각도 제한
@@ -51,6 +53,8 @@ public class SpectatorCamera : MonoBehaviour
 
         // 시작 시 비활성화
         gameObject.SetActive(false);
+
+        Instance = this;
     }
 
     private void OnEnable()
@@ -94,13 +98,20 @@ public class SpectatorCamera : MonoBehaviour
         SetMainCameraAudioListener(true);
     }
 
+    private void OnDestroy()
+    {
+        // 안전하게 제거
+        if (Instance == this)
+            Instance = null;
+    }
+
 
     // 입력
     private void Update()
     {
         // 카메라 회전
-        _yaw += _lookInput.x * _rotationSpeed * Time.deltaTime * 10f; // 감도 보정
-        _pitch -= _lookInput.y * _rotationSpeed * Time.deltaTime * 10f;
+        _yaw += _lookInput.x * SettingManager.Instance.MouseSensitivity * Time.deltaTime * _sensitivityCali; // 감도 보정
+        _pitch -= _lookInput.y * SettingManager.Instance.MouseSensitivity * Time.deltaTime * _sensitivityCali;
 
         // 각도 제한
         _pitch = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
@@ -244,6 +255,28 @@ public class SpectatorCamera : MonoBehaviour
         {
             var mainListener = Camera.main.GetComponent<AudioListener>();
             if (mainListener != null) mainListener.enabled = active;
+        }
+    }
+
+
+    // 입력 모드 변경
+    public void SetInputActive(bool active)
+    {
+        if (_playerInput == null) return;
+
+        if (active)
+        {
+            // 관전 모드 맵으로 변경
+            _playerInput.SwitchCurrentActionMap("Spectator");
+        }
+        else
+        {
+            // UI 모드 맵으로 변경
+            _playerInput.SwitchCurrentActionMap("UI");
+
+            // 움직이던 값 초기화해서 멈추기
+            _lookInput = Vector2.zero;
+            _zoomInput = 0f;
         }
     }
 }

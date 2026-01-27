@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(CharacterController))]
-public class PlayerInputHandler : MonoBehaviour
+public class PlayerInputHandler : MonoBehaviour, IInputControllable
 {
     private PlayerInput _input;
 
@@ -119,5 +119,27 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnFireCanceled(InputAction.CallbackContext ctx)
     {
         IsFiring = false;
+    }
+
+
+    // 입력 모드 변경
+    public void SetInputActive(bool active)
+    {
+        if (active)
+        {
+            // 플레이어 맵으로 변경
+            _input.SwitchCurrentActionMap("Player");
+        }
+        else
+        {
+            // UI 모드로 변경
+            _input.SwitchCurrentActionMap("UI");
+
+            // 움직이다가 메뉴 켰을 때 멈추게
+            MoveInput = Vector2.zero;
+            LookInput = Vector2.zero;
+            IsFiring = false;
+            IsSprint = false;
+        }
     }
 }

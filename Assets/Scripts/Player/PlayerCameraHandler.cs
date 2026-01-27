@@ -9,7 +9,6 @@ public class PlayerCameraHandler : MonoBehaviour
     [SerializeField] Transform _cameraHolder;
     
     [Header("회전 세팅")]
-    [SerializeField] float _mouseSensitivity = 15f; // 마우스 감도
     [SerializeField] float _topClamp = -90f;        // 위 제한
     [SerializeField] float _bottomClamp = 90f;      // 아래 제한
 
@@ -60,11 +59,11 @@ public class PlayerCameraHandler : MonoBehaviour
         Vector2 mouseInput = _inputHandler.LookInput;
 
         // 마우스 감도에 따라 수평(좌우) 회전 (루트)
-        float mouseX = mouseInput.x * _mouseSensitivity * Time.deltaTime;
+        float mouseX = mouseInput.x * SettingManager.Instance.MouseSensitivity * Time.deltaTime;
         transform.Rotate(Vector3.up * mouseX);
 
         // 마우스 감도에 따라 수직(상하) 회전 (카메라 홀더)
-        float mouseY = mouseInput.y * _mouseSensitivity * Time.deltaTime;
+        float mouseY = mouseInput.y * SettingManager.Instance.MouseSensitivity * Time.deltaTime;
         _xRotation -= mouseY;
         // 위아래 제한
         _xRotation = Mathf.Clamp(_xRotation, _topClamp, _bottomClamp);
