@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -46,6 +47,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public bool IsShop => _isShop;
     public bool IsWaitingRoom => _isWaitingRoom;
     public bool IsGameOver { get; private set; }
+
+    public event Action<int> OnGoldChanged; // 골드 변화 알림
+
 
     private PlayerSpawner _spawner;         // 플레이어 스포너
     private TimelineManager _timelineManager;// 타임라인 매니저
@@ -380,6 +384,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private void UpdateGoldText()
     {
         _goldText?.SetText($"{GameData.Gold:N0}");
+
+        // 골드 변화 뿌림
+        OnGoldChanged?.Invoke(GameData.Gold);
     }
 
     // 생존일 텍스트 갱신
@@ -464,7 +471,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         foreach (string itemName in GameData.LostItems)
         {
             // 겹치지 않게 약간의 랜덤
-            Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
+            Vector3 randomOffset = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
 
             object[] initData = new object[] { itemName };
 

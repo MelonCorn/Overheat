@@ -57,6 +57,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
     [SerializeField] Transform _trainGroup;
 
 
+    public event Action<bool, string> OnUpgradeResult; // 열차 업그레이드 결과 알림
     public event Action OnTrainListUpdated; // 열차 새로고침 알림
 
     // 검색용 열차 목록
@@ -715,50 +716,79 @@ public class TrainManager : MonoBehaviourPunCallbacks
     }
 
     // 열차 업그레이드 요청 (상점용)
-    public void RequestUpgradeTrain(int index)
+    public void RequestUpgradeTrain(int index, int currentLevel)
     {
-        Debug.Log($"열차 업그레이드 요청 : {index} 번");
+        Debug.Log($"열차 업그레이드 요청 : {index} 번 현재 레벨 {currentLevel}");
         // 범위 체크
-        if (index < 0 || index >= _currentTrains.Count) return;
+        if (index < 0 || index >= _currentTrains.Count)
+        {
+            OnUpgradeResult?.Invoke(false, "인덱스 초과");
+            return;
+        }
 
         // 방장이면 바로 실행
         if (PhotonNetwork.IsMasterClient == true)
         {
             Debug.Log($"열차 업그레이드 실행");
-            TrainUpgrade(index);
+            TrainUpgrade(index, currentLevel, PhotonNetwork.LocalPlayer);
         }
         // 아니면 방장에게 요청
         else
         {
-            Debug.Log($"방장에게 열차 업그레이드 요청");
-            photonView.RPC(nameof(RPC_UpgradeTrain), RpcTarget.MasterClient, index);
+            Debug.Log($"방장에게 열차 업그레이드 요청"); // 인덱스, 레벨
+            photonView.RPC(nameof(RPC_UpgradeTrain), RpcTarget.MasterClient, index, currentLevel);
         }
     }
 
 
     // 방장에게 업그레이드 요청
     [PunRPC]
-    private void RPC_UpgradeTrain(int index)
+    private void RPC_UpgradeTrain(int index, int currentLevel, PhotonMessageInfo info)
     {
         // 항상 이런건 방장 체크
         if (PhotonNetwork.IsMasterClient == false) return;
 
-        TrainUpgrade(index);
+        // 인덱스, 레벨, 요청자
+        TrainUpgrade(index, currentLevel, info.Sender);
     }
 
     // 실제 업그레이드 로직 (방장만)
-    private void TrainUpgrade(int index)
+    private void TrainUpgrade(int index, int expectLevel, Player requestPlayer)
     {
+        // 데이터 검증
+        if (index < 0 || index >= _currentTrains.Count)
+        {
+            // 요청자에게 실패 알림
+            SendUpgradeResult(requestPlayer, false, $"{index}번 열차가 없습니다.");
+            return;
+        }
+
         // index 열차 {type, level}
         Train target = _currentTrains[index];
 
+        // 따닥 방지 같은 레벨 동시 업그레이드
+        // 클라이언트 레벨이랑 실제 레벨이랑 다르면 실패
+        if (target.level != expectLevel)
+        {
+            SendUpgradeResult(requestPlayer, false, "이미 업그레이드 되었습니다.");
+            return;
+        }
+
         // 타입에 맞는 데이터 가져오기
-        if (TrainDict.TryGetValue(target.type, out TrainData data) == false) return;
+        if (TrainDict.TryGetValue(target.type, out TrainData data) == false)
+        {
+            SendUpgradeResult(requestPlayer, false, $"TrainDict에 {target.type} 타입이 등록되어있지 않습니다.");
+            return;
+        }
 
         // 만렙 체크
-        if (data.IsMaxLevel(target.level)) return;
+        if (data.IsMaxLevel(target.level))
+        {
+            SendUpgradeResult(requestPlayer, false, "이미 최대 레벨입니다.");
+            return;
+        }
 
-        // 비용 체크
+        // 업그레이드 비용 체크
         int price = data.GetBasicStat(target.level).upgradePrice;
 
         // 골드 사용 시도
@@ -771,9 +801,42 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
             // 룸 프로퍼티 갱신
             UpdateRoomProperties();
+            
+            // 요청자에게 성공 알림
+            SendUpgradeResult(requestPlayer, true, "업그레이드 성공!");
 
             // OnRoomPropertiesUpdate 호출 후 ShopManager 갱신
         }
+        // 골드 부족
+        else
+        {
+            SendUpgradeResult(requestPlayer, false, "골드가 부족합니다.");
+        }
+    }
+
+    // 업그레이드 결과 발송
+    private void SendUpgradeResult(Player targetPlayer, bool isSuccess, string message)
+    {
+        // 방장이 시도했으면 바로 실행
+        if (targetPlayer.IsLocal)
+        {
+            RPC_UpgradeResult(isSuccess, message);
+        }
+        else
+        {
+            // 다른 사람이면 발송
+            photonView.RPC(nameof(RPC_UpgradeResult), targetPlayer, isSuccess, message);
+        }
+    }
+
+    // 클라이언트가 받는 결과
+    [PunRPC]
+    private void RPC_UpgradeResult(bool isSuccess, string message)
+    {
+        Debug.Log($"[업그레이드 결과] {isSuccess} : {message}");
+
+        // 결과 이벤트 발생
+        OnUpgradeResult?.Invoke(isSuccess, message);
     }
     #endregion
 }

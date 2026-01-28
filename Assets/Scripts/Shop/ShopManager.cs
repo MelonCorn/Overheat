@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -27,6 +28,10 @@ public class ShopManager : MonoBehaviourPun
     [SerializeField] ShopUpgradeData _upgradePrefab;    // 열차 업그레이드 리스트용 프리팹
     [SerializeField] Transform _trainUpgradeParent;     // 열차 리스트 부모
 
+    // 활성화된 슬롯들
+    private List<ShopSlotData> _activeShopSlots = new List<ShopSlotData>();
+    private List<ShopUpgradeData> _activeUpgradeSlots = new List<ShopUpgradeData>();
+
     private void Start()
     {
         // 시작하면 상점 항목들 생성
@@ -39,6 +44,14 @@ public class ShopManager : MonoBehaviourPun
 
             // 열차 룸 프로퍼티 변경될 때마다 실행
             TrainManager.Instance.OnTrainListUpdated += RefreshTrainList;
+            // 업그레이드 결과 이벤트
+            TrainManager.Instance.OnUpgradeResult += UpgradeResult;
+        }
+
+        if(GameManager.Instance != null)
+        {
+            // 골드 변화 이벤트
+            GameManager.Instance.OnGoldChanged += GoldChanged;
         }
 
         // 일단 정보 패널 비활성화
@@ -51,6 +64,11 @@ public class ShopManager : MonoBehaviourPun
         if (TrainManager.Instance != null)
         {
             TrainManager.Instance.OnTrainListUpdated -= RefreshTrainList;
+            TrainManager.Instance.OnUpgradeResult -= UpgradeResult;
+        }
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnGoldChanged -= GoldChanged;
         }
     }
 
@@ -92,23 +110,20 @@ public class ShopManager : MonoBehaviourPun
 
     // 슬롯 버튼 생성
     private void CreateSlot(ShopItem itemData)
-    {
+    {   
         // 부모
-        Transform parentTrans = null;
+        Transform parentTrans = (itemData is PlayerItemData) ? _slotItemParent : _slotTrainParent;
 
-        // 부모 지정
-        if (itemData is PlayerItemData)
-            parentTrans = _slotItemParent;
-        else
-            parentTrans = _slotTrainParent;
-
-        // 버튼 생성
+        // 슬롯 생성
         ShopSlotData slot = Instantiate(_slotPrefab, parentTrans);
 
         if (slot != null)
         {
-            // 초기화 (ShopManager, ShopItem)
+            // 초기화
             slot.Init(this, itemData);
+
+            // 리스트에 등록
+            _activeShopSlots.Add(slot);
         }
     }
 
@@ -150,14 +165,24 @@ public class ShopManager : MonoBehaviourPun
         // 범위 체크
         if (index < 0 || index >= trains.Count) return;
 
-        // 데이터 확보
+        // 열차 데이터 확보
         Train info = trains[index];
 
         // 열차 딕셔너리 검색해서 데이터 가져오기
         if (TrainManager.Instance.TrainDict.TryGetValue(info.type, out TrainData data) == false) return;
 
+        // 최대 레벨
+        bool isMaxLevel = data.IsMaxLevel(info.level);
+
+        // 업그레이드 비용
+        int upgradePrice = 0;
+
+        // 최대 레벨 아니면 업그레이드 가격 가져옴
+        if (isMaxLevel == false)
+            upgradePrice = data.GetBasicStat(info.level).upgradePrice;
+
         // 패널 기본 정보 켜기
-        _trainUpgradeInfoUI.Show(data);
+        _trainUpgradeInfoUI.ShowUpgradeInfo(data, upgradePrice, isMaxLevel);
 
         // 스탯 리스트 문자열 합치기
         var statList = data.GetUpgradeInfos(info.level);
@@ -294,7 +319,38 @@ public class ShopManager : MonoBehaviourPun
     // 업그레이드 버튼에 연결할 것
     public void TryUpgradeTrain(int index)
     {
-        TrainManager.Instance.RequestUpgradeTrain(index);
+        if (TrainManager.Instance == null) return;
+
+        // 현재 레벨 가져오기
+        var trains = TrainManager.Instance.CurrentTrains;
+        if (index < 0 || index >= trains.Count) return;
+
+        // index 열차의 현재 레벨
+        int currentLevel = trains[index].level;
+
+        // 로딩 팝업 켜기
+        if (_loadingPopup != null) _loadingPopup.SetActive(true);
+
+        // 매니저(방장)에게 요청 (인덱스, 현재 레벨)
+        TrainManager.Instance.RequestUpgradeTrain(index, currentLevel);
+    }
+
+    // 업그레이드 결과 받기
+    private void UpgradeResult(bool isSuccess, string message)
+    {
+        // 로딩 팝업 끄기
+        if (_loadingPopup != null) _loadingPopup.SetActive(false);
+
+        // 결과 처리
+        if (isSuccess)
+        {
+            Debug.Log("업그레이드 완료");
+        }
+        else
+        {
+            // 실패 알림 메시지 띄우기
+            // UIManager.Instance.ShowMessage(message); 
+        }
     }
 
 
@@ -320,6 +376,9 @@ public class ShopManager : MonoBehaviourPun
                 Destroy(child.gameObject);
             }
         }
+
+        // 리스트 청소
+        _activeUpgradeSlots.Clear();
 
         var trains = TrainManager.Instance.CurrentTrains;   // 현재 열차
         var trainDict = TrainManager.Instance.TrainDict;    // 열차 딕셔너리 (타입이 키, 데이터가 밸류)
@@ -351,10 +410,40 @@ public class ShopManager : MonoBehaviourPun
 
                 // 초기화
                 slot.Init(this, data, i, info.level);
+
+                // 리스트에 추가
+                _activeUpgradeSlots.Add(slot);
             }
         }
+
+        // 로딩 팝업 끄기
+        if (_loadingPopup != null) _loadingPopup.SetActive(false);
     }
 
+
+
+    // 골드 변화
+    private void GoldChanged(int currentGold)
+    {
+        // 일반 슬롯들
+        foreach (var slot in _activeShopSlots)
+        {
+            // 가격 텍스트 갱신
+            if (slot != null) slot. UpdatePriceState(currentGold);
+        }
+
+        // 업그레이드 슬롯들
+        foreach (var slot in _activeUpgradeSlots)
+        {
+            // 버튼 상태 갱신
+            if (slot != null) slot.UpdateUIState(currentGold);
+        }
+
+        // 팝업창들 떠있으면 갱신
+        if (_itemInfoUI != null) _itemInfoUI.UpdateUIState(currentGold);
+        if (_trainInfoUI != null) _trainInfoUI.UpdateUIState(currentGold);
+        if (_trainUpgradeInfoUI != null) _trainUpgradeInfoUI.UpdateUIState(currentGold);
+    }
 }
 
 
@@ -379,6 +468,12 @@ public class ShopInfoPanel
     [Header("업그레이드용")]
     public TextMeshProUGUI statNameText;    // 스탯 이름
     public TextMeshProUGUI statValueText;   // 스탯 수치
+    public TextMeshProUGUI upgradePriceText;// 업글 가격
+
+    // 팝업 가격 체크용
+    private bool _isMaxLevel;            // 최대 레벨 체크
+    private int _currentDisplayPrice;    // 현재 팝업에 표시되는 가격
+    private bool _isUpgradePanel;        // 업그레이드팝업인지
 
     // 정보 갱신,켜기
     public void Show(ShopItem data)
@@ -388,20 +483,87 @@ public class ShopInfoPanel
         // 패널 켜기
         panelObj.SetActive(true);
 
-        // 데이터 채우기 (null 체크 포함)
+        // 데이터 채우기
         if (iconImage != null) iconImage.sprite = data.icon;
         if (nameText != null) nameText.SetText(data.displayName);
         if (priceText != null) priceText.SetText($"{data.price:N0} G");
         if (descText != null) descText.SetText(data.desc);
 
+        // 업그레이드 데이터
+        if (statNameText != null) statNameText.SetText("");
+        if (statValueText != null) statValueText.SetText("");
+        if (upgradePriceText != null) upgradePriceText.SetText("");
 
-        if (statNameText != null) descText.SetText("");
-        if (statValueText != null) descText.SetText("");
+        // 상태 기억
+        _isMaxLevel = false;
+        _isUpgradePanel = false;
+        _currentDisplayPrice = data.price;
+
+        // 팝업 켜면 일단 색 맞추기
+        UpdateUIState(GameData.Gold);
     }
 
     // 끄기
     public void Hide()
     {
         if (panelObj != null) panelObj.SetActive(false);
+    }
+
+    // 업그레이드용 정보
+    public void ShowUpgradeInfo(ShopItem data, int upgradePrice, bool isMaxLevel)
+    {
+        // 기본 정보는 똑같이
+        Show(data);
+        
+        // 업그레이드 상태 기억
+        _isUpgradePanel = true;
+        // 업그레이드 가격
+        _currentDisplayPrice = upgradePrice;
+
+        // 가격은 혹시 텍스트 연결 되어있을 수 있어서 그냥 비움
+        if (priceText != null) priceText.SetText("");
+
+        // 업그레이드 가격 넣음
+        if (upgradePriceText != null)
+        {
+            if (isMaxLevel)
+            {
+                _isMaxLevel = true;
+                upgradePriceText.SetText("최대 레벨");
+                upgradePriceText.color = Color.red;
+               _currentDisplayPrice = 0; // 만렙은 비교 안함
+            }
+            else
+            {
+                upgradePriceText.SetText($"{upgradePrice:N0} G");
+                upgradePriceText.color = Color.white;
+            }
+        }
+
+        // 업그레이드 팝업도 갱신
+        UpdateUIState(GameData.Gold);
+    }
+
+
+    // 팝업 갱신
+    public void UpdateUIState(int currentGold)
+    {
+        // 꺼져있으면 계산 안 함
+        if (panelObj == null || panelObj.activeSelf == false) return;
+
+        // 업그레이드 팝업일 때 (텍스트 널체크)
+        if (_isUpgradePanel && upgradePriceText != null)
+        {
+            // 최대 레벨은 체크 아낳
+            if (_isMaxLevel == true) return;
+
+            // 가격 비교해서 색 변경
+            upgradePriceText.color = (currentGold >= _currentDisplayPrice) ? Color.white : Color.red;
+        }
+        // 일반 슬롯 팝업일 때
+        else if (_isUpgradePanel == false && priceText != null)
+        {
+            priceText.color = (currentGold >= _currentDisplayPrice) ? Color.white : Color.red;
+        }
     }
 }
