@@ -27,4 +27,5 @@ MonoBehaviour:
   hitLayer:
     serializedVersion: 2
     m_Bits: 131072
+  type: 1
   isRepairTool: 0

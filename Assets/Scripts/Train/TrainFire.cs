@@ -32,20 +32,7 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         _targetScale = Vector3.one * _defaultScale;
         transform.localScale = Vector3.one * _defaultScale;
 
-        // 2. 내 위치 기준으로 열차 다시 찾기 (위치가 바뀔 수 있으므로)
-        _targetTrain = null; // 초기화
-        Collider[] hits = Physics.OverlapSphere(transform.position, 1.0f);
-        foreach (var hit in hits)
-        {
-            var train = hit.GetComponentInParent<TrainNode>();
-            if (train != null)
-            {
-                _targetTrain = train;
-                break;
-            }
-        }
-
-        // 3. 도트 데미지 시작 (방장만)
+        // 도트 데미지 시작 (방장만)
         if (PhotonNetwork.IsMasterClient)
         {
             StartCoroutine(BurnCoroutine());
@@ -155,6 +142,7 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         {
             // 부모 ID 찾기
             int parentID = (int)data[0];
+            Debug.Log($"[TrainFire] 부모 ID 수신: {parentID}"); // 로그 확인!
             PhotonView parentView = PhotonView.Find(parentID);
 
             if (parentView != null)

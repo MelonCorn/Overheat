@@ -11,6 +11,7 @@ public class BulletTracer : MonoBehaviour
     private Vector3 _startPoint;                // 시작점
     private Vector3 _hitPoint;                  // 도착점
     private float _speed = 300f;                // 속도 (초속)
+    private float _length = 3.0f;               // 길이
 
     private void Awake()
     {
@@ -39,6 +40,8 @@ public class BulletTracer : MonoBehaviour
     {
         // 총 거리
         float totalDist = Vector3.Distance(_startPoint, _hitPoint);
+        // 방향
+        Vector3 dir = (_hitPoint - _startPoint).normalized;
         // 현재 거리
         float currentDist = 0;
 
@@ -47,23 +50,29 @@ public class BulletTracer : MonoBehaviour
         {
             currentDist += Time.deltaTime * _speed; // 속도만큼 이동
 
-            // 비율 계산
-            float t = currentDist / totalDist;
-            if (t > 1) t = 1;
+            // 머리부분 도착점 넘으면 안되니까
+            float headDist = Mathf.Min(currentDist, totalDist);
+            Vector3 headPos = _startPoint + dir * headDist;
 
-            // 선 늘어나게
-            Vector3 currentPos = Vector3.Lerp(_startPoint, _hitPoint, t);
-            _line.SetPosition(1, currentPos);
+            // 꼬리는 머리에서 길이만큼 뒤에서 따라감
+            float tailDist = Mathf.Max(0, headDist - _length);
+            Vector3 tailPos = _startPoint + dir * tailDist;
+
+            // 적용
+            _line.SetPosition(0, tailPos);
+            _line.SetPosition(1, headPos);
 
             yield return null;
         }
 
         // 도착
+        _line.SetPosition(0, _hitPoint);
         _line.SetPosition(1, _hitPoint);
 
         // 이펙트 생성
         if (_impactPrefab != null && PoolManager.Instance != null)
         {
+            // 생성되고 알아서 이펙트 뿜음
             PoolManager.Instance.Spawn(_impactPrefab, _hitPoint, Quaternion.identity);
         }
 

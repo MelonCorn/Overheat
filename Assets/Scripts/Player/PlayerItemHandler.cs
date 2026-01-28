@@ -9,6 +9,9 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     [SerializeField] Transform _fpsHolder; // 1인칭(로컬)
     [SerializeField] Transform _tpsHolder; // 3인칭(리모트)
 
+    [Header("적 레이어")]
+    [SerializeField] LayerMask _enemyLayer;
+
     private PlayerInputHandler _inputHandler;   // 입력
     private PlayerStatHandler _statHandler;     // 스탯
     private PlayerItemMoveHandler _itemMover;   // 아이템 움직임
@@ -392,26 +395,33 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 쿨타임 갱신
         _lastFireTime = Time.time;
 
+        // 소화기는 공격만 하면됨 이펙트 필요없음
+        if (data.type == WeaponType.Extinguisher)
+        {
+            Attack(data);
+            return;
+        }
+
         // 레이캐스트 맞은 위치 계산 (out 벽, 적 타입)
-        Vector3 hitPoint = GetHitPoint(data, out int hitType);
+        Vector3 hitPoint = GetHitPoint(data, out bool isEnemy);
 
         // 로컬 연출 실행
-        if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, hitType);
+        if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, isEnemy);
         // 로컬 발사 애니메이션
         if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
 
         // 리모트 발사, 애니메이션
-        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, hitType);
+        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, isEnemy);
 
         // 발사
         Attack(data);
     }
 
     // 레이캐스트 맞은 위치 계산
-    private Vector3 GetHitPoint(WeaponData data, out int hitType)
+    private Vector3 GetHitPoint(WeaponData data, out bool isEnemy)
     {
-        // out 기본값 0 (벽)
-        hitType = 0;
+        // out 기본값  (벽)
+        isEnemy = false;
 
         // 카메라 없으면 정면에 사거리만큼
         if (_camera == null) return transform.position + transform.forward * data.range;
@@ -422,9 +432,9 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 레이를 쏴서 맞으면 그 위치 안 맞으면 사거리 끝 위치
         if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
         {
-            if (_hit.collider.CompareTag("Enemy"))
+            if (_hit.collider.gameObject.layer == _enemyLayer)
             {
-                hitType = 1; // 적
+                isEnemy = true;
             }
 
             return _hit.point;
@@ -437,12 +447,12 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     }
 
     [PunRPC]
-    private void RPC_FireOneShot(Vector3 hitPoint, int hitType)
+    private void RPC_FireOneShot(Vector3 hitPoint, bool isEnemy)
     {
         // 리모트들은 3인칭전용에서 발사 이뤄짐
         if (_currentVisualHandler != null)
         {
-            _currentVisualHandler.FireImpact(hitPoint, hitType);
+            _currentVisualHandler.FireImpact(hitPoint, isEnemy);
         }
 
         // 애니메이션까지
@@ -481,6 +491,12 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             // 일반 무기면
             else
             {
+                // 수리 가능하면 데미지 안줌
+                if (target.GetComponentInParent<IRepairable>() != null)
+                {
+                    return; // 팀킬 방지
+                }
+
                 // 그냥 공격
                 IDamageable damageable = target.GetComponentInParent<IDamageable>();
                 if (damageable != null) damageable.TakeDamage(data.damage);

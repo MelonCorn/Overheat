@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 1701144920307714980}
   - component: {fileID: 3490534138383578028}
   - component: {fileID: 7537090976669166867}
+  - component: {fileID: 2695955042579905339}
   m_Layer: 0
   m_Name: FireExtinguisher
   m_TagString: Untagged
@@ -170,6 +171,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9144f30be0a8ad548bd61183051509fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolableObject
+--- !u!114 &2695955042579905339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428801387747951406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7379771a624679141af7cbe078296781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemVisualHandler
+  _muzzlePoint: {fileID: 0}
+  _tracerPrefab: {fileID: 0}
+  _muzzleEffect: {fileID: 0}
+  _muzzleClip: {fileID: 0}
+  _impactWallEffect: {fileID: 0}
+  _impactEnemyEffect: {fileID: 0}
+  _isContinuous: 0
 --- !u!1 &3262436773571751651
 GameObject:
   m_ObjectHideFlags: 0

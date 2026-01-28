@@ -8,20 +8,18 @@ public class ItemVisualHandler : MonoBehaviour
 
     [Header("이펙트 리소스")]
     [SerializeField] PoolableObject _tracerPrefab;      // 총알 궤적 프리팹
-    [SerializeField] PoolableObject _muzzleEffectPrefab;// 화염 연기 소리 등 총구 이펙트
+    [SerializeField] ParticleSystem _muzzleEffect;      // 화염 연기 등 총구 이펙트
+    [SerializeField] AudioClip _muzzleClip;             // 화염 연기 소리 
 
     [Header("피격 이펙트")]
     [SerializeField] PoolableObject _impactWallEffect;  // 벽 파티클
     [SerializeField] PoolableObject _impactEnemyEffect; // 피격 파티클
 
     [Header("설정")]
-    [SerializeField] float _tracerDuration = 0.05f; // 궤적 표시 시간
     [SerializeField] bool _isContinuous = false;    // 지속형인지
 
     private float _fireInterval = 0.1f;         // 소총 연사 속도
 
-    // 지속전용
-    private PoolableObject _currentLoopEffect;  // 현재 재생중인 이펙트
     private Coroutine _fireCoroutine;
 
     // 발사 속도 설정
@@ -29,30 +27,25 @@ public class ItemVisualHandler : MonoBehaviour
 
    
     // 단발 연출
-    public void FireImpact(Vector3 hitPoint, int hitType)
+    public void FireImpact(Vector3 hitPoint, bool isEnemy)
     {
-        // 피격 이펙트 결정 (유효 맞으면 1 아니면 0)
-        PoolableObject targetEffect = (hitType == 1) ? _impactEnemyEffect : _impactWallEffect;
+        // 단발 총구 이펙트
+        if (_muzzleEffect != null) _muzzleEffect.Play();
+        //if (_muzzleClip != null) PlayerHandler.LocalPlayer.PlayAudio(_muzzleClip);
 
-        // 2궤적 생성
+        // 피격 이펙트 결정 (적인지 아닌지)
+        PoolableObject targetEffect = (isEnemy == true) ? _impactEnemyEffect : _impactWallEffect;
+
         if (_tracerPrefab != null && PoolManager.Instance != null)
         {
-            // 궤적 꺼내기
+            // 궤적 생성
             var tracerObj = PoolManager.Instance.Spawn(_tracerPrefab, _muzzlePoint.position, Quaternion.identity);
-
             var tracerScript = tracerObj.GetComponent<BulletTracer>();
+
             if (tracerScript != null)
             {
-                // 도착점이랑 함께 아까 결정한 이펙트도 보냄
+                // 궤적 쏘고 도착하면 타겟 이펙트 터트림
                 tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, targetEffect);
-            }
-        }
-        else
-        {
-            // 궤적 없을리가 없겠지만 없으면 맞은 지점에 생성
-            if (targetEffect != null && PoolManager.Instance != null)
-            {
-                PoolManager.Instance.Spawn(targetEffect, hitPoint, Quaternion.identity);
             }
         }
     }
@@ -63,18 +56,7 @@ public class ItemVisualHandler : MonoBehaviour
         // 지속형인지 (소화기, 용접기)
         if (_isContinuous)
         {
-            // 이미 실행중인 이펙트 있으면 무시
-            if (_currentLoopEffect != null) return;
-
-            if (_muzzleEffectPrefab != null)
-            {
-                // 이펙트 꺼내서 총구에 붙임
-                _currentLoopEffect = PoolManager.Instance.Spawn(_muzzleEffectPrefab, _muzzlePoint);
-
-                // 위치 초기화
-                _currentLoopEffect.transform.localPosition = Vector3.zero;
-                _currentLoopEffect.transform.localRotation = Quaternion.identity;
-            }
+            _muzzleEffect.Play();
         }
         // 지속형 아니면
         else
@@ -93,13 +75,7 @@ public class ItemVisualHandler : MonoBehaviour
         // 지속형이면
         if (_isContinuous)
         {
-            // 재생중인 이펙트 있을 때
-            if (_currentLoopEffect != null)
-            {
-                // 반납, 비우기
-                _currentLoopEffect.Release();
-                _currentLoopEffect = null;
-            }
+            _muzzleEffect.Stop();
         }
         // 아니면
         else
@@ -118,11 +94,9 @@ public class ItemVisualHandler : MonoBehaviour
     private void OnDisable()
     {
         // 소화기 뿌리는 중에 넣으면
-        if (_currentLoopEffect != null)
+        if (_muzzleEffect != null)
         {
-            // 반납
-            _currentLoopEffect.Release();
-            _currentLoopEffect = null;
+            _muzzleEffect.Stop();
         }
 
         // 발사 코루틴 정지
@@ -140,11 +114,11 @@ public class ItemVisualHandler : MonoBehaviour
         // 중단 요청 올 때 까지 무한 반복
         while (true)
         {
-            // 불꽃 이펙트 활성화하고
-            if (_muzzleEffectPrefab != null)
-            {
-                PoolManager.Instance.Spawn(_muzzleEffectPrefab, _muzzlePoint.position, _muzzlePoint.rotation);
-            }
+            //// 불꽃 이펙트 활성화하고
+            //if (_muzzleEffectPrefab != null)
+            //{
+            //    PoolManager.Instance.Spawn(_muzzleEffectPrefab, _muzzlePoint.position, _muzzlePoint.rotation);
+            //}
 
             // 발사 속도만큼 대기
             yield return new WaitForSeconds(_fireInterval);
