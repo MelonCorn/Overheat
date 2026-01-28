@@ -31,25 +31,30 @@ public class ItemVisualHandler : MonoBehaviour
     // 단발 연출
     public void FireImpact(Vector3 hitPoint, int hitType)
     {
+        // 피격 이펙트 결정 (유효 맞으면 1 아니면 0)
+        PoolableObject targetEffect = (hitType == 1) ? _impactEnemyEffect : _impactWallEffect;
+
+        // 2궤적 생성
         if (_tracerPrefab != null && PoolManager.Instance != null)
         {
-            // 궤적 풀에서 꺼내 활서오하
+            // 궤적 꺼내기
             var tracerObj = PoolManager.Instance.Spawn(_tracerPrefab, _muzzlePoint.position, Quaternion.identity);
 
-            // 궤적에 시작포인트랑 히트포인트 넣고 명령
             var tracerScript = tracerObj.GetComponent<BulletTracer>();
             if (tracerScript != null)
             {
-                tracerScript.Show(_muzzlePoint.position, hitPoint);
+                // 도착점이랑 함께 아까 결정한 이펙트도 보냄
+                tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, targetEffect);
             }
         }
-
-        //// 피격 이펙트 (기존과 동일)
-        //PoolableObject targetEffect = (hitType == 1) ? _bloodImpact : _wallImpact;
-        //if (targetEffect != null && PoolManager.Instance != null)
-        //{
-        //    PoolManager.Instance.Spawn(targetEffect, hitPoint, Quaternion.identity);
-        //}
+        else
+        {
+            // 궤적 없을리가 없겠지만 없으면 맞은 지점에 생성
+            if (targetEffect != null && PoolManager.Instance != null)
+            {
+                PoolManager.Instance.Spawn(targetEffect, hitPoint, Quaternion.identity);
+            }
+        }
     }
 
     // 연사 루프 연출

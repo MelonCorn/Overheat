@@ -10,7 +10,7 @@ public class BulletTracer : MonoBehaviour
     private PoolableObject _impactPrefab;       // 도착해서 터트릴 이펙트
     private Vector3 _startPoint;                // 시작점
     private Vector3 _hitPoint;                  // 도착점
-    private float _speed = 100f;                // 속도 (초속)
+    private float _speed = 300f;                // 속도 (초속)
 
     private void Awake()
     {

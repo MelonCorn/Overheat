@@ -273,6 +273,12 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 아이템의 비주얼 핸들러 가져오기
         _currentVisualHandler = _currentItem.GetComponent<ItemVisualHandler>();
 
+        // 무기면 발사 속도 지정
+        if (_currentVisualHandler != null && data is WeaponData weaponData)
+        {
+            _currentVisualHandler.SetFireRate(weaponData.fireRate);
+        }
+
         // 아이템의 애니메이터 가져오기
         _currentItemAnim = _currentItem.GetComponent<Animator>();
     }
@@ -284,8 +290,12 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         if (_isFiringEffectOn == true && _currentVisualHandler != null)
         {
             _currentVisualHandler.StopLoop();
+
             // 리모트한테도 전달
-            photonView.RPC(nameof(RPC_SetAutoVisual), RpcTarget.Others, false);
+            if (photonView.IsMine)
+            {
+                photonView.RPC(nameof(RPC_SetAutoVisual), RpcTarget.Others, false);
+            }
         }
 
         // 장착 아이템 있으면
@@ -382,24 +392,27 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 쿨타임 갱신
         _lastFireTime = Time.time;
 
-        // 레이캐스트 맞은 위치 계산
-        Vector3 hitPoint = GetHitPoint(data);
+        // 레이캐스트 맞은 위치 계산 (out 벽, 적 타입)
+        Vector3 hitPoint = GetHitPoint(data, out int hitType);
 
         // 로컬 연출 실행
-        if (_currentVisualHandler != null) _currentVisualHandler.FireOneShot(hitPoint);
+        if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, hitType);
         // 로컬 발사 애니메이션
         if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
 
         // 리모트 발사, 애니메이션
-        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint);
+        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, hitType);
 
         // 발사
         Attack(data);
     }
 
     // 레이캐스트 맞은 위치 계산
-    private Vector3 GetHitPoint(WeaponData data)
+    private Vector3 GetHitPoint(WeaponData data, out int hitType)
     {
+        // out 기본값 0 (벽)
+        hitType = 0;
+
         // 카메라 없으면 정면에 사거리만큼
         if (_camera == null) return transform.position + transform.forward * data.range;
 
@@ -409,8 +422,14 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 레이를 쏴서 맞으면 그 위치 안 맞으면 사거리 끝 위치
         if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
         {
+            if (_hit.collider.CompareTag("Enemy"))
+            {
+                hitType = 1; // 적
+            }
+
             return _hit.point;
         }
+        // 안 맞았으면 끝점
         else
         {
             return ray.origin + (ray.direction * data.range);
@@ -418,12 +437,12 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     }
 
     [PunRPC]
-    private void RPC_FireOneShot(Vector3 hitPoint)
+    private void RPC_FireOneShot(Vector3 hitPoint, int hitType)
     {
         // 리모트들은 3인칭전용에서 발사 이뤄짐
         if (_currentVisualHandler != null)
         {
-            _currentVisualHandler.FireOneShot(hitPoint);
+            _currentVisualHandler.FireImpact(hitPoint, hitType);
         }
 
         // 애니메이션까지
@@ -436,20 +455,35 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 레이캐스트 계산에서 히트되었을 때
         if (_hit.collider != null)
         {
-            // 히트 콜라이더의 오브젝트
             GameObject target = _hit.collider.gameObject;
-            // 그 오브젝트의 부모의 피해 인터페이스
-            IDamageable damageable = target.GetComponentInParent<IDamageable>();
-            // 피해주기
-            if (damageable != null) damageable.TakeDamage(data.damage);
 
-            // 수리도구면
-            if (data.isRepairTool == true)
+            // 수리 도구인지 확인
+            if (data.isRepairTool)
             {
-                // 수리 인터페이스
+                // 수리 가능한지 먼저 체크
                 IRepairable repairable = target.GetComponentInParent<IRepairable>();
-                // 수리
-                if (repairable != null) repairable.TakeRepair(data.damage);
+
+                if (repairable != null)
+                {
+                    // 수리 대상이면 수리하고 끝
+                    repairable.TakeRepair(data.damage);
+                    return; 
+                }
+
+                // 수리 대상이 아니면 공격시도
+                IDamageable damageable = target.GetComponentInParent<IDamageable>();
+                if (damageable != null)
+                {
+                    // 공격
+                    damageable.TakeDamage(data.damage);
+                }
+            }
+            // 일반 무기면
+            else
+            {
+                // 그냥 공격
+                IDamageable damageable = target.GetComponentInParent<IDamageable>();
+                if (damageable != null) damageable.TakeDamage(data.damage);
             }
         }
     }
