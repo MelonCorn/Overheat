@@ -17,6 +17,9 @@ public class Boiler : MonoBehaviour, IInteractable
     public float FuelRatio => _maxFuel > 0 ? _currentFuel / _maxFuel : 0f; // 연료 비율
 
 
+    private bool _isStart;  // 대기실용 중복 시작 방지
+
+
     // 초기화
     public void Init(EngineNode engine, float maxFuel, float burnRate)
     {
@@ -89,17 +92,21 @@ public class Boiler : MonoBehaviour, IInteractable
         // 대기실 (맨손)
         if (_engineNode == null)
         {
-            // 방장
-            if (PhotonNetwork.IsMasterClient == true)
+            // 시작 안했을 때만
+            if(_isStart == false)
             {
-                return "열차 가동 !";
-            }
-            // 참가자
-            else
-            {
-                // 상호작용 불가능
-                canInteract = false;
-                return "출발 대기 중 ...";
+                // 방장
+                if (PhotonNetwork.IsMasterClient == true)
+                {
+                    return "열차 가동 !";
+                }
+                // 참가자
+                else
+                {
+                    // 상호작용 불가능
+                    canInteract = false;
+                    return "출발 대기 중 ...";
+                }
             }
         }
 
@@ -137,8 +144,13 @@ public class Boiler : MonoBehaviour, IInteractable
                 // 룸 프로퍼티 초기화
                 GameManager.Instance.ResetRoomProperties();
 
-                Debug.Log("대기실에서 게임 시작 요청");
-                GameManager.Instance.RequestChangeScene();
+                // 시작 안했을 때만
+                if (_isStart == false)
+                {
+                    Debug.Log("대기실에서 게임 시작 요청");
+                    _isStart = true;
+                    GameManager.Instance.RequestChangeScene();
+                }
             }
             return;
         }
