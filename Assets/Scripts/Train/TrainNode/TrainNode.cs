@@ -20,7 +20,12 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
     [Header("후방 연결부")]
     [SerializeField] Transform _rearSocket;
-    
+
+    [Header("화재 설정")]
+    [SerializeField] GameObject _firePrefab; // Resource 폴더의 불 프리팹
+    [SerializeField] Transform[] _firePoints; // 불이 생성될 위치들 (열차 바닥 등)
+    [SerializeField] float _fireProbability = 20f; // 피격 시 화재 발생 확률
+
     [Header("폭발 연출 설정")]
     [SerializeField] float _explosionForce = 10f; // 날아가는 힘
     [SerializeField] float _torqueForce = 5f;     // 회전하는 힘 (굴리기)
@@ -211,6 +216,12 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
         _currentHp -= amount;
 
+        // 화재 발생 체크
+        if (PhotonNetwork.IsMasterClient && _currentHp > 0)
+        {
+            CheckFireSpawn();
+        }
+
         // 사망 판정
         if (_currentHp <= 0)
         {
@@ -240,12 +251,32 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     }
 
 
-    // 열차 화재
-    public void StartFire()
+    // 열차 화재 체크
+    public void CheckFireSpawn()
     {
-        // 체력 일정 이하면 화재
-        // 내부 아이템 전소
-        // 내부에 플레이어 있으면 계속 대미지
+        // 확률 체크
+        float random = UnityEngine.Random.Range(0f, 100f);
+        if (random > _fireProbability) return;
+
+        // 생성 위치 랜덤 선정
+        if (_firePoints == null || _firePoints.Length == 0) return;
+        int randIndex = UnityEngine.Random.Range(0, _firePoints.Length);
+        Vector3 spawnPos = _firePoints[randIndex].position;
+
+        // 이미 그 자리에 불이 있는지 체크
+        // 작은 구 쏴서 TrainFire 컴포넌트 있는지 확인
+        Collider[] hits = Physics.OverlapSphere(spawnPos, 0.5f);
+        foreach (var hit in hits)
+        {
+            if (hit.GetComponent<TrainFire>()) return; // 이미 불타고 있으면 패스
+        }
+
+        // 불 생성
+        // ViewID 데이터로 넘겨서 불 부모 설정
+        object[] data = new object[] { photonView.ViewID };
+        PhotonNetwork.Instantiate(_firePrefab.name, spawnPos, Quaternion.identity, 0, data);
+
+        Debug.Log($"{gameObject.name}에 화재 발생!");
     }
 
 
@@ -258,21 +289,24 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         // 엔진 파괴 시
         if (TrainIndex == 0)
         {
-            // 방장만
-            if (PhotonNetwork.IsMasterClient)
+            if (GameManager.Instance != null && GameManager.Instance.IsGameOver == false)
             {
-                Debug.Log("[엔진 파괴] 동력 상실. 게임 오버 진입.");
-                if (GameManager.Instance != null)
+                // 방장만
+                if (PhotonNetwork.IsMasterClient)
                 {
+                    Debug.Log("[엔진 파괴] 동력 상실. 게임 오버 진입.");
                     // 게임오버 호출
                     GameManager.Instance.GameOver();
                 }
+
+                // 엔진 터지면 타임라인으로 연쇄 폭발 연출할거기 때문에
+                // 그리고 CutTail하면 애초에 룸 프로퍼티 갱신되어서
+                // 게임오버 시 룸 프로퍼티 초기화와 꼬일 가능성 있음
+
+                // 패스
+                return;
             }
 
-            // 엔진 터지면 타임라인으로 연쇄 폭발 연출할거기 때문에
-            // 그리고 CutTail하면 애초에 룸 프로퍼티 갱신되어서
-            // 게임오버 시 룸 프로퍼티 초기화와 꼬일 가능성 있음
-            return;
         }
 
         // 앞차랑 연결 끊기
@@ -395,6 +429,15 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         _rigidbody.AddTorque(UnityEngine.Random.insideUnitSphere * _torqueForce, ForceMode.Impulse);
     }
 
+    // 숨기기
+    public void Hide()
+    {
+        // 모든 코루틴 중단
+        StopAllCoroutines();
+
+        // 걍 꺼버림
+        gameObject.SetActive(false);
+    }
 
     // 폭발 범위 내 오브젝트 처리
     private void ExplosionHit()
@@ -463,6 +506,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
             }
         }
     }
+
     #endregion
 
 
