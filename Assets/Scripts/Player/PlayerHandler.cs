@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -181,6 +182,9 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     {
         _interactHandler.SetCamera(_camera.transform);
         _itemHandler.SetCamera(_camera.transform);
+
+        //Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     // 메인 카메라 오디오 리스터 상태 전환

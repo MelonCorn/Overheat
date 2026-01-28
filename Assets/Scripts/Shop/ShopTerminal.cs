@@ -22,6 +22,12 @@ public class ShopTerminal : MonoBehaviour, IInteractable
 
     public static bool IsUsing = false;             // 사용 상태
 
+    private void Awake()
+    {
+        // 일단 항상 초기화
+        IsUsing = false;
+    }
+
     private void Start()
     {
         _exitButton.onClick.AddListener(() => ExitTerminal());

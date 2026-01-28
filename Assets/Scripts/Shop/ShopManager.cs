@@ -338,9 +338,6 @@ public class ShopManager : MonoBehaviourPun
     // 업그레이드 결과 받기
     private void UpgradeResult(bool isSuccess, string message)
     {
-        // 로딩 팝업 끄기
-        if (_loadingPopup != null) _loadingPopup.SetActive(false);
-
         // 결과 처리
         if (isSuccess)
         {
@@ -350,6 +347,9 @@ public class ShopManager : MonoBehaviourPun
         {
             // 실패 알림 메시지 띄우기
             // UIManager.Instance.ShowMessage(message); 
+
+            // 로딩 팝업 끄기
+            if (_loadingPopup != null) _loadingPopup.SetActive(false);
         }
     }
 
