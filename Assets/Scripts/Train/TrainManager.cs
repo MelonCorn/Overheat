@@ -72,6 +72,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
     // 현재 화물 배치 (화물칸 아이템명 묶음)
     private List<string> _currentContents = new List<string>();
 
+    // 잘린 열차
+    private List<TrainNode> _deadTrains = new List<TrainNode>();
+
     // 엔진 노드
     public EngineNode MainEngine
     {
@@ -399,6 +402,12 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 잘릴 꼬리 수
         int count = _currentTrainNodes.Count - index;
 
+        // 잘려나갈 범위 열차들을 임시 리스트로
+        var cutNodes = _currentTrainNodes.GetRange(index, count);
+
+        // 시체 노드에 추가
+        _deadTrains.AddRange(cutNodes);
+
         // 데이터 리스트에서 즉시 삭제해서 잘라버림
         _currentTrainNodes.RemoveRange(index, count);   // 열차 노드 리스트
         _currentTrains.RemoveRange(index, count);       // 열차 데이터 리스트 (Train)
@@ -409,6 +418,21 @@ public class TrainManager : MonoBehaviourPunCallbacks
         {
             UpdateRoomProperties();
         }
+    }
+    public void CleanupDeadTrain()
+    {
+        foreach (var train in _deadTrains)
+        {
+            if (train != null)
+            {
+                // 아까 만든 강제 숨김 함수 호출
+                train.Hide();
+            }
+        }
+
+        // 청소 끝났으니 명단 초기화
+        _deadTrains.Clear();
+        Debug.Log("[TrainManager] 시체 열차들만 깔끔하게 청소 완료");
     }
 
     // 전체 리스트 위치 정렬 (인게임용)

@@ -277,8 +277,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             // 유실물 청소
             CleanupLostItems();
 
+            // 죽은 열차 청소
+            if (TrainManager.Instance != null)
+            {
+                TrainManager.Instance.CleanupDeadTrain();
+            }
+
             // 엔진 ui 비활성화
-            _engineUI?.SetActive(false);
+            if (_engineUI != null) _engineUI.SetActive(false);
         }
         else
         {
@@ -531,6 +537,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 게임오버 발동 (외부용)
     public void GameOver()
     {
+        Debug.Log("게임오버");
         // 방장만
         if (PhotonNetwork.IsMasterClient == false) return;
 
@@ -579,6 +586,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 게임오버 타임라인 재생
         if (_timelineManager != null)
         {
+            // 방장은 엔진 폭발 예약
+            if (PhotonNetwork.IsMasterClient == true)
+                StartCoroutine(EngineExplosion());
+
             // 타임라인 재생 완료 대기 (페이드 인 -> 파괴 타임라인 재생 -> 페이드 아웃)
             yield return StartCoroutine(PlayTimeline(TimelineType.GameOver));
         }
@@ -598,7 +609,28 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    // 룸 프로퍼티 초기화
+
+    // 엔진 폭발 예약
+    private IEnumerator EngineExplosion()
+    {
+        // 페이드 인 시간
+        float fadeInTime = (LoadingManager.Instance != null) ? LoadingManager.Instance.FadeDuration : 1f;
+        yield return new WaitForSeconds(fadeInTime);
+
+        // 카메라가 열차를 잡을 시간 조금
+        yield return new WaitForSeconds(2f);
+
+        // 폭발
+        if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
+        {
+            TrainNode engine = TrainManager.Instance.TrainNodes[0];
+
+            if (engine != null)
+                engine.photonView.RPC("ExplodeRPC", RpcTarget.All);
+        }
+    }
+
+    // 룸 프로퍼티 초기화                       
     public void ResetRoomProperties()
     {
         ExitGames.Client.Photon.Hashtable resetProps = new ExitGames.Client.Photon.Hashtable
@@ -672,6 +704,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log($"[적 투사체 청소] {enemyProjectiles.Length} 개의 적 투사체를 화면에서 치웠습니다.");
     }
 
+
     // 타임라인 재생 코루틴
     private IEnumerator PlayTimeline(TimelineType type)
     {
@@ -686,7 +719,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             _spectatorCamera.gameObject.SetActive(false);
         }
-
 
         // 해당 타입 디렉터 가져오기
         PlayableDirector director = _timelineManager.GetDirector(type);
