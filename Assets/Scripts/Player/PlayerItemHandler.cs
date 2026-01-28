@@ -215,8 +215,13 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 있으면
         if (prefabPoolable != null)
         {
+            PoolableObject newObj = null;
+
             // 풀에서 가져오기
-            PoolableObject newObj = PoolManager.Instance.Spawn(prefabPoolable, parent);
+            if (PoolManager.Instance != null)
+            {
+                newObj = PoolManager.Instance.Spawn(prefabPoolable, parent);
+            }
 
             // 반납용 저장
             _currentItemPoolable = newObj;
@@ -403,25 +408,26 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         }
 
         // 레이캐스트 맞은 위치 계산 (out 벽, 적 타입)
-        Vector3 hitPoint = GetHitPoint(data, out bool isEnemy);
+        Vector3 hitPoint = GetHitPoint(data, out bool isEnemy, out Vector3 normal);
 
         // 로컬 연출 실행
-        if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, isEnemy);
+        if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal);
         // 로컬 발사 애니메이션
         if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
 
         // 리모트 발사, 애니메이션
-        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, isEnemy);
+        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, isEnemy, normal);
 
         // 발사
         Attack(data);
     }
 
     // 레이캐스트 맞은 위치 계산
-    private Vector3 GetHitPoint(WeaponData data, out bool isEnemy)
+    private Vector3 GetHitPoint(WeaponData data, out bool isEnemy, out Vector3 normal)
     {
-        // out 기본값  (벽)
-        isEnemy = false;
+        // out 기본값  
+        isEnemy = false;        // (벽)
+        normal = Vector3.zero;  // 표면 방향
 
         // 카메라 없으면 정면에 사거리만큼
         if (_camera == null) return transform.position + transform.forward * data.range;
@@ -432,11 +438,16 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 레이를 쏴서 맞으면 그 위치 안 맞으면 사거리 끝 위치
         if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
         {
+            // 적인지 체크
             if (_hit.collider.gameObject.layer == _enemyLayer)
             {
                 isEnemy = true;
             }
 
+            // 표면 방향
+            normal = _hit.normal;
+
+            // 위치
             return _hit.point;
         }
         // 안 맞았으면 끝점
@@ -447,12 +458,12 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     }
 
     [PunRPC]
-    private void RPC_FireOneShot(Vector3 hitPoint, bool isEnemy)
+    private void RPC_FireOneShot(Vector3 hitPoint, bool isEnemy, Vector3 normal)
     {
         // 리모트들은 3인칭전용에서 발사 이뤄짐
         if (_currentVisualHandler != null)
         {
-            _currentVisualHandler.FireImpact(hitPoint, isEnemy);
+            _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal);
         }
 
         // 애니메이션까지

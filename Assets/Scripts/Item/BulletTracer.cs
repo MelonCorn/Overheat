@@ -10,6 +10,7 @@ public class BulletTracer : MonoBehaviour
     private PoolableObject _impactPrefab;       // 도착해서 터트릴 이펙트
     private Vector3 _startPoint;                // 시작점
     private Vector3 _hitPoint;                  // 도착점
+    private Vector3 _hitNormal;                 // 표면방향
     private float _speed = 300f;                // 속도 (초속)
     private float _length = 3.0f;               // 길이
 
@@ -20,10 +21,11 @@ public class BulletTracer : MonoBehaviour
     }
 
     // 초기화, 발사
-    public void InitAndShoot(Vector3 start, Vector3 end, PoolableObject impactPrefab)
+    public void InitAndShoot(Vector3 start, Vector3 end, Vector3 hitNormal, PoolableObject impactPrefab)
     {
         _startPoint = start;            // 시작점
         _hitPoint = end;                // 도착점
+        _hitNormal = hitNormal;         // 표면방향
         _impactPrefab = impactPrefab;   // 이펙트
 
         // 궤적 On
@@ -73,7 +75,7 @@ public class BulletTracer : MonoBehaviour
         if (_impactPrefab != null && PoolManager.Instance != null)
         {
             // 생성되고 알아서 이펙트 뿜음
-            PoolManager.Instance.Spawn(_impactPrefab, _hitPoint, Quaternion.identity);
+            PoolManager.Instance.Spawn(_impactPrefab, _hitPoint, Quaternion.LookRotation(_hitNormal));
         }
 
         // 잔상 사라지기 시간

@@ -27,7 +27,7 @@ public class ItemVisualHandler : MonoBehaviour
 
    
     // ¥‹πﬂ ø¨√‚
-    public void FireImpact(Vector3 hitPoint, bool isEnemy)
+    public void FireImpact(Vector3 hitPoint, bool isEnemy, Vector3 hitNormal)
     {
         // ¥‹πﬂ √—±∏ ¿Ã∆Â∆Æ
         if (_muzzleEffect != null) _muzzleEffect.Play();
@@ -45,7 +45,7 @@ public class ItemVisualHandler : MonoBehaviour
             if (tracerScript != null)
             {
                 // ±À¿˚ ΩÓ∞Ì µµ¬¯«œ∏È ≈∏∞Ÿ ¿Ã∆Â∆Æ ≈Õ∆Æ∏≤
-                tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, targetEffect);
+                tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, hitNormal, targetEffect);
             }
         }
     }

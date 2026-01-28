@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5883454812950177703}
   - component: {fileID: 7873235363204196065}
   - component: {fileID: -6753986051678385841}
+  - component: {fileID: 8106012243633429580}
   m_Layer: 0
   m_Name: SparkEffect
   m_TagString: Untagged
@@ -4907,3 +4908,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9144f30be0a8ad548bd61183051509fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolableObject
+--- !u!114 &8106012243633429580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961938183096906406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f08e429a8857964b8ec2553c09cec1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ImpactEffect
+  _audioClip: {fileID: 0}

@@ -142,7 +142,7 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         {
             // 부모 ID 찾기
             int parentID = (int)data[0];
-            Debug.Log($"[TrainFire] 부모 ID 수신: {parentID}"); // 로그 확인!
+
             PhotonView parentView = PhotonView.Find(parentID);
 
             if (parentView != null)
