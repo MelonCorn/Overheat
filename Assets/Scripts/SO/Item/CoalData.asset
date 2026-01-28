@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FuelData
   displayName: "\uC11D\uD0C4"
   itemName: Coal
-  desc: "\uC11D\uD0C4\uC785\uB2C8\uB2E4"
+  desc: 
   price: 0
   icon: {fileID: 21300000, guid: 66efb24ed46044ab8a039599cbc47d7b, type: 3}
   prefab: {fileID: 8808426797613977201, guid: f09dcfd7b95861a4fa5c4f86a76cbadf, type: 3}
-  _fuelAddAmount: 4
+  _fuelAddAmount: 15

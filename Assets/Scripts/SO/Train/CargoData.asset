@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2247b4e2f094bf04d824880db01d3271, type: 3}
   m_Name: CargoData
   m_EditorClassIdentifier: Assembly-CSharp::TrainDataSO
-  displayName: "\uD654\uBB3C \uC5F4\uCC28"
+  displayName: "\uD654\uBB3C\uCE78"
   itemName: Cargo
-  desc: "\uD654\uBB3C\uCE78\uC785\uB2C8\uB2E4"
+  desc: "\uC5EC\uB7EC\uAC00\uC9C0 \uBB3C\uAC74\uB4E4\uC744 \uC218\uB0A9\uD560 \uC218
+    \uC788\uC2B5\uB2C8\uB2E4."
   price: 100
   icon: {fileID: 21300000, guid: 815030f9b8247c24cb0bba7c405e6b7c, type: 3}
   type: 2

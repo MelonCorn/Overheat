@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5974e62e52e848418378bd7b431f675, type: 3}
   m_Name: EngineData
   m_EditorClassIdentifier: Assembly-CSharp::TrainEngineDataSO
-  displayName: "\uC5D4\uC9C4 \uC5F4\uCC28"
+  displayName: "\uC99D\uAE30\uAE30\uAD00"
   itemName: Engine
-  desc: This is Engine
+  desc: 
   price: 0
   icon: {fileID: 21300000, guid: 815030f9b8247c24cb0bba7c405e6b7c, type: 3}
   type: 1
@@ -30,8 +30,8 @@ MonoBehaviour:
     maxFuel: 100
     burnRate: 5
     accel: 1
-  - maxSpeed: 70
-    minSpeed: 15
+  - maxSpeed: 65
+    minSpeed: 10
     maxFuel: 120
     burnRate: 5
     accel: 1.1

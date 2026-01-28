@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c8d3261398e39a48af974d6bb1d067e, type: 3}
   m_Name: TurretData
   m_EditorClassIdentifier: Assembly-CSharp::TrainTurretDataSO
-  displayName: "\uD3EC\uD0D1 \uC5F4\uCC28"
+  displayName: "\uD3EC\uD0D1\uCE78"
   itemName: Turret
-  desc: This is Turret
+  desc: "\uB4E0\uB4E0\uD558\uAC8C \uC801\uC744 \uBB34\uCC14\uB7EC \uC90D\uB2C8\uB2E4."
   price: 150
   icon: {fileID: 21300000, guid: 815030f9b8247c24cb0bba7c405e6b7c, type: 3}
   type: 3

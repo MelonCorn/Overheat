@@ -73,17 +73,13 @@ public class ShopTerminal : MonoBehaviour, IInteractable
                 // 플레이어의 카메라 등록
                 _terminalCanvas.worldCamera = cam.LocalCamera;
             }
-            // 단말기 캔버스에 카메라 등록 되어있으면
-            else
-            {
-                // 플레이어 입력 UI로 전환
-                if (input) input.SetInputActive(false);
-                // 플레이어 얼음
-                if (move) move.enabled = false;
-                // 카메라 납치
-                if (cam) cam.MoveCameraToTarget(_viewPoint, _moveDuration);
 
-            }
+            // 플레이어 입력 UI로 전환
+            if (input) input.SetInputActive(false);
+            // 플레이어 얼음
+            if (move) move.enabled = false;
+            // 카메라 납치
+            if (cam) cam.MoveCameraToTarget(_viewPoint, _moveDuration);
         }
 
         // 마우스 커서 풀기
@@ -121,7 +117,7 @@ public class ShopTerminal : MonoBehaviour, IInteractable
         Cursor.lockState = CursorLockMode.Locked;
 
         // 퀵슬롯 켜기
-        QuickSlotManager.Instance.SetUIActive(false);
+        QuickSlotManager.Instance.SetUIActive(true);
     }
 
     public string GetInteractText(out bool canInteract)

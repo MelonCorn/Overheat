@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "\uC0AC\uACFC"
   itemName: Apple
   desc: "\uBE68\uAC1B\uAC8C \uC798 \uC775\uC5C8\uC2B5\uB2C8\uB2E4. \n\n\uB108\uBB34
-    \uB2EC\uC544\uC11C \uCCB4\uB825\uC774 30\n\uD68C\uBCF5\uB429\uB2C8\uB2E4."
+    \uB2EC\uC544\uC11C \uCCB4\uB825\uC774 \uD68C\uBCF5\uB429\uB2C8\uB2E4."
   price: 10
   icon: {fileID: 21300000, guid: 7377013011b4c3348809ff574abe799e, type: 3}
   prefab: {fileID: 429471891331199967, guid: 9e677d803ca3fa34d9dc52ef41c17141, type: 3}

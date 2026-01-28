@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   displayName: "\uAD8C\uCD1D"
   itemName: Pistol
-  desc: "\uAD8C\uCD1D\uC785\uB2C8\uB2E4."
+  desc: "\uC2DC\uC6D0\uCC2E\uC740 \uBB34\uAE30\uC785\uB2C8\uB2E4.\n\n\uADF8\uB798\uB3C4
+    \uC801\uC744 \uCC98\uCE58\uD560 \uC218\uB294 \uC788\uC2B5\uB2C8\uB2E4."
   price: 50
   icon: {fileID: 21300000, guid: 3f07e121dff858b46be11c81416b617b, type: 3}
   prefab: {fileID: 901158581646923471, guid: 3b0e7e3ab4d4dbb49aae975df50dcb4f, type: 3}
