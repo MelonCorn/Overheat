@@ -93,7 +93,7 @@ public class Boiler : MonoBehaviour, IInteractable
         if (_engineNode == null)
         {
             // 시작 안했을 때만
-            if(_isStart == false)
+            if (_isStart == false)
             {
                 // 방장
                 if (PhotonNetwork.IsMasterClient == true)
@@ -107,6 +107,11 @@ public class Boiler : MonoBehaviour, IInteractable
                     canInteract = false;
                     return "출발 대기 중 ...";
                 }
+            }
+            else
+            {
+                canInteract = false;
+                return "";
             }
         }
 
