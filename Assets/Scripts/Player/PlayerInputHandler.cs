@@ -122,15 +122,28 @@ public class PlayerInputHandler : MonoBehaviour, IInputControllable
     }
 
 
+    private void Start()
+    {
+        SetInputActive(true);
+    }
+
     // 입력 모드 변경
     public void SetInputActive(bool active)
     {
         // 파괴된 오브젝트인지 확인
-        if (this == null) return;
+        if (this == null)
+        {
+            Debug.LogError("[PlayerInputHandler] 객체가 파괴되었는데 SetInputActive 호출됨");
+            return;
+        }
 
         // 게임오브젝트가 꺼져있거나 스크립트가 비활성화 상태면 무시
-        if (isActiveAndEnabled == false) return;
-
+        if (isActiveAndEnabled == false)
+        {
+            Debug.LogWarning("[PlayerInputHandler] 스크립트가 꺼져(Disable) 있어서 SetInputActive 무시됨");
+            return;
+        }
+        Debug.Log($"[PlayerInputHandler] SetInputActive 호출됨: {active}"); // 로그
         if (active)
         {
             // 플레이어 에임 활성화
@@ -138,7 +151,13 @@ public class PlayerInputHandler : MonoBehaviour, IInputControllable
 
             // 플레이어 맵으로 변경
             _input.SwitchCurrentActionMap("Player");
+            Debug.Log("[PlayerInputHandler] ActionMap -> 'Player'로 전환 완료");
+
+            // 커서 잠금
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
+    
         else
         {
             // 플레이어 에임 비활성화
@@ -146,6 +165,11 @@ public class PlayerInputHandler : MonoBehaviour, IInputControllable
 
             // UI 모드로 변경
             _input.SwitchCurrentActionMap("UI");
+            Debug.Log("[PlayerInputHandler] ActionMap -> 'UI'로 전환 완료");
+
+            // 커서 보이기
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
 
             // 움직이다가 메뉴 켰을 때 멈추게
             MoveInput = Vector2.zero;

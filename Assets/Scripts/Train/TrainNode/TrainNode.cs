@@ -4,9 +4,10 @@ using System.Collections;
 using UnityEngine;
 
 public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicCallback, // 네트워크 객체 생성 후 데이터 콜백
-                                            IDamageable, IRepairable
+                                            IDamageable, IRepairable        // 피해, 수리
 {
     protected Collider _collider;
+    protected Rigidbody _rigidbody;
 
     protected int _maxHp;         // 최대 체력
     protected int _currentHp;     // 현재 체력
@@ -19,6 +20,10 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
     [Header("후방 연결부")]
     [SerializeField] Transform _rearSocket;
+    
+    [Header("폭발 연출 설정")]
+    [SerializeField] float _explosionForce = 10f; // 날아가는 힘
+    [SerializeField] float _torqueForce = 5f;     // 회전하는 힘 (굴리기)
 
     // 파괴 타겟 레이어
     protected LayerMask _localPlayerLayer;   // 로컬플레이어
@@ -43,6 +48,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     private void Awake()
     {
         _collider = GetComponent<Collider>();
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
     public virtual void Init(TrainData data, int level)
@@ -294,6 +300,13 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
         _isExploding = true;
 
+        // 체력 0
+        if (_currentHp > 0)
+        {
+            _currentHp = 0;
+            OnHpChanged?.Invoke(0, _maxHp);
+        }
+
         // 폭발 코루틴 시작
         StartCoroutine(ExplodeCoroutine());
     }
@@ -301,6 +314,9 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     IEnumerator ExplodeCoroutine()
     {
         Debug.Log($"{name} 쾅!");
+
+        // 날려버리기
+        BlowAway();
 
         // 연출 딜레이
         yield return new WaitForSeconds(0.15f);
@@ -319,11 +335,64 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         OnExplode?.Invoke();
 
         // 삭제 딜레이
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
 
         // 진짜 사망
         if (PhotonNetwork.IsMasterClient) PhotonNetwork.Destroy(gameObject);
         else gameObject.SetActive(false);
+    }
+
+
+    // 폭발 시 날려버리기
+    private void BlowAway()
+    {
+        if (_rigidbody == null || _collider == null) return;
+
+        // 부모 연결 해제
+        transform.SetParent(null);
+
+        // 물리 켜기
+        _rigidbody.isKinematic = false;
+        _rigidbody.useGravity = true;
+        _rigidbody.maxAngularVelocity = 100f; // 회전 제한 해제
+
+        // 콜라이더 설정
+        Collider[] allColliders = GetComponentsInChildren<Collider>();
+
+        // 일단 전부 끄기
+        foreach (var col in allColliders)
+        {
+            col.enabled = false;
+        }
+
+        // 루트에 있는 박스 콜라이더 가져오기
+        BoxCollider rootCollider = GetComponent<BoxCollider>();
+        if(rootCollider != null)
+        {
+            // 활성화, 트리거 끄기
+            rootCollider.enabled = true;
+            rootCollider.isTrigger = false;
+        }
+
+        // 폭발점
+        // 앞쪽으로 좀 많이 이동
+        Vector3 forwardOffset = transform.forward * 2.0f;
+
+        // 아래쪽으로 이동
+        Vector3 downOffset = Vector3.down * 1.5f;
+
+        // 랜덤 양 사이드
+        float randomSide = UnityEngine.Random.Range(-1.5f, 1.5f);
+        Vector3 sideOffset = transform.right * randomSide;
+
+        // 최종 폭발 위치 연결부 + 앞 + 아래 + 랜덤옆
+        Vector3 explosionOrigin = transform.position + forwardOffset + downOffset + sideOffset;
+
+        // 폭발력 적용 
+        _rigidbody.AddExplosionForce(_explosionForce, explosionOrigin, 10f, 0.5f, ForceMode.Impulse);
+
+        // 회전력 적용
+        _rigidbody.AddTorque(UnityEngine.Random.insideUnitSphere * _torqueForce, ForceMode.Impulse);
     }
 
 

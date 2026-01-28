@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("대기 패널 (인게임/상점)")]
     [SerializeField] GameObject _waitingPanel;
 
+    [Header("엔진 UI")]
+    [SerializeField] GameObject _engineUI;
+
     [Header("관전 카메라 (인게임)")]
     [SerializeField] SpectatorCamera _spectatorCamera;
 
@@ -273,6 +276,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
             // 유실물 청소
             CleanupLostItems();
+
+            // 엔진 ui 비활성화
+            _engineUI?.SetActive(false);
         }
         else
         {
@@ -560,6 +566,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         CleanupEnemyProjectile();
         // 아이템 청소
         CleanupLostItems();
+
+        // 엔진 ui 비활성화
+        _engineUI?.SetActive(false);
 
         // 플레이어 전부 치우고
         foreach (var player in ActivePlayers.ToArray())

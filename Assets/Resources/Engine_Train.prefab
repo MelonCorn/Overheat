@@ -60,6 +60,8 @@ MonoBehaviour:
   - {fileID: 5978218106668412326}
   - {fileID: 5096909081790558174}
   _rearSocket: {fileID: 8189540316866135606}
+  _explosionForce: 10
+  _torqueForce: 5
   _boiler: {fileID: 1471782928515510517}
   _networkIgnoreTime: 0.3
 --- !u!114 &1767256785288966860
@@ -172,7 +174,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
