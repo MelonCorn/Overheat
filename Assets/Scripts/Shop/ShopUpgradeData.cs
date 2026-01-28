@@ -15,9 +15,13 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private TrainData _data;             // 열차 데이터
     private int _trainIndex;             // 인덱스
 
+    private int _upgradePrice;      // 업그레이드 비용
+    private bool _isMaxLevel;       // 만렙 여부
+
     public void Init(ShopManager manager, TrainData data, int index, int currentLevel)
     {
         _shopManager = manager;
+        _data = data;
         _trainIndex = index;
 
         if (_icon != null) _icon.sprite = data.icon;
@@ -31,6 +35,17 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
             _upgradeButton.onClick.RemoveAllListeners();
             _upgradeButton.onClick.AddListener(OnClickSlot);
         }
+        
+        // 최대 레벨 캐싱
+        _isMaxLevel = data.IsMaxLevel(currentLevel);
+        if (_isMaxLevel == false)
+        {
+            // 가격도 최대 레벨 아니면
+            _upgradePrice = data.GetBasicStat(currentLevel).upgradePrice;
+        }
+
+        // 초기화 시점에 한번 실행
+        UpdateUIState(GameData.Gold);
     }
     private void OnClickSlot()
     {
@@ -41,11 +56,29 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
         EventSystem.current.SetSelectedGameObject(null);
     }
 
+    // UI갱신
+    public void UpdateUIState(int currentGold)
+    {
+        if (_upgradeButton == null) return;
+
+        // 만렙이면 비활성화
+        if (_isMaxLevel == true)
+        {
+            _upgradeButton.interactable = false;
+            return;
+        }
+
+        // 돈이 충분하면 버튼 활성화
+        _upgradeButton.interactable = (currentGold >= _upgradePrice);
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
+        _shopManager?.ShowTrainUpgradeInfo(_trainIndex);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        _shopManager?.HideTrainUpgradeInfo();
     }
 }

@@ -30,6 +30,9 @@ public class ShopSlotData : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
         // 버튼 기능 추가 (결제 요청)
         _button.onClick.AddListener(OnClickSlot);
+
+        // 생성 되면 한 번 갱신
+        UpdatePriceState(GameData.Gold);
     }
 
     // 클릭
@@ -40,6 +43,15 @@ public class ShopSlotData : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
         // 버튼 선택되는거 바로 풀기
         EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    // 가격 생상 갱신
+    public void UpdatePriceState(int currentGold)
+    {
+        if (_data == null || _priceText == null) return;
+
+        // 가격보다 돈이 많으면 흰색, 적으면 빨간색
+        _priceText.color = (currentGold >= _data.price) ? Color.white : Color.red;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
