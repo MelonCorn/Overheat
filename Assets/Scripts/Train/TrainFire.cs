@@ -132,27 +132,6 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         }
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(_currentHp);
-        }
-        else
-        {
-            int receiveHp = (int)stream.ReceiveNext();
-
-            // 체력 받고 크기 지정
-            if (_currentHp != receiveHp)
-            {
-                _currentHp = receiveHp;
-                UpdateFireSize();
-
-                // HP 0 이하면 끄기
-                if (_currentHp <= 0) gameObject.SetActive(false);
-            }
-        }
-    }
 
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
@@ -172,6 +151,27 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
 
                 // 열차 하위 객체로 들어감
                 transform.SetParent(_targetTrain.transform);
+            }
+        }
+    }
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(_currentHp);
+        }
+        else
+        {
+            int receiveHp = (int)stream.ReceiveNext();
+
+            // 체력 받고 크기 지정
+            if (_currentHp != receiveHp)
+            {
+                _currentHp = receiveHp;
+                UpdateFireSize();
+
+                // HP 0 이하면 끄기
+                if (_currentHp <= 0) gameObject.SetActive(false);
             }
         }
     }

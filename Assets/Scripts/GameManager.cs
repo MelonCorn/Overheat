@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
+using WebSocketSharp;
 
 [RequireComponent(typeof(NetworkPool))]
 public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
@@ -13,6 +14,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public static GameManager Instance;
     
     public List<PlayerHandler> ActivePlayers = new List<PlayerHandler>();
+
+    [Header("바닥 스타터 아이템 (소화기 등)")]
+    [SerializeField] GameObject _starterItem;
 
     [Header("씬 체크")]
     [SerializeField] bool _isShop;
@@ -33,7 +37,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("적 스포너 (인게임)")]
     [SerializeField] EnemySpawner _enemySpawner;
 
-    [Header("유실물 생성 포인트 (상점)")]
+    [Header("유실물 생성 포인트 (인게임/상점)")]
     [SerializeField] Transform _lostItemSpawnPoint;
 
     [Header("텍스트")]
@@ -138,7 +142,41 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (PhotonNetwork.IsMasterClient == true)
         {
             StartCoroutine(SpawnLostItems());
+
+            // 방장이 지급 받지 못했다면
+            if(GameData.HasMasterStarterItem == false)
+            {
+                // 지급 확인
+                GameData.HasMasterStarterItem = true;
+
+                // 스타터 아이템 생성
+                SpawnStarterItem();
+            }
         }
+        // 방장 이전 시 못 받게
+        else
+        {
+            GameData.HasMasterStarterItem = true;
+        }
+    }
+
+    // 스타터 아이템 바닥에 떨구기
+    private void SpawnStarterItem()
+    {
+        if (_starterItem == null) return;
+
+        // 위치 결정 (지정된 위치 없으면 0,0,0)
+        Vector3 spawnPos = _lostItemSpawnPoint != null ? _lostItemSpawnPoint.position : Vector3.zero;
+        // 좀 퍼지게 랜덤
+        Vector3 randomOffset = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
+
+        // 아이템 이름 보내기
+        object[] initData = new object[] { _starterItem.name };
+
+        // 네트워크 생성
+        PhotonNetwork.Instantiate(_starterItem.name, spawnPos + randomOffset, Quaternion.identity, 0, initData);
+
+        Debug.Log($"[GameManager] 바닥 스타터 아이템 생성 : {_starterItem.name}");
     }
 
     #region 씬 변경
