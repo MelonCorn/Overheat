@@ -12,7 +12,7 @@ public class BulletTracer : MonoBehaviour
     private Vector3 _hitPoint;                  // 도착점
     private Vector3 _hitNormal;                 // 표면방향
     private float _speed = 300f;                // 속도 (초속)
-    private float _length = 3.0f;               // 길이
+    private float _length = 4.0f;               // 길이
 
     private void Awake()
     {

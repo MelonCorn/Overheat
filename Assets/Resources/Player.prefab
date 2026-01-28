@@ -460,6 +460,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerItemHandler
   _fpsHolder: {fileID: 8267650221840263510}
   _tpsHolder: {fileID: 1261966356410007744}
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 16384
 --- !u!114 &5231009159725759405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -562,6 +565,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 1676165299516714826}
+  - {fileID: 1243383332005046132}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

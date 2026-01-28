@@ -400,15 +400,15 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 쿨타임 갱신
         _lastFireTime = Time.time;
 
+        // 레이캐스트 맞은 위치 계산 (out 벽, 적 타입)
+        Vector3 hitPoint = GetHitPoint(data, out bool isEnemy, out Vector3 normal);
+
         // 소화기는 공격만 하면됨 이펙트 필요없음
         if (data.type == WeaponType.Extinguisher)
         {
             Attack(data);
             return;
         }
-
-        // 레이캐스트 맞은 위치 계산 (out 벽, 적 타입)
-        Vector3 hitPoint = GetHitPoint(data, out bool isEnemy, out Vector3 normal);
 
         // 로컬 연출 실행
         if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal);
@@ -439,7 +439,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
         {
             // 적인지 체크
-            if (_hit.collider.gameObject.layer == _enemyLayer)
+            if ((_enemyLayer.value & (1 << _hit.collider.gameObject.layer)) != 0)
             {
                 isEnemy = true;
             }
@@ -502,8 +502,8 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             // 일반 무기면
             else
             {
-                // 수리 가능하면 데미지 안줌
-                if (target.GetComponentInParent<IRepairable>() != null)
+                // 수리 가능하면 데미지 안줌 (소화기는 제외 불때문에 패런츠가 열차로 잡힘)
+                if (target.GetComponentInParent<IRepairable>() != null && _currentWeaponData.type != WeaponType.Extinguisher)
                 {
                     return; // 팀킬 방지
                 }

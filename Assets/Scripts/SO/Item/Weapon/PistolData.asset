@@ -21,10 +21,10 @@ MonoBehaviour:
   prefab: {fileID: 901158581646923471, guid: 3b0e7e3ab4d4dbb49aae975df50dcb4f, type: 3}
   handPosOffset: {x: 0, y: 0, z: 0}
   handRotOffset: {x: 0, y: 0, z: 0}
-  damage: 10
+  damage: 20
   range: 50
-  fireRate: 0.2
-  isAuto: 0
+  fireRate: 0.1
+  isAuto: 1
   hitLayer:
     serializedVersion: 2
     m_Bits: 21184
