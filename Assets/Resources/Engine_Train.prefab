@@ -85,8 +85,8 @@ MonoBehaviour:
   - {fileID: 4667748107626651127}
   - {fileID: 8141285246368113921}
   _fireProbability: 20
-  _explosionForce: 10
-  _torqueForce: 5
+  _explosionForce: 25
+  _torqueForce: 30
   _boiler: {fileID: 1471782928515510517}
   _networkIgnoreTime: 0.3
 --- !u!114 &1767256785288966860

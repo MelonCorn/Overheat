@@ -231,8 +231,11 @@ MonoBehaviour:
   - {fileID: 160107052320845895}
   - {fileID: 6427965892483676101}
   _rearSocket: {fileID: 9162355008634982995}
-  _explosionForce: 10
-  _torqueForce: 5
+  _firePrefab: {fileID: 1428801387747951406, guid: e1682da5dfc9ee64a854c1573dfac4ef, type: 3}
+  _firePoints: []
+  _fireProbability: 20
+  _explosionForce: 25
+  _torqueForce: 30
 --- !u!114 &1899852967147318386
 MonoBehaviour:
   m_ObjectHideFlags: 0

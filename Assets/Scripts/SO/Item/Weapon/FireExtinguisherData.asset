@@ -15,14 +15,16 @@ MonoBehaviour:
   displayName: "\uC18C\uD654\uAE30"
   itemName: FireExtinguisher
   desc: "\uB728\uAC70\uC6B4 \uC5F4\uCC28\uC758 \uC5F4\uAE30\uB97C \uC2DD\uD600\uC90D\uB2C8\uB2E4."
-  price: 0
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  price: 50
+  icon: {fileID: 21300000, guid: 56bbc6b42271d4177ac313247f47ac1f, type: 3}
+  prefab: {fileID: 1428801387747951406, guid: e1682da5dfc9ee64a854c1573dfac4ef, type: 3}
+  handPosOffset: {x: 0, y: -0.31, z: 0}
+  handRotOffset: {x: 0, y: 0, z: 0}
   damage: 10
-  range: 50
-  fireRate: 0.5
-  isAuto: 0
+  range: 4
+  fireRate: 0.05
+  isAuto: 1
   hitLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 131072
   isRepairTool: 0

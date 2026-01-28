@@ -3148,8 +3148,8 @@ MonoBehaviour:
   - {fileID: 4563248318529560895}
   - {fileID: 698833879175717890}
   _fireProbability: 20
-  _explosionForce: 20
-  _torqueForce: 20
+  _explosionForce: 25
+  _torqueForce: 30
   _sockets:
   - {fileID: 1914602158773338498}
   - {fileID: 3400925187676537745}

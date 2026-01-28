@@ -190,6 +190,18 @@ public class PlayerItemHandler : MonoBehaviourPun
             // 로컬 체크 (내꺼고, 부모가 1인칭 홀더일 때)
             bool isLocalMode = photonView.IsMine && parent == _fpsHolder;
 
+            // 로컬 1인칭 보정
+            if (isLocalMode)
+            {
+                // 일단 부모 기준 0,0,0
+                itemObj.transform.localPosition = Vector3.zero;
+                itemObj.transform.localRotation = Quaternion.identity;
+
+                // 오프셋 적용
+                itemObj.transform.localPosition = data.handPosOffset;
+                itemObj.transform.localRotation = Quaternion.Euler(data.handRotOffset);
+            }
+
             // 로컬 레이어로 변경
             networkItem.SetLayer(isLocalMode);
         }

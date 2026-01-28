@@ -7,6 +7,7 @@ public static class GameData
     public static int SurviveDay = 1;       // 생존일
 
     public static bool HasStarterItem = false;  // 스타터팩 지급 여부
+    public static bool HasMasterStarterItem = false;  // 방장용 스타터팩 지급 여부
     public static bool LocalDead = false;       // 로컬 사망
     public static int LocalCurrentHp = 100;
 
@@ -21,6 +22,7 @@ public static class GameData
         LocalDead = false;
         LocalCurrentHp = 100;
         HasStarterItem = false;
+        HasMasterStarterItem = false;
         LostItems.Clear();
     }
 }

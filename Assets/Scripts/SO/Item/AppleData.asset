@@ -19,4 +19,6 @@ MonoBehaviour:
   price: 10
   icon: {fileID: 21300000, guid: 7377013011b4c3348809ff574abe799e, type: 3}
   prefab: {fileID: 429471891331199967, guid: 9e677d803ca3fa34d9dc52ef41c17141, type: 3}
+  handPosOffset: {x: 0, y: -0.05, z: 0}
+  handRotOffset: {x: 0, y: 0, z: 0}
   healAmount: 30
