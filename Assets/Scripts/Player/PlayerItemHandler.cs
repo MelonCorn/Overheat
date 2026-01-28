@@ -3,12 +3,11 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerInputHandler))]
-public class PlayerItemHandler : MonoBehaviourPun
+public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 {
     [Header("아이템 장착 위치)")]
     [SerializeField] Transform _fpsHolder; // 1인칭(로컬)
     [SerializeField] Transform _tpsHolder; // 3인칭(리모트)
-
 
     private PlayerInputHandler _inputHandler;   // 입력
     private PlayerStatHandler _statHandler;     // 스탯
@@ -19,6 +18,11 @@ public class PlayerItemHandler : MonoBehaviourPun
     private GameObject _currentItem;             // 모델
     private Animator _currentItemAnim;           // 애니메이터
     private PoolableObject _currentItemPoolable; // 반납용
+
+    private ItemVisualHandler _currentVisualHandler;// 현재 무기 비주얼 핸들러
+    private WeaponData _currentWeaponData;          // 현재 무기 데이터
+    private bool _isFiringEffectOn = false;         // 이펙트 중복 실행 방지용
+    private bool _isRemoteFiring = false;
 
     private float _lastFireTime;    // 쿨타임 관리용
     private RaycastHit _hit;        // 공격 레이캐스트용
@@ -44,8 +48,17 @@ public class PlayerItemHandler : MonoBehaviourPun
         // 내꺼 아니면 무시
         if (photonView.IsMine == false) return;
 
+        // 단발 아이템은 무시해도 됨
+        if (_currentWeaponData == null || _currentWeaponData.isAuto == false) return;
+
+        // 발사 상태
+        bool isFiring = _inputHandler.IsFiring;
+
+        // 자동 무기 비주얼 처리
+        UpdateVisualState(isFiring);
+
         // 연사 입력
-        if (_inputHandler.IsFiring)
+        if (isFiring == true)
         {
             OnTryHoldUse();
         }
@@ -59,6 +72,39 @@ public class PlayerItemHandler : MonoBehaviourPun
         // 아이템반납
         UnequipItem();
     }
+
+
+    #region 비주얼
+
+    // 클라이언트/리모트 공용 비주얼 상태 업데이트
+    private void UpdateVisualState(bool isFiring)
+    {
+        if (_currentVisualHandler == null) return;
+
+        // 이미 같은 상태로 들어오면 무시
+        if (_isFiringEffectOn == isFiring) return;
+
+        // 상태 갱신
+        _isFiringEffectOn = isFiring;
+
+        // 상태 변경
+        if (isFiring) _currentVisualHandler.PlayLoop();
+        else _currentVisualHandler.StopLoop();
+    }
+
+    // 리모트들 바뀔 때만 온오프
+    [PunRPC]
+    private void RPC_SetAutoVisual(bool isPlaying)
+    {
+        if (_currentVisualHandler == null) return;
+
+        // 상태 따라서 루프 온오프
+        if (isPlaying) _currentVisualHandler.PlayLoop();
+        else _currentVisualHandler.StopLoop();
+    }
+    #endregion
+
+
 
 
     #region 아이템 장착
@@ -101,6 +147,9 @@ public class PlayerItemHandler : MonoBehaviourPun
 
         // 아이템 데이터 가져오기
         ShopItem itemData = GameManager.Instance.FindItemData(newItem);
+
+        // 무기 데이터 캐싱
+        _currentWeaponData = itemData as WeaponData;
 
         // PlayerItemData이면 새 아이템
         // 
@@ -221,6 +270,9 @@ public class PlayerItemHandler : MonoBehaviourPun
         // 현재 장착 아이템 변경
         _currentItem = itemObj;
 
+        // 아이템의 비주얼 핸들러 가져오기
+        _currentVisualHandler = _currentItem.GetComponent<ItemVisualHandler>();
+
         // 아이템의 애니메이터 가져오기
         _currentItemAnim = _currentItem.GetComponent<Animator>();
     }
@@ -228,6 +280,14 @@ public class PlayerItemHandler : MonoBehaviourPun
     // 아이템 장착 해제
     private void UnequipItem()
     {
+        // 이펙트 켜져있으면 강제로 끄기
+        if (_isFiringEffectOn == true && _currentVisualHandler != null)
+        {
+            _currentVisualHandler.StopLoop();
+            // 리모트한테도 전달
+            photonView.RPC(nameof(RPC_SetAutoVisual), RpcTarget.Others, false);
+        }
+
         // 장착 아이템 있으면
         if (_currentItem != null)
         {
@@ -240,6 +300,9 @@ public class PlayerItemHandler : MonoBehaviourPun
             _currentItem = null;
             _currentItemPoolable = null;
             _currentItemAnim = null;
+            _currentVisualHandler = null;
+            _currentWeaponData = null;
+            _isFiringEffectOn = false;
         }
     }
     #endregion
@@ -319,42 +382,73 @@ public class PlayerItemHandler : MonoBehaviourPun
         // 쿨타임 갱신
         _lastFireTime = Time.time;
 
+        // 레이캐스트 맞은 위치 계산
+        Vector3 hitPoint = GetHitPoint(data);
+
+        // 로컬 연출 실행
+        if (_currentVisualHandler != null) _currentVisualHandler.FireOneShot(hitPoint);
         // 로컬 발사 애니메이션
         if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
 
-        // 리모트 발사 애니메이션
-        photonView.RPC(nameof(RPC_PlayFireAnim), RpcTarget.Others);
+        // 리모트 발사, 애니메이션
+        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint);
 
         // 발사
-        FireRaycast(data);
+        Attack(data);
     }
 
-    // 리모드 발사 애니메이션 재생
-    [PunRPC]
-    private void RPC_PlayFireAnim()
+    // 레이캐스트 맞은 위치 계산
+    private Vector3 GetHitPoint(WeaponData data)
     {
+        // 카메라 없으면 정면에 사거리만큼
+        if (_camera == null) return transform.position + transform.forward * data.range;
+
+        // 원점으로부터 정면 방향으로 레이 생성
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
+        // 레이를 쏴서 맞으면 그 위치 안 맞으면 사거리 끝 위치
+        if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
+        {
+            return _hit.point;
+        }
+        else
+        {
+            return ray.origin + (ray.direction * data.range);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_FireOneShot(Vector3 hitPoint)
+    {
+        // 리모트들은 3인칭전용에서 발사 이뤄짐
+        if (_currentVisualHandler != null)
+        {
+            _currentVisualHandler.FireOneShot(hitPoint);
+        }
+
+        // 애니메이션까지
         if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
     }
 
     // 발사 레이캐스트
-    private void FireRaycast(WeaponData data)
+    private void Attack(WeaponData data)
     {
-        if (_camera == null) return;
-        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
-
-        if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
+        // 레이캐스트 계산에서 히트되었을 때
+        if (_hit.collider != null)
         {
+            // 히트 콜라이더의 오브젝트
             GameObject target = _hit.collider.gameObject;
+            // 그 오브젝트의 부모의 피해 인터페이스
             IDamageable damageable = target.GetComponentInParent<IDamageable>();
+            // 피해주기
+            if (damageable != null) damageable.TakeDamage(data.damage);
 
-            if (damageable != null)
+            // 수리도구면
+            if (data.isRepairTool == true)
             {
-                damageable.TakeDamage(data.damage);
-            }
-
-            if (data.isRepairTool)
-            {
+                // 수리 인터페이스
                 IRepairable repairable = target.GetComponentInParent<IRepairable>();
+                // 수리
                 if (repairable != null) repairable.TakeRepair(data.damage);
             }
         }
@@ -368,5 +462,27 @@ public class PlayerItemHandler : MonoBehaviourPun
     public void SetCamera(Transform cameraTrans)
     {
         _camera = cameraTrans;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting) 
+        {
+            stream.SendNext(_inputHandler.IsFiring);
+        }
+        else
+        {
+            // 데이터 받아서
+            bool receiveFiring = (bool)stream.ReceiveNext();
+
+            // 값 바뀌면 갱신
+            if (_isRemoteFiring != receiveFiring)
+            {
+                _isRemoteFiring = receiveFiring;
+
+                // 여기서 바로 갱신
+                UpdateVisualState(_isRemoteFiring);
+            }
+        }
     }
 }
