@@ -295,6 +295,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 씬 전환 코루틴
     private IEnumerator ChangeSceneCoroutine()
     {
+        // 게임오버 상태 변경 (클리어)
+        IsGameOver = true;
+
         if (LoadingManager.Instance != null)
         {
             // 페이드 아웃
