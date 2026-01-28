@@ -9,9 +9,11 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
     [SerializeField] int _maxHp = 100;       // 불의 생명력
     [SerializeField] int _damage = 5;        // 열차에 주는 도트 데미지
     [SerializeField] float _interval = 2.0f; // 데미지 주기
+    [SerializeField] float _shrinkSpeed = 5f;// 줄어드는 속도
 
     private int _currentHp;                  // 현재 체력
-    private float _defualtScale;             // 기본 크기
+    private float _defaultScale;             // 기본 크기
+    private Vector3 _targetScale;            // 목표 크기
 
     private TrainNode _targetTrain;          // 타겟 열차
 
@@ -19,14 +21,16 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
     {
         // 초기화
         _currentHp = _maxHp;
-        _defualtScale = transform.localScale.x;
+        _defaultScale = transform.localScale.x;
     }
 
     private void OnEnable()
     {
         // 상태 초기화 (재사용)
         _currentHp = _maxHp;
-        transform.localScale = Vector3.one * _defualtScale;
+
+        _targetScale = Vector3.one * _defaultScale;
+        transform.localScale = Vector3.one * _defaultScale;
 
         // 2. 내 위치 기준으로 열차 다시 찾기 (위치가 바뀔 수 있으므로)
         _targetTrain = null; // 초기화
@@ -52,6 +56,15 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         // 돌고 있던 코루틴 올 스톱
         StopAllCoroutines();
         _targetTrain = null;
+    }
+
+    private void Update()
+    {
+        if (transform.localScale != _targetScale)
+        {
+            // 크기 부드럽게 축소
+            transform.localScale = Vector3.Lerp(transform.localScale, _targetScale, Time.deltaTime * _shrinkSpeed);
+        }
     }
 
     // 소화기 피격
@@ -88,9 +101,9 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         // 체력 비율
         float ratio = (float)_currentHp / _maxHp;
         // 최소 0.3크기
-        float targetScale = Mathf.Max(_defualtScale * 0.3f, _defualtScale * ratio);
-        // 크기 설정
-        transform.localScale = Vector3.one * targetScale;
+        float targetScale = Mathf.Max(_defaultScale * 0.3f, _defaultScale * ratio);
+        // 목표 크기 설정
+        _targetScale = Vector3.one * targetScale;
     }
 
     // 소화
