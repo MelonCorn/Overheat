@@ -43,4 +43,11 @@ public class RadarNode : TrainNode
         // 상태 전환 실행
         OnRadarStateChanged?.Invoke(isRadarActive);
     }
+
+    // 씬 넘어갈 때 초기화
+    public static void ResetRadarCount()
+    {
+        _activeRadarCount = 0;
+        OnRadarStateChanged?.Invoke(false);
+    }
 }
