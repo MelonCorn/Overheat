@@ -23,9 +23,16 @@ MonoBehaviour:
   damage: 15
   range: 50
   fireRate: 0.1
-  isAuto: 0
+  isAuto: 1
   hitLayer:
     serializedVersion: 2
-    m_Bits: 16384
+    m_Bits: 545408
   type: 0
+  recoilX: 2
+  recoilY: 5
+  maxRecoilX: 10
+  snappiness: 6
+  returnSpeed: 10
+  pelletCount: 1
+  spreadAngle: 0
   isRepairTool: 0

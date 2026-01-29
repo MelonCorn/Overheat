@@ -24,10 +24,17 @@ MonoBehaviour:
   handRotOffset: {x: 0, y: 0, z: 0}
   damage: 20
   range: 50
-  fireRate: 0.1
-  isAuto: 1
+  fireRate: 0.5
+  isAuto: 0
   hitLayer:
     serializedVersion: 2
-    m_Bits: 21184
+    m_Bits: 545472
   type: 0
+  recoilX: 5
+  recoilY: 5
+  maxRecoilX: 10
+  snappiness: 20
+  returnSpeed: 10
+  pelletCount: 1
+  spreadAngle: 0
   isRepairTool: 0

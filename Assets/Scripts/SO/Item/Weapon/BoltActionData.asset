@@ -26,6 +26,13 @@ MonoBehaviour:
   isAuto: 0
   hitLayer:
     serializedVersion: 2
-    m_Bits: 16384
+    m_Bits: 545472
   type: 0
+  recoilX: 10
+  recoilY: 5
+  maxRecoilX: 20
+  snappiness: 20
+  returnSpeed: 2
+  pelletCount: 1
+  spreadAngle: 0
   isRepairTool: 0

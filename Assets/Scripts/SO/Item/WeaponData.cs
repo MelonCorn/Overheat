@@ -18,6 +18,13 @@ public class WeaponData : PlayerItemData
     public LayerMask hitLayer;     // 타겟 설정
     public WeaponType type;        // 타입
 
+    [Header("반동 설정")]
+    public float recoilX = 2f;           // 위로 튀는 힘 (X)
+    public float recoilY = 1f;           // 좌우 랜덤 힘 (Y)
+    public float maxRecoilX = 10f;       // 반동 최대치
+    public float snappiness = 6f;        // 반동이 적용되는 속도
+    public float returnSpeed = 2f;       // 원점으로 돌아오는 속도
+
     [Header("산탄 설정")]
     public int pelletCount = 1;      // 발사체 개수
     [Range(0f, 10f)]

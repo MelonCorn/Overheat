@@ -351,7 +351,8 @@ MonoBehaviour:
   - {fileID: 4411880462178130062}
   - {fileID: 6439853996020436887}
   - {fileID: 4721078788879104366}
-  _camera: {fileID: 2045652762034455185}
+  - {fileID: 6752937071245640376}
+  _cameraHolder: {fileID: 2045652762034455185}
   _canvas: {fileID: 1435600471120788571}
   _moveSmoothSpeed: 10
   _rotSmoothSpeed: 10
@@ -1536,6 +1537,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2688493219900572474}
+  - component: {fileID: 6752937071245640376}
   - component: {fileID: 6880727270548743675}
   - component: {fileID: 7774827879323337494}
   - component: {fileID: 5012734303169803134}
@@ -1563,6 +1565,18 @@ Transform:
   - {fileID: 8001317963871986039}
   m_Father: {fileID: 5418326320911575754}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6752937071245640376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8277215590541570020}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79ccd675e19c67f4c9a943edbe49292c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRecoilHandler
 --- !u!20 &6880727270548743675
 Camera:
   m_ObjectHideFlags: 0

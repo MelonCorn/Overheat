@@ -361,7 +361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemVisualHandler
   _muzzlePoint: {fileID: 6113632170558297088}
-  _tracerPrefab: {fileID: 2882075201696625023, guid: 91b33ea3293612e4bbbcdda85ff24a86, type: 3}
+  _tracerPrefab: {fileID: 2882075201696625023, guid: befa91347dbaaf44dac0bd2fec26ed44, type: 3}
   _muzzleEffect: {fileID: 960612715758778540}
   _muzzleClip: {fileID: 0}
   _impactWallEffect: {fileID: -6753986051678385841, guid: 60840607e665bf04587f413f0e80ddb3, type: 3}
