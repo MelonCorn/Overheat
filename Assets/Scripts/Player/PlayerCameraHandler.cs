@@ -71,11 +71,11 @@ public class PlayerCameraHandler : MonoBehaviour
         Vector2 mouseInput = _inputHandler.LookInput;
 
         // 마우스 감도에 따라 수평(좌우) 회전 (루트)
-        float mouseX = mouseInput.x * SettingManager.Instance.MouseSensitivity * Time.deltaTime;
+        float mouseX = mouseInput.x * SettingManager.Instance.Sensitivity * Time.deltaTime;
         transform.Rotate(Vector3.up * mouseX);
 
         // 마우스 감도에 따라 수직(상하) 회전 (카메라 홀더)
-        float mouseY = mouseInput.y * SettingManager.Instance.MouseSensitivity * Time.deltaTime;
+        float mouseY = mouseInput.y * SettingManager.Instance.Sensitivity * Time.deltaTime;
         _xRotation -= mouseY;
         // 위아래 제한
         _xRotation = Mathf.Clamp(_xRotation, _topClamp, _bottomClamp);

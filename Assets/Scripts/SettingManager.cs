@@ -1,7 +1,9 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,32 +12,41 @@ public class SettingManager : MonoBehaviourPunCallbacks
 {
     public static SettingManager Instance;
 
-    [Header("씬 이동")]
+    [Header("UI 참조")]
+    [SerializeField] SettingUI _settingUi;
+
+    [Header("씬 이동 설정")]
     [SerializeField] string _titleSceneName = "Lobby";
 
-    [Header("UI 설정")]
-    [SerializeField] GameObject _settingUI;             // 세팅 UI 패널
-    [SerializeField] TMP_Dropdown _screenModeDropdown;  // 화면모드 드롭다운
-    [SerializeField] Slider _sensitivitySlider;         // 마우스 감도 슬라이더
-    [SerializeField] TextMeshProUGUI _sensitivityText;  // 현재 마우스 감도 텍스트
-
-    [Header("버튼")]
-    [SerializeField] Button _leaveButton;   // 방 나가기 버튼
-    [SerializeField] Button _closeButton;   // 닫기(확인) 버튼
-
-    [Header("퇴장 패널")]
-    [SerializeField] GameObject _exitBlind; // 퇴장 가리개
-    
-    // 설정값 저장용 키
+    // 저장 키
     private const string KEY_SENSITIVITY = "MouseSensitivity";
     private const string KEY_SCREEN_MODE = "ScreenMode";
+    private const string KEY_VOL_MASTER = "MasterVolume";
+    private const string KEY_VOL_BGM = "BGMVolume";
+    private const string KEY_VOL_SFX = "SFXVolume";
+    private const string KEY_MUTE_MASTER = "MasterMute";
+    private const string KEY_MUTE_BGM = "BGMMute";
+    private const string KEY_MUTE_SFX = "SFXMute";
 
-    // 현재 마우스 감도
-    public float MouseSensitivity { get; private set; }
+    private float _sensitivity;
+    private float _masterVol;
+    private float _bgmVol;
+    private float _sfxVol;
 
-    // 패널 상태
-    private bool _isOpen = false;
-    private bool _isChangingMode = false;
+    private bool _isMasterOn;
+    private bool _isBgmOn;
+    private bool _isSfxOn;
+
+    // 데이터
+    public float Sensitivity => _sensitivity;    // 감도
+    public float MasterVol => _masterVol;        // 전체 볼륨
+    public float BgmVol => _bgmVol;              // 브금 볼륨
+    public float SfxVol => _sfxVol;              // 효과음 볼륨
+    public bool IsMasterOn => _isMasterOn;       // 마스터 토글
+    public bool IsBgmOn => _isBgmOn;             // 브금 토글
+    public bool IsSfxOn => _isSfxOn;             // 효과음 토글
+
+    private bool _isChangingMode = false;        // 화면 전환 상태
 
     private void Awake()
     {
@@ -68,8 +79,6 @@ public class SettingManager : MonoBehaviourPunCallbacks
     {
         // 환경설정 UI 초기화
         InitUI();
-
-        if (_exitBlind != null) _exitBlind.SetActive(false);
     }
 
     private void Update()
@@ -78,7 +87,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             // 세팅 패널 상태 변경
-            ToggleSettingPanel();
+            EscInput();
         }
 
 
@@ -91,37 +100,281 @@ public class SettingManager : MonoBehaviourPunCallbacks
     {
         Debug.Log($"[SettingManager] 씬 로드 감지: {scene.name}"); // 로그
         // 씬이 바뀌면 무조건 패널 닫기
-        _isOpen = false;
-        if (_settingUI != null) _settingUI.SetActive(false);
-        if(_exitBlind != null)  _exitBlind.SetActive(false);
+        if (_settingUi != null) _settingUi.SetPanelActive(false);
     }
 
-    #region 세팅
-
+    // 시작 세팅
     private void LoadSettings()
     {
-        // 마우스 감도
-        // 기본값 15f
-        MouseSensitivity = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 15f);
+        // 마우스 감도 (기본 15)
+        _sensitivity = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 15f);
 
-        // 화면 모드
-        // 기본 보더리스
-        // 0: 전체화면 1: 경계없는 창모드 2: 전체창모드
-        int modeIndex = PlayerPrefs.GetInt(KEY_SCREEN_MODE, 1);
-        SetScreenMode(modeIndex);
+        // 볼륨 (기본 1)
+        _masterVol = PlayerPrefs.GetFloat(KEY_VOL_MASTER, 1f);
+        _bgmVol = PlayerPrefs.GetFloat(KEY_VOL_BGM, 1f);
+        _sfxVol = PlayerPrefs.GetFloat(KEY_VOL_SFX, 1f);
+
+        // 활성화 (기본값 True)
+        _isMasterOn = PlayerPrefs.GetInt(KEY_MUTE_MASTER, 1) == 1;
+        _isBgmOn = PlayerPrefs.GetInt(KEY_MUTE_BGM, 1) == 1;
+        _isSfxOn = PlayerPrefs.GetInt(KEY_MUTE_SFX, 1) == 1;
+
+        // 화면 모드 적용 (기본 창전체)
+        SetScreenMode(PlayerPrefs.GetInt(KEY_SCREEN_MODE, 1));
+
+        // 사운드 적용
+        ApplySoundSettings();
+    }
+
+    // 사운드 설정 확인
+    private void ApplySoundSettings()
+    {
+        if (SoundManager.Instance == null) return;
+
+        if (IsMasterOn) SoundManager.Instance.SetVolume("MasterVolume", MasterVol);
+        else SoundManager.Instance.SetMute("MasterVolume", true);
+
+        if (IsBgmOn) SoundManager.Instance.SetVolume("BGMVolume", BgmVol);
+        else SoundManager.Instance.SetMute("BGMVolume", true);
+
+        if (IsSfxOn) SoundManager.Instance.SetVolume("SFXVolume", SfxVol);
+        else SoundManager.Instance.SetMute("SFXVolume", true);
     }
 
 
     // 마우스 감도 설정
     public void SetSensitivity(float value)
     {
-        MouseSensitivity = value;
+        _sensitivity = value;
         PlayerPrefs.SetFloat(KEY_SENSITIVITY, value);
+        _settingUi.UpdateSensitivityText(value);
     }
+
+    // -----------------------------------------------
+
+    #region 초기화
+    private void InitUI()
+    {
+        if (_settingUi == null) return;
+
+        // 감도
+        _settingUi.sensitivitySlider.value = Sensitivity;                                  // 감도 갱신
+        _settingUi.UpdateSensitivityText(Sensitivity);                                     // 텍스트 갱신
+        _settingUi.sensitivitySlider.onValueChanged.AddListener(SetSensitivity);           // 이벤트 연결
+
+        // 화면 모드
+        int mode = PlayerPrefs.GetInt(KEY_SCREEN_MODE, 1);                          // 모드 불러오기
+        _settingUi.screenModeDropdown.value = mode;                                 // 값 갱신
+        _settingUi.screenModeDropdown.RefreshShownValue();                          // 새로고침     // 이벤트 연결
+        _settingUi.screenModeDropdown.onValueChanged.AddListener((index) => StartCoroutine(SetScreenModeCoroutine(index)));
+
+        // 사운드 슬라이더 값 로드
+        _settingUi.masterSlider.value = MasterVol;
+        _settingUi.bgmSlider.value = BgmVol;
+        _settingUi.sfxSlider.value = SfxVol;
+
+        // 슬라이더 이벤트 연결
+        _settingUi.masterSlider.onValueChanged.AddListener((value) => SetVolume("MasterVolume", value, ref _masterVol, KEY_VOL_MASTER, _settingUi.masterText));
+        _settingUi.bgmSlider.onValueChanged.AddListener((value) => SetVolume("BGMVolume", value, ref _bgmVol, KEY_VOL_BGM, _settingUi.bgmText));
+        _settingUi.sfxSlider.onValueChanged.AddListener((value) => SetVolume("SFXVolume", value, ref _sfxVol, KEY_VOL_SFX, _settingUi.sfxText));
+
+        // 볼륨 텍스트 갱신
+        _settingUi.UpdateVolumeText(_settingUi.masterText, MasterVol);
+        _settingUi.UpdateVolumeText(_settingUi.bgmText, BgmVol);
+        _settingUi.UpdateVolumeText(_settingUi.sfxText, SfxVol);
+
+        // 사운드 토글 설정
+        // 토글 이벤트 연결
+        InitToggle(_settingUi.masterToggle, _settingUi.masterIcon, IsMasterOn, (isOn) => SetMute("MasterVolume", isOn, ref _isMasterOn, KEY_MUTE_MASTER));
+        InitToggle(_settingUi.bgmToggle, _settingUi.bgmIcon, IsBgmOn, (isOn) => SetMute("BGMVolume", isOn, ref _isBgmOn, KEY_MUTE_BGM));
+        InitToggle(_settingUi.sfxToggle, _settingUi.sfxIcon, IsSfxOn, (isOn) => SetMute("SFXVolume", isOn, ref _isSfxOn, KEY_MUTE_SFX));
+
+        // 버튼
+        _settingUi.leaveButton.onClick.AddListener(OnClickLeaveRoom);
+        _settingUi.closeButton.onClick.AddListener(ToggleSettingPanel);
+
+        RefreshSoundUI();
+    }
+
+    // 토글 초기화 (토글, 아이콘, 활성화, 액션)
+    private void InitToggle(Toggle toggle, Image icon, bool isOn, UnityAction<bool> action)
+    {
+        toggle.isOn = isOn;
+        _settingUi.UpdateToggleIcon(icon, isOn);
+        toggle.onValueChanged.AddListener(action);
+    }
+    #endregion
+
+    // -----------------------------------------------
+
+    #region 세팅 패널 On/Off
+
+    // ESC 입력
+    private void EscInput()
+    {
+        // 상점 이용 중이면 끄기만 가능
+        if (ShopTerminal.IsUsing == true)
+        {
+            if (_settingUi.IsActive == true) ToggleSettingPanel();
+            return;
+        }
+
+        // 세팅 패널 토글
+        ToggleSettingPanel();
+    }
+
+    // 닫기 버튼용
+    public void CloseSetting()
+    {
+        // 세팅 패널 상태 변경
+        ToggleSettingPanel();
+    }
+
+    // 세팅 패널 상태 변경
+    public void ToggleSettingPanel()
+    {
+        if (_settingUi == null) return;
+
+        // 상태 반전
+        bool isOpen = !_settingUi.IsActive;
+        _settingUi.SetPanelActive(isOpen);
+
+        // 퇴장 버튼은 방에 있을 때만
+        _settingUi.leaveButton.gameObject.SetActive(PhotonNetwork.InRoom);
+
+        // 현재 입력 제어권 객체 찾기
+        IInputControllable currentController = GetCurrentController();
+
+        if (currentController != null)
+        {
+            // 상점 이용 중이 아닐 때만 입력 제어
+            if (ShopTerminal.IsUsing == false)
+                currentController.SetInputActive(!isOpen);
+        }
+
+        // 커서 처리
+        // 열려있으면 보이게
+        if (isOpen)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        // 닫았는데 단말기 사용 안하면
+        else if (ShopTerminal.IsUsing == false)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+    }
+
+    // 현재 입력 객체 가져오기
+    private IInputControllable GetCurrentController()
+    {
+        // 먼저 관전 카메라 상태 체크
+        if (SpectatorCamera.Instance != null && SpectatorCamera.Instance.gameObject.activeInHierarchy)
+        {
+            return SpectatorCamera.Instance;
+        }
+
+        // 그다음 로컬 플레이어
+        if (PlayerHandler.localPlayer != null)
+        {
+            return PlayerHandler.localPlayer.GetComponent<IInputControllable>();
+        }
+
+        return null;
+    }
+    #endregion
+
+    // -----------------------------------------------
+
+    #region 사운드
+
+
+    // 볼륨 설정 (볼륨 파라미터 이름, 슬라이더 입력값, 현재 값, 저장 키, 볼륨 텍스트)
+    private void SetVolume(string name, float inputValue, ref float currentValue, string saveKey, TextMeshProUGUI textUI)
+    {
+        // 현재 값 변경
+        currentValue = inputValue;
+        // 키에 저장
+        PlayerPrefs.SetFloat(saveKey, inputValue);
+
+        // 사운드 매니저에 볼륨 설정
+        SoundManager.Instance.SetVolume(name, inputValue);
+
+        // 텍스트 갱신
+        _settingUi.UpdateVolumeText(textUI, inputValue);
+    }
+
+    // 뮤트 설정 (볼륨 파라미터 이름, 토글 값, 현재 값, 저장 키)
+    private void SetMute(string name, bool isOn, ref bool currentBool, string saveKey)
+    {
+        // 현재 값 변경
+        currentBool = isOn;
+        // 저장 (확실하게 보이도록)
+        PlayerPrefs.SetInt(saveKey, isOn ? 1 : 0);
+
+        // 켜질 땐 현재 볼륨값
+        // 꺼질 땐 Mute 
+        if (isOn)
+            SoundManager.Instance.SetVolume(name, (name == "MasterVolume") ? MasterVol : (name == "BGMVolume" ? BgmVol : SfxVol));
+        else
+            SoundManager.Instance.SetMute(name, true);
+
+        // UI 새로고침
+        RefreshSoundUI();
+    }
+
+    // 사운드 UI 새로고침
+    private void RefreshSoundUI()
+    {
+        if (_settingUi == null) return;
+        _settingUi.masterSlider.interactable = IsMasterOn;
+        _settingUi.bgmSlider.interactable = IsBgmOn;
+        _settingUi.sfxSlider.interactable = IsSfxOn;
+
+        _settingUi.UpdateToggleIcon(_settingUi.masterIcon, IsMasterOn);
+        _settingUi.UpdateToggleIcon(_settingUi.bgmIcon, IsBgmOn);
+        _settingUi.UpdateToggleIcon(_settingUi.sfxIcon, IsSfxOn);
+    }
+
+    #endregion
+
+    // -----------------------------------------------
+
+    #region 화면 모드
+
+    // 화면 모드 설정
+    public void SetScreenMode(int index)
+    {
+        // 현재 모니터 해상도
+        Resolution maxResolusion = Screen.currentResolution;
+
+        switch (index)
+        {
+            case 0: // 전체화면
+                Screen.SetResolution(maxResolusion.width, maxResolusion.height, FullScreenMode.ExclusiveFullScreen);
+                break;
+
+            case 1: // 보더리스
+                // 해상도는 최대로, 모드는 FullScreenWindow
+                Screen.SetResolution(maxResolusion.width, maxResolusion.height, FullScreenMode.FullScreenWindow);
+                break;
+
+            case 2: // 창모드
+                // 16:9 비율 유지하면서 조금만 작게
+                Screen.SetResolution(1600, 900, FullScreenMode.Windowed);
+                break;
+        }
+
+        PlayerPrefs.SetInt(KEY_SCREEN_MODE, index);
+    }
+
+    // 화면 설정 코루틴
     private IEnumerator SetScreenModeCoroutine(int index)
     {
         // 모드 전환 중 중단
-        if(_isChangingMode) yield break;
+        if (_isChangingMode) yield break;
 
         // 모드 전환 중
         _isChangingMode = true;
@@ -156,202 +409,29 @@ public class SettingManager : MonoBehaviourPunCallbacks
         _isChangingMode = false;
     }
 
-    // 화면 모드 설정
-    public void SetScreenMode(int index)
-    {
-        // 현재 모니터 해상도
-        Resolution maxResolusion = Screen.currentResolution;
-
-        switch (index)
-        {
-            case 0: // 전체화면
-                Screen.SetResolution(maxResolusion.width, maxResolusion.height, FullScreenMode.ExclusiveFullScreen);
-                break;
-
-            case 1: // 보더리스
-                // 해상도는 최대로, 모드는 FullScreenWindow
-                Screen.SetResolution(maxResolusion.width, maxResolusion.height, FullScreenMode.FullScreenWindow);
-                break;
-
-            case 2: // 창모드
-                // 16:9 비율 유지하면서 조금만 작게
-                Screen.SetResolution(1600, 900, FullScreenMode.Windowed);
-                break;
-        }
-
-        PlayerPrefs.SetInt(KEY_SCREEN_MODE, index);
-    }
-    #endregion
-
-    #region UI
-    private void InitUI()
-    {
-        // 화면모드 드롭다운 초기화 (고정 드롭다운)
-        // 화면모드 불러오기, 기본값 창전체
-        int currentMode = PlayerPrefs.GetInt("ScreenMode", 1);
-        if (_screenModeDropdown != null)
-        {
-            // 화면모드 드롭다운 설정
-            _screenModeDropdown.value = currentMode;
-            // 화면모드 드롭다운 새로고침
-            _screenModeDropdown.RefreshShownValue();
-            // 화면모드 드롭다운 값 변경 이벤트 연결
-            _screenModeDropdown.onValueChanged.AddListener((index) => StartCoroutine(SetScreenModeCoroutine(index)));
-        }
-
-        // 감도 슬라이더 초기화
-        // 현재 감도
-        float currentSensitivity = MouseSensitivity;
-
-        if (_sensitivitySlider != null)
-        {
-            _sensitivitySlider.minValue = 1f;    // 최소 감도
-            _sensitivitySlider.maxValue = 100f;  // 최대 감도
-            // 슬라이더 값 설정
-            _sensitivitySlider.value = currentSensitivity;
-
-            // 슬라이더 값 변경 이벤트
-            _sensitivitySlider.onValueChanged.AddListener((value) =>
-            {
-                SetSensitivity(value);          // 감도 변경
-                UpdateSensitivityText(value);   // 텍스트 변경
-            });
-        }
-
-        // 한 번 갱신
-        UpdateSensitivityText(currentSensitivity);
-
-        // 퇴장 버튼 연결
-        if (_leaveButton != null) _leaveButton.onClick.AddListener(OnClickLeaveRoom);
-        // 닫기 버튼에 세팅 패널 토글 연결
-        if (_closeButton != null) _closeButton.onClick.AddListener(ToggleSettingPanel);
-    }
-
-    // 감도 텍스트 변경
-    private void UpdateSensitivityText(float value)
-    {
-        // 점하나 내리고 소수점 한 자리로 반올림
-        if (_sensitivityText != null)
-            _sensitivityText.text = $"{(value * 0.1f):0.0}";
-    }
-
-    // 닫기 버튼용
-    public void CloseSetting()
-    {
-        // 세팅 패널 상태 변경
-        ToggleSettingPanel();
-    }
-    #endregion
-
-
-    // 세팅 패널 상태 변경
-    public void ToggleSettingPanel()
-    {
-        // 상태 반전
-        _isOpen = !_isOpen;
-        _settingUI?.SetActive(_isOpen);
-
-        // 현재 입력 제어권을 가진 객체 찾기
-        IInputControllable currentController = GetCurrentController();
-
-        // 상점 이용 중인지
-        bool isShopUsing = ShopTerminal.IsUsing;
-
-        // On으로 변경 시
-        if (_isOpen == true)
-        {
-            // UI 상태 변경
-            UpdateUIState();
-
-            // 입력 끄기 (상점 이용 안할 때)
-            if (isShopUsing == false)
-            {
-                currentController?.SetInputActive(false);
-            }
-        }
-        // Off로 변경 시
-        else
-        {
-            // 입력 켜기 (상점 이용 안할 때)
-            if (isShopUsing == false)
-            {
-                // 인터페이스를 이용한 체크이기 때문에 내부에 따로 널체크 함
-                // null 아니고 활성화되어있을때
-                if (currentController != null)
-                {
-                    // 입력 켜기 (인터페이스 사용)
-                    currentController.SetInputActive(true);
-                }
-            }   
-        }
-    }
-
-
-    // UI 상태 변경
-    private void UpdateUIState()
-    {
-        // 로비인지 방인지 체크
-        bool isRoom = PhotonNetwork.InRoom;
-
-        // 퇴장 버튼 상태 변경
-        if (_leaveButton != null)
-            _leaveButton.gameObject.SetActive(isRoom);
-    }
-
     // 알트 엔터로 화면 강제 변환 시 계속 체크
     private void CheckScreenChange()
     {
-        // 실제 모드
-        int currentIndex = 0;
+        // 기본 창모드
+        int current = 2;
 
-        switch (Screen.fullScreenMode)
+        // 0 전체
+        if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen) current = 0;
+        // 1 창전체
+        else if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow) current = 1;
+
+        // 드롭다운 값이 다를 때
+        if (_settingUi.screenModeDropdown.value != current)
         {
-            case FullScreenMode.ExclusiveFullScreen:
-                currentIndex = 0; // 전체화면
-                break;
-            case FullScreenMode.FullScreenWindow:
-                currentIndex = 1; // 창 전체
-                break;
-            case FullScreenMode.Windowed:
-                currentIndex = 2; // 창모드
-                break;
-            default:
-                currentIndex = 2; // 혹시 모를 뭔가
-                break;
-        }
-
-        // 드롭다운 UI가 실제와 다르면 (Alt+Enter)
-        if (_screenModeDropdown != null && _screenModeDropdown.value != currentIndex)
-        {
-            // UI 표기만 변경
-            _screenModeDropdown.SetValueWithoutNotify(currentIndex);
-
-            // 상태 저장까지
-            PlayerPrefs.SetInt(KEY_SCREEN_MODE, currentIndex);
+            // 설정
+            _settingUi.screenModeDropdown.SetValueWithoutNotify(current);
+            // 저장
+            PlayerPrefs.SetInt(KEY_SCREEN_MODE, current);
         }
     }
+    #endregion
 
-
-    // 현재 입력 객체 가져오기
-    private IInputControllable GetCurrentController()
-    {
-        // 먼저 관전 카메라 상태 체크
-        if (SpectatorCamera.Instance != null && SpectatorCamera.Instance.gameObject.activeInHierarchy)
-        {
-            return SpectatorCamera.Instance;
-        }
-
-        // 그다음 로컬 플레이어
-        if (PlayerHandler.localPlayer != null)
-        {
-            return PlayerHandler.localPlayer.GetComponent<IInputControllable>();
-        }
-
-        return null;
-    }
-
-
-
+    // -----------------------------------------------
 
     #region 퇴장
 
@@ -362,7 +442,7 @@ public class SettingManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
 
         // 네트워크 객체 파괴되는거 보이기 싫으니까 가림
-        if (_exitBlind != null) _exitBlind.SetActive(true);
+        _settingUi.SetExitBlind(true);
 
         // 바로 창 닫아버리기
         ToggleSettingPanel();
@@ -376,30 +456,14 @@ public class SettingManager : MonoBehaviourPunCallbacks
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // 싱글톤 정리
-        CleanupSingleTons();
+        // 인게임에서만 쓰는 싱글톤 정리
+        if (ItemManager.Instance != null) Destroy(ItemManager.Instance.gameObject);
+        if (QuickSlotManager.Instance != null) Destroy(QuickSlotManager.Instance.gameObject);
 
         // 타이틀 씬으로 이동 (로비)
-        if(LoadingManager.Instance != null)
+        if (LoadingManager.Instance != null)
         {
             LoadingManager.Instance.RequestLoadScene(_titleSceneName);
-        }
-    }
-
-    // 인게임에서만 쓰는 싱글톤들 파괴
-    private void CleanupSingleTons()
-    {
-        // 파괴 대상 매니저들
-        DestroySingleton(ItemManager.Instance);
-        DestroySingleton(QuickSlotManager.Instance);
-    }
-
-    // 제네릭 파괴 함수
-    private void DestroySingleton<T>(T instance) where T : MonoBehaviour
-    {
-        if (instance != null)
-        {
-            Destroy(instance.gameObject);
         }
     }
 

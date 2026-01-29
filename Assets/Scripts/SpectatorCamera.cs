@@ -110,8 +110,8 @@ public class SpectatorCamera : MonoBehaviour, IInputControllable
     private void Update()
     {
         // 카메라 회전
-        _yaw += _lookInput.x * SettingManager.Instance.MouseSensitivity * Time.deltaTime * _sensitivityCali; // 감도 보정
-        _pitch -= _lookInput.y * SettingManager.Instance.MouseSensitivity * Time.deltaTime * _sensitivityCali;
+        _yaw += _lookInput.x * SettingManager.Instance.Sensitivity * Time.deltaTime * _sensitivityCali; // 감도 보정
+        _pitch -= _lookInput.y * SettingManager.Instance.Sensitivity * Time.deltaTime * _sensitivityCali;
 
         // 각도 제한
         _pitch = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
