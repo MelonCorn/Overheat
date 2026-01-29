@@ -24,8 +24,8 @@ public class EnvironmentMove : MonoBehaviour
         // 이동
         transform.Translate(Vector3.back * _spawner.Speed * Time.deltaTime);
 
-        // 뒤로 넘어가면 반납
-        if (transform.position.z < _spawner.DespawnZ)
+        // 디스폰 z 보다 뒤로 넘어가면 반납
+        if (transform.position.z < _spawner.GetDespawnZ())
             _poolable.Release();
     }
 }
