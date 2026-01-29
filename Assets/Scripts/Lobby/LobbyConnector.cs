@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class LobbyConnector : MonoBehaviourPunCallbacks
 {
-    [SerializeField] Button joinButton;
+    [SerializeField] Button _joinButton;
+    [SerializeField] Button _settingButton;
 
     private void Awake()
     {
@@ -15,12 +16,12 @@ public class LobbyConnector : MonoBehaviourPunCallbacks
         PhotonNetwork.IsMessageQueueRunning = true;
 
         // 일단 버튼 끄기
-        joinButton.interactable = false;
+        _joinButton.interactable = false;
 
         // 이미 로비면 버튼
         if (PhotonNetwork.InLobby)
         {
-            joinButton.interactable = true;
+            _joinButton.interactable = true;
         }
         // 마스터 서버 연결 완료
         else if (PhotonNetwork.NetworkClientState == ClientState.ConnectedToMasterServer)
@@ -37,6 +38,12 @@ public class LobbyConnector : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        if(SettingManager.Instance != null)
+        {
+            // 세팅 버튼에 설정 패널 열기 설정
+            _settingButton.onClick.AddListener(SettingManager.Instance.OpenSetting);
+        }
+
         // 페이드 인
         if (LoadingManager.Instance != null)
         {
@@ -53,7 +60,7 @@ public class LobbyConnector : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         Debug.Log("[Lobby] 콜백 OnJoinedLobby");
-        joinButton.interactable = true;
+        _joinButton.interactable = true;
     }
     public override void OnDisconnected(DisconnectCause cause)
     {

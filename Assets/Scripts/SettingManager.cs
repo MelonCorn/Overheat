@@ -228,6 +228,11 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 세팅 패널 상태 변경
         ToggleSettingPanel();
     }
+    // 켜기 버튼용 (타이틀 설정 버튼)
+    public void OpenSetting()
+    {
+        if (_settingUi.IsActive == false) ToggleSettingPanel();
+    }
 
     // 세팅 패널 상태 변경
     public void ToggleSettingPanel()
