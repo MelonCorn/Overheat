@@ -1,5 +1,4 @@
 using Photon.Pun;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,7 +23,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     [SerializeField] float _rotSmoothSpeed = 10f;  // 회전
     [SerializeField] float _teleportDistance = 5f; // 순간이동
 
-    [Header("플레이어 에임 오브젝트")]
+    [Header("플레이어 에임")]
     [SerializeField] GameObject _aimObj;        // 에임
 
     private Vector3 _networkPosition;       // 네트워크 위치
@@ -182,9 +181,6 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     {
         _interactHandler.SetCamera(_camera.transform);
         _itemHandler.SetCamera(_camera.transform);
-
-        //Cursor.visible = false;
-        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     // 메인 카메라 오디오 리스터 상태 전환

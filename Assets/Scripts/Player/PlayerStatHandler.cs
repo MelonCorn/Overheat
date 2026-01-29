@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -15,14 +16,32 @@ public class PlayerStatHandler : MonoBehaviour
     [SerializeField] Slider _hpSlider;      // 체력 바
     [SerializeField] Slider _staminaSlider; // 기력 바
 
+    [Header("테두리")]
+    [SerializeField] Image _stateColor;          // 피격/회복 이미지
+    [SerializeField] Color _hitColor;            // 피격 색
+    [SerializeField] Color _healColor;           // 치유 색
+    [SerializeField] float _flashAlpha = 0.5f;   // 투명도
+    [SerializeField] float _fadeDuration = 0.5f; // 페이드 아웃 시간
+
 
     // 내부 변수
     private int _currentHp;
     private float _currentStamina;
     private float _lastStaminaUseTime; // 회복 딜레이용
 
+    // 중복 실행 방지용
+    private Coroutine _fadeCoroutine;
+
     private void Start()
     {
+        // 초기 투명
+        if (_stateColor != null)
+        {
+            Color c = _stateColor.color;
+            c.a = 0f;
+            _stateColor.color = c;
+        }
+
         // 상점 && 로컬 사망 상태 시
         if (GameManager.Instance.IsShop && GameData.LocalDead)
         {
@@ -74,6 +93,9 @@ public class PlayerStatHandler : MonoBehaviour
         _currentHp -= damage;
         Debug.Log($"체력 감소: {_currentHp}/{_maxHp}");
 
+        // 피격 피드백
+        PlayFeedbackEffect(_hitColor);
+
         if (_currentHp <= 0)
         {
             _currentHp = 0;
@@ -88,11 +110,15 @@ public class PlayerStatHandler : MonoBehaviour
     public void Heal(int amount)
     {
         if (_currentHp <= 0) return;
+        if (_currentHp >= _maxHp) return;
 
         _currentHp += amount;
 
         if (_currentHp >= _maxHp)
             _currentHp = _maxHp;
+
+        // 치유 피드백
+        PlayFeedbackEffect(_healColor);
 
         Debug.Log($"체력 회복: {_currentHp}");
 
@@ -175,5 +201,53 @@ public class PlayerStatHandler : MonoBehaviour
             // 반영
             _staminaSlider.value = Mathf.Lerp(0f, 1f, staminaRatio);
         }
+    }
+
+
+    // 효과 재생 요청 함수
+    private void PlayFeedbackEffect(Color targetColor)
+    {
+        // 상태 UI 없으먼 중단
+        if (_stateColor == null) return;
+
+        // 이미 실행 중인 코루틴이 있다면 정지 (중복 깜빡임 방지)
+        if (_fadeCoroutine != null) StopCoroutine(_fadeCoroutine);
+
+        // 코루틴 시작
+        _fadeCoroutine = StartCoroutine(ColorFade(targetColor));
+    }
+
+    // 색상 페이드 아웃 코루틴
+    private IEnumerator ColorFade(Color targetColor)
+    {
+        // 시작 색상 설정 (알파값, 색)
+        targetColor.a = _flashAlpha;
+        _stateColor.color = targetColor;
+
+        float timer = 0f;
+
+        // 페이드 아웃
+        while (timer < _fadeDuration)
+        {
+            timer += Time.deltaTime;
+
+            // 시간에 따라 0까지
+            float newAlpha = Mathf.Lerp(_flashAlpha, 0f, timer / _fadeDuration);
+
+            // 색상 적용
+            Color currentColor = _stateColor.color;
+            currentColor.a = newAlpha;
+            _stateColor.color = currentColor;
+
+            yield return null;
+        }
+
+        // 확실하게 0으로 마무리
+        Color finalColor = _stateColor.color;
+        finalColor.a = 0f;
+        _stateColor.color = finalColor;
+
+        // 코루틴 비우기
+        _fadeCoroutine = null;
     }
 }

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ab5894ae7fdd464b8adaa1a72d87cdb, type: 3}
+  m_Name: AppleData 2
+  m_EditorClassIdentifier: Assembly-CSharp::PotionData
+  displayName: "\uB9D0\uB9B0 \uB9D0\uACE0\uAE30"
+  itemName: Meat
+  desc: "\uB9D0\uACE0\uAE30\uB294 \uC539\uB294 \uB9DB\uC774 \uC77C\uD488\uC785\uB2C8\uB2E4."
+  price: 25
+  icon: {fileID: 21300000, guid: 7377013011b4c3348809ff574abe799e, type: 3}
+  prefab: {fileID: 429471891331199967, guid: 9e677d803ca3fa34d9dc52ef41c17141, type: 3}
+  handPosOffset: {x: 0, y: -0.05, z: 0}
+  handRotOffset: {x: 0, y: 0, z: 0}
+  healAmount: 80

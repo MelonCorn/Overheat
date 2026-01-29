@@ -391,7 +391,10 @@ public class SettingManager : MonoBehaviourPunCallbacks
         CleanupSingleTons();
 
         // 타이틀 씬으로 이동 (로비)
-        LoadingManager.Instance?.RequestLoadScene(_titleSceneName);
+        if(LoadingManager.Instance != null)
+        {
+            LoadingManager.Instance.RequestLoadScene(_titleSceneName);
+        }
     }
 
     // 인게임에서만 쓰는 싱글톤들 파괴
