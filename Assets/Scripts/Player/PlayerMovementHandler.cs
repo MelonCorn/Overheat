@@ -61,7 +61,17 @@ public class PlayerMovementHandler : MonoBehaviour
 
         // 최종 이동    수평 - 이동 / 수직 - 중력
         Vector3 finalVelocity = _horizontalVelocity + _verticalVelocity;
-        _cc.Move(finalVelocity * Time.deltaTime);
+
+        // Move에 따른 상태 반환
+        CollisionFlags flags = _cc.Move(finalVelocity * Time.deltaTime);
+
+        // 머리위에 뭔가 부딪혔고
+        // 올라가는 속도가 남아있다면
+        if ((flags & CollisionFlags.Above) != 0 && _verticalVelocity.y > 0)
+        {
+            // 수직 속도 0
+            _verticalVelocity.y = 0;
+        }
     }
     private void Move()
     {
