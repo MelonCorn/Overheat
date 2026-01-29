@@ -573,8 +573,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (_spectatorCamera != null)
         {
             _spectatorCamera.gameObject.SetActive(true);
-            _spectatorCamera.transform.position = PlayerHandler.localPlayer.CameraTrans.position;
-            _spectatorCamera.transform.rotation = PlayerHandler.localPlayer.CameraTrans.rotation;
+            _spectatorCamera.transform.position = PlayerHandler.localPlayer.CameraHolderTrans.position;
+            _spectatorCamera.transform.rotation = PlayerHandler.localPlayer.CameraHolderTrans.rotation;
         }
 
         // 레이더 초기화

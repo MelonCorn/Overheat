@@ -1,7 +1,6 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerInputHandler))]
@@ -16,6 +15,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
     private PlayerInputHandler _inputHandler;   // 입력
     private PlayerStatHandler _statHandler;     // 스탯
+    private PlayerRecoilHandler _recoilHandler; // 반동
     private PlayerItemMoveHandler _itemMover;   // 아이템 움직임
     private Transform _camera;
 
@@ -38,6 +38,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     {
         _inputHandler = GetComponent<PlayerInputHandler>();
         _statHandler = GetComponent<PlayerStatHandler>();
+        _recoilHandler = GetComponentInChildren<PlayerRecoilHandler>();
         _itemMover = GetComponentInChildren<PlayerItemMoveHandler>();
     }
     private void Start()
@@ -155,9 +156,13 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
         // 무기 데이터 캐싱
         _currentWeaponData = itemData as WeaponData;
+        if (_currentWeaponData != null && _recoilHandler != null)
+        {
+            // 반동핸들러에도 적용
+            _recoilHandler.SetWeaponData(_currentWeaponData);
+        }
 
         // PlayerItemData이면 새 아이템
-        // 
         if (itemData is PlayerItemData data && data.prefab != null)
         {
             CreateItem(data, _fpsHolder);
@@ -401,6 +406,10 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
         // 쿨타임 갱신
         _lastFireTime = Time.time;
+
+        // 반동
+        if (_recoilHandler != null)
+            _recoilHandler.RecoilFire(data);
 
         // 탄 수가 1개보다 많으면 산탄 로직
         if (data.pelletCount > 1)
