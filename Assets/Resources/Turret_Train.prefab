@@ -964,7 +964,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2209340741597218962}
   - component: {fileID: 238147267615191508}
-  m_Layer: 7
+  m_Layer: 19
   m_Name: Bridge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1065,7 +1065,7 @@ Transform:
   m_GameObject: {fileID: 5561313991666100083}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.49999997, z: -0.27952728}
+  m_LocalPosition: {x: 0, y: 0.50000095, z: -0.277}
   m_LocalScale: {x: 0.41062325, y: 1.3950503, z: 0.65463054}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1384,9 +1384,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2640087355524035731}
   - {fileID: 5185246115703015578}
   - {fileID: 2985308010081023329}
-  - {fileID: 2640087355524035731}
   - {fileID: 2209340741597218962}
   - {fileID: 1721229118523105853}
   - {fileID: 9162355008634982995}
@@ -1497,12 +1497,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
   m_SerializedVersion: 0
   m_AgentTypeID: 0
-  m_CollectObjects: 0
+  m_CollectObjects: 2
   m_Size: {x: 10, y: 10, z: 10}
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 524288
   m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -1513,7 +1513,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.1
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 331bfc893c5da134488160cc500eb225, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 16b5106799b18234094fa8911b7784f4, type: 2}
   m_BuildHeightMesh: 0
 --- !u!54 &2870479128874670718
 Rigidbody:
@@ -2122,7 +2122,7 @@ GameObject:
   - component: {fileID: 3474403841512856606}
   - component: {fileID: 321984100465271012}
   - component: {fileID: 6326076335210060451}
-  m_Layer: 7
+  m_Layer: 19
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2138,7 +2138,7 @@ Transform:
   m_GameObject: {fileID: 8512258272379617699}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: -3.1571}
+  m_LocalPosition: {x: 0, y: 0, z: -3.1571}
   m_LocalScale: {x: 3.8742, y: 0.71682, z: 6.303706}
   m_ConstrainProportionsScale: 0
   m_Children: []

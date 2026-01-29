@@ -189,7 +189,7 @@ MonoBehaviour:
   _muzzleClip: {fileID: 0}
   _impactWallEffect: {fileID: 0}
   _impactEnemyEffect: {fileID: 0}
-  _isContinuous: 0
+  _isContinuous: 1
 --- !u!1 &3262436773571751651
 GameObject:
   m_ObjectHideFlags: 0

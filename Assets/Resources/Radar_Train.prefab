@@ -48,7 +48,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4047813088649172758
 Transform:
   m_ObjectHideFlags: 0
@@ -368,7 +368,7 @@ Transform:
   m_GameObject: {fileID: 1510665873381455770}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.49999997, z: -0.27952728}
+  m_LocalPosition: {x: 0, y: 0.5000011, z: -0.286}
   m_LocalScale: {x: 0.41062325, y: 1.3950503, z: 0.65463054}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1092,7 +1092,7 @@ GameObject:
   - component: {fileID: 663341880758882970}
   - component: {fileID: 7716030011484848900}
   - component: {fileID: 3069618697215258426}
-  m_Layer: 7
+  m_Layer: 19
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1108,7 +1108,7 @@ Transform:
   m_GameObject: {fileID: 4296763572808711628}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: -3.1571}
+  m_LocalPosition: {x: 0, y: 0, z: -3.1571}
   m_LocalScale: {x: 3.8742, y: 0.71682, z: 6.303706}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1312,7 +1312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6296715376721135855}
   - component: {fileID: 5229713968087083415}
-  m_Layer: 7
+  m_Layer: 19
   m_Name: Bridge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1927,7 +1927,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2570054898865439176
 Transform:
   m_ObjectHideFlags: 0
@@ -2455,15 +2455,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8291606527430192133}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.21, y: 0, z: -19.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4919072252520745389}
   - {fileID: 1842270453367696176}
   - {fileID: 1909612010632333999}
   - {fileID: 7875976905633415340}
-  - {fileID: 4919072252520745389}
   - {fileID: 6296715376721135855}
   - {fileID: 5803449322201689823}
   - {fileID: 6392861611565730475}
@@ -2493,8 +2493,8 @@ MonoBehaviour:
   - {fileID: 3518557603628255337}
   - {fileID: 4330980363554044955}
   _fireProbability: 20
-  _explosionForce: 25
-  _torqueForce: 30
+  _explosionForce: 50
+  _torqueForce: 50
 --- !u!114 &4920103300784491134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2565,12 +2565,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
   m_SerializedVersion: 0
   m_AgentTypeID: 0
-  m_CollectObjects: 0
+  m_CollectObjects: 2
   m_Size: {x: 10, y: 10, z: 10}
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 524288
   m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -2581,7 +2581,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.1
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 331bfc893c5da134488160cc500eb225, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 15ca5edd999abed4099e1e96c77b1af5, type: 2}
   m_BuildHeightMesh: 0
 --- !u!54 &4277079657692009366
 Rigidbody:

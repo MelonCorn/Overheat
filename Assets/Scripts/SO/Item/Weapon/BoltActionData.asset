@@ -17,8 +17,8 @@ MonoBehaviour:
   desc: "\uC2DC\uC6D0\uC2DC\uC6D0\uD55C \uBCFC\uD2B8\uC561"
   price: 200
   icon: {fileID: 21300000, guid: 3f07e121dff858b46be11c81416b617b, type: 3}
-  prefab: {fileID: 0}
-  handPosOffset: {x: 0, y: 0, z: 0}
+  prefab: {fileID: 3495679736710920350, guid: b4388e63f7eac554eb0679dca1d5e8b1, type: 3}
+  handPosOffset: {x: 0, y: -0.007, z: 0}
   handRotOffset: {x: 0, y: 0, z: 0}
   damage: 100
   range: 100

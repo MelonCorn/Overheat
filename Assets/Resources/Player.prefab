@@ -379,7 +379,7 @@ MonoBehaviour:
   _airSmoothTime: 0.3
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 4288
+    m_Bits: 528576
   _groundCheckRadius: 0.4
   _groundCheckOffset: 0.5
   _groundCheckDistance: 0.2
@@ -1602,7 +1602,7 @@ Camera:
   m_Depth: 10
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 196599
+    m_Bits: 720887
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
