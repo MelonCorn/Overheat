@@ -5,14 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TrainType       //  열차 타입
-{
-    None,
-    Engine,
-    Cargo,
-    Turret,
-}
-
 public struct Train         // 소유 열차 정보
 {
     public TrainType type;

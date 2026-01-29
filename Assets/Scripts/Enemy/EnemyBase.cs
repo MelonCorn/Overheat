@@ -44,6 +44,12 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
         // 개체 수 증가
         EnemySpawner.ActiveCount++;
 
+        // 미니맵에 등록
+        if (MiniMapHandler.Instance != null)
+        {
+            MiniMapHandler.Instance.RegisterEnemy(transform);
+        }
+
         _networkPos = transform.position;
         _networkRot = transform.rotation;
     }

@@ -3,16 +3,16 @@ using UnityEngine.UI;
 
 public class MinimapDot : MonoBehaviour
 {
-    [SerializeField] Image _icon;   // 이미지
-
     // 추적 대상
     public Transform Target { get; private set; }
 
-    private RectTransform _rect;
+    private Image _icon;            // 이미지
+    private RectTransform _rect;    // UI 트랜스폼
     public PoolableObject PoolObj { get; private set; }
 
     private void Awake()
     {
+        _icon = GetComponent<Image>();
         _rect = GetComponent<RectTransform>();
         PoolObj = GetComponent<PoolableObject>();
     }
@@ -25,22 +25,18 @@ public class MinimapDot : MonoBehaviour
     }
 
     // 매니저에서 호출할 위치 갱신
-    public void UpdatePosition(Vector3 playerPos, float mapScale, float maxRadius)
+    public void UpdatePosition(Vector3 playerPos, float playerRotY, float mapScale, float maxRadius)
     {
-        // 타겟 없으면
+        // 타겟 없으면 무시
         if (Target == null)
-        {
-            // 반납
-            PoolObj.Release();
             return;
-        }
 
         // 플레이어와 타겟 사이의 거리 계산
         Vector3 dir = Target.position - playerPos;
-        Vector2 pos = new Vector2(dir.x, dir.z); // X, Z만 사용
-
-        // 스케일 적용 (월드 거리를 UI 거리로)
-        Vector2 uiPos = pos * mapScale;
+        // 플레이어 회전값만큼 반대로 (오른쪽보면 왼쪽으로)
+        Vector3 rotatedDir = Quaternion.Euler(0, -playerRotY, 0) * dir;
+        // UI 좌표만큼 줄이기
+        Vector2 uiPos = new Vector2(rotatedDir.x, rotatedDir.z) * mapScale;
 
         // 원형 레이더 밖으로 나가지 않게
         if (uiPos.magnitude > maxRadius)

@@ -1,6 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TrainType       //  열차 타입
+{
+    None,
+    Engine,
+    Cargo,
+    Turret,
+    Radar,
+}
+
 [System.Serializable]
 public struct BasicLevelData
 {

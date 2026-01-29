@@ -1470,6 +1470,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   ActivePlayers: []
+  _starterItem: {fileID: 0}
   _isShop: 1
   _isWaitingRoom: 0
   _waitingCanvas: {fileID: 0}
@@ -1477,6 +1478,7 @@ MonoBehaviour:
   _engineUI: {fileID: 0}
   _spectatorCamera: {fileID: 0}
   _enemySpawner: {fileID: 0}
+  _environmentSpawner: {fileID: 0}
   _lostItemSpawnPoint: {fileID: 1670466077}
   _goldText: {fileID: 154930830}
   _SurviveDayText: {fileID: 904127499}
@@ -1537,6 +1539,7 @@ MonoBehaviour:
   - {fileID: 5843901296592451507, guid: f09dcfd7b95861a4fa5c4f86a76cbadf, type: 3}
   - {fileID: -4925531393011033924, guid: 9e677d803ca3fa34d9dc52ef41c17141, type: 3}
   - {fileID: 7537090976669166867, guid: e1682da5dfc9ee64a854c1573dfac4ef, type: 3}
+  - {fileID: 5749499404702696556, guid: 7eba71cd512f67a4892cf29cbe4532ec, type: 3}
 --- !u!1 &494570166
 GameObject:
   m_ObjectHideFlags: 0
@@ -5845,6 +5848,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3cb6bc48de942624a85b696a3416e55f, type: 2}
   - {fileID: 11400000, guid: 66b4002e96ef4044c91bece470346ad9, type: 2}
   - {fileID: 11400000, guid: eef1ce83a88684d449beebcb11f389ec, type: 2}
+  - {fileID: 11400000, guid: 74cc070558fee4f458b918de2d5bc067, type: 2}
   _trainGroup: {fileID: 1816615968}
 --- !u!4 &1820175776
 Transform:

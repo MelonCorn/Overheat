@@ -7,8 +7,7 @@ public class MiniMapHandler : MonoBehaviour
 
     [Header("UI 연결")]
     [SerializeField] GameObject _minimapUI;        // 미니맵 UI
-    [SerializeField] RectTransform _blipContainer; // 점 찍힐 패널
-    [SerializeField] Transform _playerArrow;       // 내 화살표 (회전용)
+    [SerializeField] RectTransform _dotsContainer; // 점 찍힐 패널
 
     [Header("프리팹")]
     [SerializeField] PoolableObject _dotPrefab;  // 점 프리팹
@@ -47,11 +46,8 @@ public class MiniMapHandler : MonoBehaviour
         // 레이더 상 중앙은 플레이어 위치
         Vector3 centerPos = PlayerHandler.localPlayer.transform.position;
 
-        // 내 화살표 회전 (플레이어가 보는 방향)
-        float yRot = PlayerHandler.localPlayer.transform.eulerAngles.y;
-
-        // UI는 Z축 회전
-        _playerArrow.localRotation = Quaternion.Euler(0, 0, -yRot);
+        // 내 플레이어 Y 회전값
+        float playerRotY = PlayerHandler.localPlayer.transform.eulerAngles.y;
 
         // 모든 점 위치 갱신 (역순)
         for (int i = _activeDots.Count - 1; i >= 0; i--)
@@ -68,7 +64,7 @@ public class MiniMapHandler : MonoBehaviour
             }
 
             // 위치 업데이트
-            _activeDots[i].UpdatePosition(centerPos, _mapScale, _maxRadius);
+            _activeDots[i].UpdatePosition(centerPos, playerRotY, _mapScale, _maxRadius);
         }
     }
 
@@ -96,7 +92,7 @@ public class MiniMapHandler : MonoBehaviour
         if(PoolManager.Instance != null)
         {
             // 풀 꺼내서
-            var poolObj = PoolManager.Instance.Spawn(_dotPrefab, _blipContainer);
+            var poolObj = PoolManager.Instance.Spawn(_dotPrefab, _dotsContainer);
             MinimapDot dot = poolObj.GetComponent<MinimapDot>();
             // 초기화
             dot.Init(target, color);

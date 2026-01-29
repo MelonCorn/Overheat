@@ -118,6 +118,12 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         {
             // ²ø °Íµé ²ô±â 
             DisableRemoteComponents();
+
+            // ¹Ì´Ï¸Ê¿¡ µî·Ï
+            if (MiniMapHandler.Instance != null)
+            {
+                MiniMapHandler.Instance.RegisterEnemy(transform);
+            }
         }
     }
 

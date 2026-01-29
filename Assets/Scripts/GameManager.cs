@@ -327,6 +327,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 TrainManager.Instance.CleanupDeadTrain();
             }
 
+            // 레이더 초기화
+            RadarNode.ResetRadarCount();
+
             // 엔진 ui 비활성화
             if (_engineUI != null) _engineUI.SetActive(false);
 
@@ -567,6 +570,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             _spectatorCamera.transform.position = PlayerHandler.localPlayer.CameraTrans.position;
             _spectatorCamera.transform.rotation = PlayerHandler.localPlayer.CameraTrans.rotation;
         }
+
+        // 레이더 초기화
+        RadarNode.ResetRadarCount();
     }
 
 
@@ -630,7 +636,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         // 환경 오브젝트 끌어당기기
         if (_environmentSpawner) _environmentSpawner.Repositon();
-        
+
+        // 레이더 초기화
+        RadarNode.ResetRadarCount();
 
         // 플레이어 전부 치우고
         foreach (var player in ActivePlayers.ToArray())

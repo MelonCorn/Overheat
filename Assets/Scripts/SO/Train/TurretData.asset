@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c8d3261398e39a48af974d6bb1d067e, type: 3}
   m_Name: TurretData
   m_EditorClassIdentifier: Assembly-CSharp::TrainTurretDataSO
-  displayName: "\uD3EC\uD0D1\uCE78"
+  displayName: "\uD3EC\uD0D1"
   itemName: Turret
   desc: "\uB4E0\uB4E0\uD558\uAC8C \uC801\uC744 \uBB34\uCC14\uB7EC \uC90D\uB2C8\uB2E4."
   price: 150
@@ -27,5 +27,9 @@ MonoBehaviour:
   turretLevelDatas:
   - damage: 5
     fireRate: 1
+    range: 0
+    rotationSpeed: 0
   - damage: 8
     fireRate: 1.2
+    range: 0
+    rotationSpeed: 0
