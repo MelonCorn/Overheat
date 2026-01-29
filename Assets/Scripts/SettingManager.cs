@@ -78,6 +78,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
     {
         // 환경설정 UI 초기화
         InitUI();
+
+        // 사운드 적용 후 브금 재생
+        ApplySoundSettings();
     }
 
     private void Update()
@@ -120,9 +123,6 @@ public class SettingManager : MonoBehaviourPunCallbacks
 
         // 화면 모드 적용 (기본 창전체)
         SetScreenMode(PlayerPrefs.GetInt(KEY_SCREEN_MODE, 1));
-
-        // 사운드 적용 후 브금 재생
-        ApplySoundSettings();
     }
 
     // 사운드 설정 확인
