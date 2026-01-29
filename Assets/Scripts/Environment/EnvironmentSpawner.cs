@@ -17,7 +17,7 @@ public class EnvironmentSpawner : MonoBehaviour
 
 
     // 활성화된 환경 오브젝트
-    private List<EnvironmentMove> _activeEnvironments = new List<EnvironmentMove>();
+    private List<PoolableObject> _activeEnvironments = new List<PoolableObject>();
 
     public float Speed { get; private set; }    // 속도
 
@@ -59,45 +59,93 @@ public class EnvironmentSpawner : MonoBehaviour
         }
     }
 
-    // 오브젝트 생성
-    void SpawnObject()
+
+    // 오브젝트 재위치
+    public void Repositon()
     {
-        // 일단 프리팹 수 만큼 랜덤
+        // 타겟 재설정 (카메라가 0,0,0으로 갔으면 거기가 기준)
+        if (Camera.main != null) _target = Camera.main.transform;
+        if (_target == null) return;
+
+        // 역순 반납
+        for (int i = _activeEnvironments.Count - 1; i >= 0; i--)
+        {
+            if (_activeEnvironments[i] != null && _activeEnvironments[i].gameObject.activeSelf)
+            {
+                _activeEnvironments[i].Release();
+            }
+        }
+
+        // 깔끔하게 정리
+        _activeEnvironments.Clear();
+
+        // 뒤쪽부터 앞쪽
+        float startZ = _target.position.z - _despawnZ;
+        float endZ = _target.position.z + _spawnZ;
+
+        // 간격마다 심기
+        for (float z = startZ; z <= endZ; z += _spawnDistanceInterval)
+        {
+            SpawnObjectWithZ(z);
+        }
+
+        // 이동 거리 초기화
+        _totalDistance = 0f;
+
+        Debug.Log("[배경] 리셋 완료");
+    }
+
+    // 특정 Z 위치에 생성
+    void SpawnObjectWithZ(float zPos)
+    {
+        // 랜덤 환경오브젝트
         int index = Random.Range(0, _prefabs.Length);
 
-        // 랜덤 프리팹 선정
+        // 선택된 오브젝트
         PoolableObject selectedPrefab = _prefabs[index];
 
-        // 랜덤 X
+        // 랜덤 X 가운데 비움
         float randomX = 0f;
-
-        // 왼쪽 아니면 오른쪽 결정
         if (Random.value > 0.5f)
-        {
-            // 철로 반경 ~ 스폰 너비
             randomX = Random.Range(_trackRadius, _spawnWidth);
-        }
         else
-        {
-            // -스폰 너비 ~ - 철로 반경
             randomX = Random.Range(-_spawnWidth, -_trackRadius);
-        }
 
-        // 로컬 위치에 더해서 생성
-        float spawnZ = _target.position.z + _spawnZ;
+        // 스폰 위치
+        Vector3 spawnPos = new Vector3(randomX, 0, zPos);
 
-        // 스폰 위치 결정
-        Vector3 spawnPos = new Vector3(randomX, 0, spawnZ);
-
-        // 풀에서 꺼냄
-        PoolableObject spawnedObj = PoolManager.Instance.Spawn(selectedPrefab, spawnPos, Quaternion.identity);
-
-        // 움직임 세팅
-        var mover = spawnedObj.GetComponent<EnvironmentMove>();
-        if (mover != null)
+        // 생성
+        if(PoolManager.Instance != null)
         {
-            // 이동 속도, 반환 Z 설정
-            mover.Setup(this);
+            PoolableObject spawnedObj = PoolManager.Instance.Spawn(selectedPrefab, spawnPos, Quaternion.identity);
+            var mover = spawnedObj.GetComponent<EnvironmentMove>();
+            if (mover != null)
+            {
+                // 초기화
+                mover.Setup(this);
+
+                // 리스트에 등록
+                _activeEnvironments.Add(spawnedObj);
+            }
+        }
+    }
+
+    // 기존 SpawnObject는 이제 SpawnObjectAtZ를 호출하는 껍데기 역할
+    void SpawnObject()
+    {
+        float targetZ = (_target == null || _target.gameObject.activeInHierarchy == false) ? 0f : _target.position.z;
+
+        // 앞쪽에 생성
+        float spawnZ = targetZ + _spawnZ;
+        SpawnObjectWithZ(spawnZ);
+    }
+
+    // 리스트에서 제거
+    public void RemoveFromList(PoolableObject item)
+    {
+        if (_activeEnvironments.Contains(item))
+        {
+            _activeEnvironments.Remove(item);
         }
     }
 

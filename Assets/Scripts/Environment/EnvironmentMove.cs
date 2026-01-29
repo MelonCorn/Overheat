@@ -13,6 +13,15 @@ public class EnvironmentMove : MonoBehaviour
         _poolable = GetComponent<PoolableObject>();
     }
 
+    private void OnDisable()
+    {
+        // 비활성화 될때 리스트에서 지우기
+        if (_spawner != null)
+        {
+            _spawner.RemoveFromList(_poolable);
+        }
+    }
+
     // 수치 설정
     public void Setup(EnvironmentSpawner spawner)
     {

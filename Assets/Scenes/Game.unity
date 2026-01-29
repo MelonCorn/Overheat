@@ -3767,6 +3767,7 @@ MonoBehaviour:
   _engineUI: {fileID: 1353385792}
   _spectatorCamera: {fileID: 1898154543}
   _enemySpawner: {fileID: 759135627}
+  _environmentSpawner: {fileID: 1869453000}
   _lostItemSpawnPoint: {fileID: 912058149}
   _goldText: {fileID: 44768187}
   _SurviveDayText: {fileID: 341828667}

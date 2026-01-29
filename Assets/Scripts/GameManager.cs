@@ -37,6 +37,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("적 스포너 (인게임)")]
     [SerializeField] EnemySpawner _enemySpawner;
 
+    [Header("환경 스포너 (인게임)")]
+    [SerializeField] EnvironmentSpawner _environmentSpawner;
+
     [Header("유실물 생성 포인트 (인게임/상점)")]
     [SerializeField] Transform _lostItemSpawnPoint;
 
@@ -326,6 +329,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
             // 엔진 ui 비활성화
             if (_engineUI != null) _engineUI.SetActive(false);
+
+            // 상점도 아닐 때
+            if(_isShop == false)
+            {
+                // 환경 오브젝트 끌어당기기
+                if (_environmentSpawner) _environmentSpawner.Repositon();
+            }
         }
         else
         {
@@ -616,7 +626,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         CleanupLostItems();
 
         // 엔진 ui 비활성화
-        _engineUI?.SetActive(false);
+        if(_engineUI) _engineUI.SetActive(false);
+
+        // 환경 오브젝트 끌어당기기
+        if (_environmentSpawner) _environmentSpawner.Repositon();
+        
 
         // 플레이어 전부 치우고
         foreach (var player in ActivePlayers.ToArray())
