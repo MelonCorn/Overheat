@@ -18,6 +18,11 @@ public class WeaponData : PlayerItemData
     public LayerMask hitLayer;     // 타겟 설정
     public WeaponType type;        // 타입
 
+    [Header("산탄 설정")]
+    public int pelletCount = 1;      // 발사체 개수
+    [Range(0f, 10f)]
+    public float spreadAngle = 0f;   // 탄퍼짐 정도
+
     [Header("도구 설정")]
     public bool isRepairTool = false; // 체크하면 수리 도구로 작동
 }
