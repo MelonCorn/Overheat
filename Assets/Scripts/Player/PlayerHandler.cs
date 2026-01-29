@@ -6,6 +6,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 {
     public static PlayerHandler localPlayer;
 
+    private PlayerCameraHandler _cameraHandler;
     private PlayerStatHandler _statHandler;
     private PlayerInteractHandler _interactHandler;
     private PlayerItemHandler _itemHandler;
@@ -15,7 +16,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     [SerializeField] MonoBehaviour[] _scripts; // PlayerInputHandler 같은 것들
 
     [Header("리모트 끌 것")]
-    [SerializeField] GameObject _camera;        // 카메라
+    [SerializeField] GameObject _cameraHolder;  // 카메라홀더
     [SerializeField] GameObject _canvas;        // 캔버스
 
     [Header("네트워크 동기화 설정")]
@@ -29,7 +30,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     private Vector3 _networkPosition;       // 네트워크 위치
     private Quaternion _networkRotation;    // 네트워크 회전
 
-    public Transform CameraTrans => _camera.transform;
+    public Transform CameraHolderTrans => _cameraHolder.transform;          // 홀더 트랜스폼
+    public Transform CameraTrans => _cameraHandler.LocalCamera.transform;   // 진짜 카메라 트랜스폼
     public GameObject LocalAim => _aimObj;
     public string CurrentItem = "";
 
@@ -37,6 +39,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 
     private void Awake()
     {
+        _cameraHandler = GetComponent<PlayerCameraHandler>();
         _statHandler = GetComponent<PlayerStatHandler>();
         _interactHandler = GetComponent<PlayerInteractHandler>();
         _itemHandler = GetComponent<PlayerItemHandler>();
@@ -122,7 +125,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
             // 미니맵에 등록
             if (MiniMapHandler.Instance != null)
             {
-                MiniMapHandler.Instance.RegisterEnemy(transform);
+                MiniMapHandler.Instance.RegisterPlayer(transform);
             }
         }
     }
@@ -174,7 +177,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     private void DisableRemoteComponents()
     {
         // 카메라 끄기
-        if (_camera != null) _camera.SetActive(false);
+        if (_cameraHolder != null) _cameraHolder.SetActive(false);
         if (_canvas != null) _canvas.SetActive(false);
 
         // 혹시 몰라서 끔
@@ -185,8 +188,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     // 카메라 설정
     private void SetCamera()
     {
-        _interactHandler.SetCamera(_camera.transform);
-        _itemHandler.SetCamera(_camera.transform);
+        _interactHandler.SetCamera(CameraTrans);
+        _itemHandler.SetCamera(CameraTrans);
     }
 
     // 메인 카메라 오디오 리스터 상태 전환
@@ -263,7 +266,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         if (playerInput != null) playerInput.enabled = false;// 플레이어 인풋 차단
 
         // 플레이어 로컬 카메라 끄기
-        _camera?.gameObject.SetActive(false);
+        _cameraHolder?.gameObject.SetActive(false);
         _canvas?.gameObject.SetActive(false);
 
         if (GameManager.Instance != null)
