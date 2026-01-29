@@ -123,6 +123,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
 
         // 사운드 적용
         ApplySoundSettings();
+
+        // 설정 다 하고 소리 재생
+        SoundManager.Instance.OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
     // 사운드 설정 확인

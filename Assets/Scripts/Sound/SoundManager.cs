@@ -44,8 +44,6 @@ public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance { get; private set; }
 
-    private SettingUI _settingUI;
-
     [Header("오디오 믹서")]
     [SerializeField] AudioMixer _mixer;      // 믹서
     [Header("오디오 소스")]
@@ -108,9 +106,6 @@ public class SoundManager : MonoBehaviour
     {
         // 씬 로드 구독
         SceneManager.sceneLoaded += OnSceneLoaded;
-
-        // 맨첨에 일단 실행
-        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
     private void OnDestroy()
@@ -135,7 +130,7 @@ public class SoundManager : MonoBehaviour
 
     // 씬 로드시 실행
     // 씬 이름에 맞는 타입의 배경음 재생
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // 씬 BGM 재생
         PlaySceneBGM(scene.name);
