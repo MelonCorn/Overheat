@@ -33,15 +33,6 @@ public class TurretNode : TrainNode
         SetData(level);
     }
 
-
-    public override void Upgrade(int level)
-    {
-        base.Upgrade(level);
-
-        SetData(level);
-    }
-
-
     // 레벨 데이터 설정
     private void SetData(int level)
     {
@@ -248,18 +239,5 @@ public class TurretNode : TrainNode
             // 목표 회전값
             _targetRotation = (Quaternion)stream.ReceiveNext();
         }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        // 사거리
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _range);
-
-        // 안전 구역
-        Gizmos.color = Color.green;
-        Vector3 center = transform.position;
-        Vector3 size = new Vector3(_safeWidth * 2, 5f, _range * 2);
-        Gizmos.DrawWireCube(center, size);
     }
 }

@@ -20,8 +20,8 @@ MonoBehaviour:
   prefab: {fileID: 3495679736710920350, guid: b4388e63f7eac554eb0679dca1d5e8b1, type: 3}
   handPosOffset: {x: 0, y: -0.007, z: 0}
   handRotOffset: {x: 0, y: 0, z: 0}
-  damage: 100
-  range: 100
+  damage: 200
+  range: 200
   fireRate: 3
   isAuto: 0
   hitLayer:

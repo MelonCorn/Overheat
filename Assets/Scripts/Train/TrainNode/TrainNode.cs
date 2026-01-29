@@ -99,16 +99,6 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         _explosionMask = _localPlayerLayer | _itemLayer | _enemyLayer;
     }
 
-    // 업그레이드
-    public virtual void Upgrade(int level)
-    {
-        // 레벨의 스탯
-        var stat = Data.GetBasicStat(level);
-
-        // 체력
-        _maxHp = stat.maxHP;
-    }
-
     // 앞차의 후방 연결부에 붙임
     public void Attach(TrainNode prevTrain)
     {

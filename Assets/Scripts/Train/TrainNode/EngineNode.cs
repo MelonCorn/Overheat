@@ -33,15 +33,6 @@ public class EngineNode : TrainNode
         SetData(level);
     }
 
-
-    public override void Upgrade(int level)
-    {
-        base.Upgrade(level);
-
-        SetData(level);
-    }
-
-
     // 레벨 데이터 설정
     private void SetData(int level)
     {
