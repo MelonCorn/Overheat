@@ -10,8 +10,10 @@ public class SettingUI : MonoBehaviour
     [SerializeField] GameObject _settingPanel;
     [SerializeField] GameObject _exitBlind; // 퇴장 시 가림막
 
-    [Header("화면/조작")]
+    [Header("화면 모드 드롭다운")]
     public TMP_Dropdown screenModeDropdown;
+
+    [Header("마우스 감도")]
     public Slider sensitivitySlider;
     public TextMeshProUGUI sensitivityText;
 

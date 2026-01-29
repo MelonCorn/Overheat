@@ -1,5 +1,4 @@
 using Photon.Pun;
-using Photon.Realtime;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -174,9 +173,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
         _settingUi.sfxSlider.value = SfxVol;
 
         // 슬라이더 이벤트 연결
-        _settingUi.masterSlider.onValueChanged.AddListener((value) => SetVolume("MasterVolume", value, ref _masterVol, KEY_VOL_MASTER, _settingUi.masterText));
-        _settingUi.bgmSlider.onValueChanged.AddListener((value) => SetVolume("BGMVolume", value, ref _bgmVol, KEY_VOL_BGM, _settingUi.bgmText));
-        _settingUi.sfxSlider.onValueChanged.AddListener((value) => SetVolume("SFXVolume", value, ref _sfxVol, KEY_VOL_SFX, _settingUi.sfxText));
+        _settingUi.masterSlider.onValueChanged.AddListener((value) => SetVolume(KEY_VOL_MASTER, value, ref _masterVol, _settingUi.masterText));
+        _settingUi.bgmSlider.onValueChanged.AddListener((value) => SetVolume(KEY_VOL_BGM, value, ref _bgmVol, _settingUi.bgmText));
+        _settingUi.sfxSlider.onValueChanged.AddListener((value) => SetVolume(KEY_VOL_SFX, value, ref _sfxVol, _settingUi.sfxText));
 
         // 볼륨 텍스트 갱신
         _settingUi.UpdateVolumeText(_settingUi.masterText, MasterVol);
@@ -185,9 +184,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
 
         // 사운드 토글 설정
         // 토글 이벤트 연결
-        InitToggle(_settingUi.masterToggle, _settingUi.masterIcon, IsMasterOn, (isOn) => SetMute("MasterVolume", isOn, ref _isMasterOn, KEY_MUTE_MASTER));
-        InitToggle(_settingUi.bgmToggle, _settingUi.bgmIcon, IsBgmOn, (isOn) => SetMute("BGMVolume", isOn, ref _isBgmOn, KEY_MUTE_BGM));
-        InitToggle(_settingUi.sfxToggle, _settingUi.sfxIcon, IsSfxOn, (isOn) => SetMute("SFXVolume", isOn, ref _isSfxOn, KEY_MUTE_SFX));
+        InitToggle(_settingUi.masterToggle, _settingUi.masterIcon, IsMasterOn, (isOn) => SetMute(KEY_VOL_MASTER, KEY_MUTE_MASTER, isOn, ref _isMasterOn));
+        InitToggle(_settingUi.bgmToggle, _settingUi.bgmIcon, IsBgmOn, (isOn) => SetMute(KEY_VOL_BGM, KEY_MUTE_BGM, isOn, ref _isBgmOn));
+        InitToggle(_settingUi.sfxToggle, _settingUi.sfxIcon, IsSfxOn, (isOn) => SetMute(KEY_VOL_SFX, KEY_MUTE_SFX, isOn, ref _isSfxOn));
 
         // 버튼
         _settingUi.leaveButton.onClick.AddListener(OnClickLeaveRoom);
@@ -212,8 +211,8 @@ public class SettingManager : MonoBehaviourPunCallbacks
     // ESC 입력
     private void EscInput()
     {
-        // 상점 이용 중이면 끄기만 가능
-        if (ShopTerminal.IsUsing == true)
+        // 로비거나 상점 이용 중엔 끄기만 가능
+        if (IsLobbyScene() == true || ShopTerminal.IsUsing == true)
         {
             if (_settingUi.IsActive == true) ToggleSettingPanel();
             return;
@@ -259,12 +258,18 @@ public class SettingManager : MonoBehaviourPunCallbacks
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
-        // 닫았는데 단말기 사용 안하면
-        else if (ShopTerminal.IsUsing == false)
+        // 닫았는데 로비 아니고 단말기 사용 안하면
+        else if (IsLobbyScene() == false && ShopTerminal.IsUsing == false)
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
+    }
+
+    // 로비씬 체크
+    private bool IsLobbyScene()
+    {
+        return SceneManager.GetActiveScene().name == _titleSceneName;
     }
 
     // 현재 입력 객체 가져오기
@@ -291,13 +296,13 @@ public class SettingManager : MonoBehaviourPunCallbacks
     #region 사운드
 
 
-    // 볼륨 설정 (볼륨 파라미터 이름, 슬라이더 입력값, 현재 값, 저장 키, 볼륨 텍스트)
-    private void SetVolume(string name, float inputValue, ref float currentValue, string saveKey, TextMeshProUGUI textUI)
+    // 볼륨 설정 (볼륨 파라미터 이름, 슬라이더 입력값, 현재 값, 볼륨 텍스트)
+    private void SetVolume(string name, float inputValue, ref float currentValue, TextMeshProUGUI textUI)
     {
         // 현재 값 변경
         currentValue = inputValue;
         // 키에 저장
-        PlayerPrefs.SetFloat(saveKey, inputValue);
+        PlayerPrefs.SetFloat(name, inputValue);
 
         // 사운드 매니저에 볼륨 설정
         SoundManager.Instance.SetVolume(name, inputValue);
@@ -306,18 +311,18 @@ public class SettingManager : MonoBehaviourPunCallbacks
         _settingUi.UpdateVolumeText(textUI, inputValue);
     }
 
-    // 뮤트 설정 (볼륨 파라미터 이름, 토글 값, 현재 값, 저장 키)
-    private void SetMute(string name, bool isOn, ref bool currentBool, string saveKey)
+    // 뮤트 설정 (볼륨 파라미터 이름, 뮤트 이름, 토글 값, 현재 값)
+    private void SetMute(string name, string muteName, bool isOn, ref bool currentBool)
     {
         // 현재 값 변경
         currentBool = isOn;
         // 저장 (확실하게 보이도록)
-        PlayerPrefs.SetInt(saveKey, isOn ? 1 : 0);
+        PlayerPrefs.SetInt(muteName, isOn ? 1 : 0);
 
         // 켜질 땐 현재 볼륨값
         // 꺼질 땐 Mute 
         if (isOn)
-            SoundManager.Instance.SetVolume(name, (name == "MasterVolume") ? MasterVol : (name == "BGMVolume" ? BgmVol : SfxVol));
+            SoundManager.Instance.SetVolume(name, (name == KEY_VOL_MASTER) ? MasterVol : (name == KEY_VOL_BGM ? BgmVol : SfxVol));
         else
             SoundManager.Instance.SetMute(name, true);
 
