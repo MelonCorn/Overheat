@@ -121,11 +121,8 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 화면 모드 적용 (기본 창전체)
         SetScreenMode(PlayerPrefs.GetInt(KEY_SCREEN_MODE, 1));
 
-        // 사운드 적용
+        // 사운드 적용 후 브금 재생
         ApplySoundSettings();
-
-        // 설정 다 하고 소리 재생
-        SoundManager.Instance.OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
     // 사운드 설정 확인
@@ -141,6 +138,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
 
         if (IsSfxOn) SoundManager.Instance.SetVolume("SFXVolume", SfxVol);
         else SoundManager.Instance.SetMute("SFXVolume", true);
+
+        // 설정 다 하고 소리 재생
+        SoundManager.Instance.OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
 
