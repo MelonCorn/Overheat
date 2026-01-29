@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -11,8 +12,11 @@ public class BulletTracer : MonoBehaviour
     private Vector3 _startPoint;                // 시작점
     private Vector3 _hitPoint;                  // 도착점
     private Vector3 _hitNormal;                 // 표면방향
-    private float _speed = 300f;                // 속도 (초속)
-    private float _length = 4.0f;               // 길이
+
+    [Header("궤적 설정")]
+    [SerializeField] float _speed = 300f;                // 속도 (초속)
+    [SerializeField] float _length = 4.0f;               // 길이
+    [SerializeField] float _minDistance = 3.0f;          // 최소 거리 (더 가까워지면 안그림)
 
     private void Awake()
     {
@@ -27,6 +31,27 @@ public class BulletTracer : MonoBehaviour
         _hitPoint = end;                // 도착점
         _hitNormal = hitNormal;         // 표면방향
         _impactPrefab = impactPrefab;   // 이펙트
+
+        // 시작, 끝 거리
+        float distance = Vector3.Distance(start, end);
+        // 최소거리보다 가까우면
+        if (distance < _minDistance)
+        {
+            // 그냥 바로 이펙트 생성
+            if (_impactPrefab != null && PoolManager.Instance != null)
+            {
+                PoolManager.Instance.Spawn(_impactPrefab, _hitPoint, Quaternion.LookRotation(_hitNormal));
+            }
+
+            // 즉시 반납해서 궤적 안보이게
+            if (_poolObj != null) _poolObj.Release();
+            else gameObject.SetActive(false);
+
+            // 중단
+            return;
+        }
+
+        // 최소 거리보다 멀면
 
         // 궤적 On
         _line.enabled = true;
