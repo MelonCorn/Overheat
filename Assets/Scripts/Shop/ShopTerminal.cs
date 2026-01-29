@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -71,7 +72,8 @@ public class ShopTerminal : MonoBehaviour, IInteractable
             var move = PlayerHandler.localPlayer.GetComponent<PlayerMovementHandler>();
             // 플레이어 카메라
             var cam = PlayerHandler.localPlayer.GetComponent<PlayerCameraHandler>();
-            // 플레이어 아이템 움직임
+            // 플레이어 반동
+            var recoil = PlayerHandler.localPlayer.GetComponentInChildren<PlayerRecoilHandler>();
 
             // 카메라 등록 안되어 있으면
             if (_terminalCanvas.worldCamera == null)
@@ -86,13 +88,14 @@ public class ShopTerminal : MonoBehaviour, IInteractable
             if (move) move.enabled = false;
             // 카메라 납치
             if (cam) cam.MoveCameraToTarget(_viewPoint, _moveDuration);
+            // 반동 Off
+            if (recoil) recoil.enabled = false;
         }
 
         // 마우스 커서 풀기
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
-
 
     // 단말기 종료
     private void ExitTerminal()
@@ -116,6 +119,9 @@ public class ShopTerminal : MonoBehaviour, IInteractable
             // 플레이어 얼음땡
             var move = PlayerHandler.localPlayer.GetComponent<PlayerMovementHandler>();
             if (move) move.enabled = true;
+
+            // 얼음땡 기다리고 반동 허용
+            StartCoroutine(EnableRecoilDelay(_moveDuration));
         }
         
         // 마우스 커서 잠그기
@@ -125,6 +131,25 @@ public class ShopTerminal : MonoBehaviour, IInteractable
         // 퀵슬롯 켜기
         QuickSlotManager.Instance.SetUIActive(true);
     }
+
+
+    // 단말기 나오는동안 반동 금지
+    private IEnumerator EnableRecoilDelay(float delay)
+    {
+        // 카메라가 돌아오는 시간만큼 대기 (여유까지)
+        yield return new WaitForSeconds(delay);
+        yield return null;
+
+        if (PlayerHandler.localPlayer != null)
+        {
+            var recoil = PlayerHandler.localPlayer.GetComponentInChildren<PlayerRecoilHandler>();
+            if (recoil)
+            {
+                recoil.enabled = true;
+            }
+        }
+    }
+
 
     public string GetInteractText(out bool canInteract)
     {
