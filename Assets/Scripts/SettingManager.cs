@@ -249,18 +249,10 @@ public class SettingManager : MonoBehaviourPunCallbacks
     {
         // 상태 반전
         _isOpen = !_isOpen;
-        Debug.Log($"[SettingManager] 설정 패널 토글됨. 현재 상태: {(_isOpen ? "OPEN" : "CLOSE")}"); // 로그
         _settingUI?.SetActive(_isOpen);
 
         // 현재 입력 제어권을 가진 객체 찾기
         IInputControllable currentController = GetCurrentController();
-
-        // 컨트롤러 찾았는지 확인
-        if (currentController == null)
-        {
-            Debug.LogError("[SettingManager]  치명적 오류: Toggle 시점에서 PlayerHandler.localPlayer를 찾을 수 없음!"); // 로그
-            // 여기서 못 찾으면 입력 제어를 못 하므로 카메라가 계속 돌아감
-        }
 
         // 상점 이용 중인지
         bool isShopUsing = ShopTerminal.IsUsing;
@@ -274,7 +266,6 @@ public class SettingManager : MonoBehaviourPunCallbacks
             // 입력 끄기 (상점 이용 안할 때)
             if (isShopUsing == false)
             {
-                Debug.Log("[SettingManager] 입력 비활성화 요청 (SetInputActive false)"); // 로그
                 currentController?.SetInputActive(false);
             }
         }
@@ -288,8 +279,6 @@ public class SettingManager : MonoBehaviourPunCallbacks
                 // null 아니고 활성화되어있을때
                 if (currentController != null)
                 {
-                    Debug.Log("[SettingManager] 입력 활성화 요청 (SetInputActive true)"); // 로그
-
                     // 입력 켜기 (인터페이스 사용)
                     currentController.SetInputActive(true);
                 }
