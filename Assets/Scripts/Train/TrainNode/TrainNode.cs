@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System;
 using System.Collections;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicCallback, // 네트워크 객체 생성 후 데이터 콜백
@@ -21,6 +22,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     [Header("후방 연결부")]
     [SerializeField] Transform _rearSocket;
 
+
     [Header("화재 설정")]
     [SerializeField] GameObject _firePrefab; // Resource 폴더의 불 프리팹
     [SerializeField] Transform[] _firePoints; // 불이 생성될 위치들 (열차 바닥 등)
@@ -36,6 +38,8 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     protected LayerMask _enemyLayer;        // 적
 
     private LayerMask _explosionMask;       // 폭발 체크용
+
+    private NavMeshLink _navMeshLink;       // 링크 새로고침
 
     // 기차 번호
     public int TrainIndex { get; private set; }
@@ -54,6 +58,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     {
         _collider = GetComponent<Collider>();
         _rigidbody = GetComponent<Rigidbody>();
+        _navMeshLink = GetComponentInChildren<NavMeshLink>();
     }
 
     public virtual void Init(TrainData data, int level)
@@ -284,7 +289,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     #region 파괴
     // 열차 파괴 
     [PunRPC]
-    public void ExplodeRPC()
+    public virtual void ExplodeRPC()
     {
         // 엔진 파괴 시
         if (TrainIndex == 0)
@@ -510,7 +515,12 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     #endregion
 
 
-
+    // 네비 링크 새로고침 (타임라인 때문에 꼬인거 푸는용)
+    public void RefreshNavMeshLink()
+    {
+        _navMeshLink.enabled = false;
+        _navMeshLink.enabled = true;
+    }
 
 
     // 네트워크로 생성되면 호출

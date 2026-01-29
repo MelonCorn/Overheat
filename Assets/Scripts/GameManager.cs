@@ -258,12 +258,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         if (LoadingManager.Instance != null)
         {
-            // 페이드 아웃
+            // 페이드 인
             LoadingManager.Instance.RequestFadeIn();
         }
 
         // 유실물 생성 (방장만)
         if (PhotonNetwork.IsMasterClient == true) StartCoroutine(SpawnLostItems());
+
+        // 열차 순회하면서 네비링크 새로고침
+        if (TrainManager.Instance != null)
+        {
+            TrainManager.Instance.RefreshAllTrainLinks();
+        }
     }
 
 
@@ -485,8 +491,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             // 혹시 null이면 패스
             if (item == null) continue;
 
-            // 방장은 유실물 저장
-            if (PhotonNetwork.IsMasterClient == true)
+            // 방장인데 상점 아닐때만 저장
+            if (PhotonNetwork.IsMasterClient == true && _isShop == false)
             {
                 // 저장 조건 체크 (활성화, 이름 존재, 포톤뷰 켜짐)
                 if (item.gameObject.activeInHierarchy &&

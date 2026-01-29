@@ -479,6 +479,19 @@ public class TrainManager : MonoBehaviourPunCallbacks
     }
 
 
+    // 모든 열차 순회하면서 네비 링크 새로고침
+    public void RefreshAllTrainLinks()
+    {
+        foreach (var node in TrainNodes)
+        {
+            if (node != null)
+            {
+                node.RefreshNavMeshLink();
+            }
+        }
+    }
+
+
     #region 화물칸 아이템 변경
     public void RequestSocketInteract(CargoNode node, int socketIndex, string newItem, string oldItem, int slotIndex)
     {
