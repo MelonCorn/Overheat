@@ -17,6 +17,9 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
 
     private TrainNode _targetTrain;          // 타겟 열차
 
+    // Update에서 반납 체크하는데 혹시나 찰나 생길까봐 넣음
+    private bool _isInit = false;
+
     private void Awake()
     {
         // 초기화
@@ -28,6 +31,8 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
     {
         // 상태 초기화 (재사용)
         _currentHp = _maxHp;
+        _isInit = false;
+        _targetTrain = null;
 
         _targetScale = Vector3.one * _defaultScale;
         transform.localScale = Vector3.one * _defaultScale;
@@ -42,7 +47,9 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
     {
         // 돌고 있던 코루틴 올 스톱
         StopAllCoroutines();
+        // 걍 또 해버림
         _targetTrain = null;
+        _isInit = false;
     }
 
     private void Update()
@@ -51,6 +58,17 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         {
             // 크기 부드럽게 축소
             transform.localScale = Vector3.Lerp(transform.localScale, _targetScale, Time.deltaTime * _shrinkSpeed);
+        }
+
+        // 초기화 이후 타겟 열차가 있을 때
+        if (_isInit && _targetTrain != null)
+        {
+            // 열차 밖으로 나와지거나, 비활성화되면 소멸
+            if (transform.parent == null || _targetTrain.gameObject.activeInHierarchy == false)
+            {
+                // 즉시 소멸 처리
+                Extinguish();
+            }
         }
     }
 
@@ -96,6 +114,9 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
     // 소화
     private void Extinguish()
     {
+        // 중복 실행 방지
+        if (gameObject.activeInHierarchy == false) return;
+
         // 풀 반납
         if (PhotonNetwork.IsMasterClient == true)
         {
@@ -122,8 +143,8 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
                 // 피해
                 _targetTrain.TakeDamage(_damage);
             }
-            // 열차 사라지면
-            else if (_targetTrain == null) 
+            // 열차 사라지면                      // 코루틴에서도 혹시 모르니까 추가
+            else if (_targetTrain == null || _targetTrain.gameObject.activeInHierarchy == false) 
             {
                 // 파괴
                 if (PhotonNetwork.IsMasterClient) PhotonNetwork.Destroy(gameObject);
@@ -152,6 +173,9 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
 
                 // 열차 하위 객체로 들어감
                 transform.SetParent(_targetTrain.transform);
+
+                // 초기화 완료
+                _isInit = true;
             }
         }
     }
