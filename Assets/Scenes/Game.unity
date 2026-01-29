@@ -4063,7 +4063,7 @@ MonoBehaviour:
   - {fileID: 1332703872}
   - {fileID: 728471370}
   - {fileID: 443426826}
-  _starterItemName: Pistol
+  _starterItemName: Revolver
 --- !u!4 &1881315413
 Transform:
   m_ObjectHideFlags: 0
