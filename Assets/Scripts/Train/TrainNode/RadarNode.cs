@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Photon.Pun;
 
 public class RadarNode : TrainNode
 {
@@ -21,18 +22,6 @@ public class RadarNode : TrainNode
         UpdateRadarUI();
     }
 
-    private void OnDisable()
-    {
-        // 감소
-        if (_activeRadarCount > 0)
-        {
-            _activeRadarCount--;
-
-            // 레이더 체크
-            UpdateRadarUI();
-        }
-    }
-
     private void UpdateRadarUI()
     {
         // 레이더 한개 이상 있는지
@@ -49,5 +38,22 @@ public class RadarNode : TrainNode
     {
         _activeRadarCount = 0;
         OnRadarStateChanged?.Invoke(false);
+    }
+
+    // 터질 때 감소
+    // 오버라이드 RPC
+    [PunRPC]
+    public override void ExplodeRPC()
+    {
+        base.ExplodeRPC();
+
+        // 감소
+        if (_activeRadarCount > 0)
+        {
+            _activeRadarCount--;
+
+            // 레이더 체크
+            UpdateRadarUI();
+        }
     }
 }
