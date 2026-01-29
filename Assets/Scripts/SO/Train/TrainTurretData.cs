@@ -6,6 +6,8 @@ public struct TurretLevelData
 {
     public int damage;           // 공격력
     public float fireRate;       // 공격속도
+    public float range;          // 사거리
+    public float rotationSpeed;  // 회전 속도
 }
 
 [CreateAssetMenu(fileName = "TurretData", menuName = "Train/Turret Data")]
@@ -21,5 +23,13 @@ public class TrainTurretData : TrainData
         // 인덱스 : 인풋 (0 ~ 최대 데이터 수)
         int index = Mathf.Clamp(level - 1, 0, turretLevelDatas.Count - 1);
         return turretLevelDatas[index];
+    }
+
+
+    public override List<(string name, string value)> GetUpgradeInfos(int level)
+    {
+        var stat =  base.GetUpgradeInfos(level);
+
+        return stat;
     }
 }

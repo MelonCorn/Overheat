@@ -9,8 +9,8 @@ public enum BGMType     // 배경음 타입
 {
     None,       // 없음
     Lobby,      // 로비 (타이틀)
-    Waiting,    // 마을
-    Battle,     // 전투
+    Room,       // 대기실
+    Game,       // 전투
     GameOver,   // 게임오버
     GameClear,  // 클리어
     Shop,       // 상점
@@ -158,10 +158,10 @@ public class SoundManager : MonoBehaviour
                 targetBGM = BGMType.Lobby;
                 break;
             case "Room":
-                targetBGM = BGMType.Waiting;
+                targetBGM = BGMType.Room;
                 break;
             case "Game":
-                targetBGM = BGMType.Battle;
+                targetBGM = BGMType.Game;
                 break;
             case "Shop":
                 targetBGM = BGMType.Shop;

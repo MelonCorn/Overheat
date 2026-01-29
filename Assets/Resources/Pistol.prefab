@@ -436,6 +436,10 @@ PrefabInstance:
       value: MuzzleParticle
       objectReference: {fileID: 0}
     - target: {fileID: 5070541523884715653, guid: 8f023e2adca701a4b9d508d85d63a594, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5070541523884715653, guid: 8f023e2adca701a4b9d508d85d63a594, type: 3}
       propertyPath: InitialModule.startSize.scalar
       value: 0.02
       objectReference: {fileID: 0}

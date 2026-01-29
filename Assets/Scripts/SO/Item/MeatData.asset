@@ -10,16 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ab5894ae7fdd464b8adaa1a72d87cdb, type: 3}
-  m_Name: AppleData 1
+  m_Name: MeatData
   m_EditorClassIdentifier: Assembly-CSharp::PotionData
-  displayName: "\uB9E5\uC8FC"
-  itemName: Beer
-  desc: "\uCC28\uAC11\uAC8C \uAC70\uD488\uC744 \uBB3C\uACE0\uC788\uC2B5\uB2C8\uB2E4.\n\n\uB108\uBB34
-    \uCC28\uAC00\uC6CC\uC11C \uCCB4\uB825\uC774 \uB2F3\uC9C0\uB9CC\n\uC2A4\uD14C\uBBF8\uB108\uB294
-    \uD655\uC2E4\uD788 \uC624\uB985\uB2C8\uB2E4."
-  price: 15
+  displayName: "\uB9D0\uB9B0 \uB9D0\uACE0\uAE30"
+  itemName: Meat
+  desc: "\uB9D0\uACE0\uAE30\uB294 \uC539\uB294 \uB9DB\uC774 \uC77C\uD488\uC785\uB2C8\uB2E4."
+  price: 25
   icon: {fileID: 21300000, guid: 7377013011b4c3348809ff574abe799e, type: 3}
   prefab: {fileID: 429471891331199967, guid: 9e677d803ca3fa34d9dc52ef41c17141, type: 3}
   handPosOffset: {x: 0, y: -0.05, z: 0}
   handRotOffset: {x: 0, y: 0, z: 0}
-  healAmount: 30
+  healAmount: 80
