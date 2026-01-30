@@ -30,8 +30,8 @@ public class EnvironmentMove : MonoBehaviour
 
     private void Update()
     {
-        // 이동
-        transform.Translate(Vector3.back * _spawner.Speed * Time.deltaTime);
+        // 이동 (월드기준으로 해서 몸 돌아가도 뒤로가게)
+        transform.Translate(Vector3.back * _spawner.Speed * Time.deltaTime, Space.World);
 
         // 디스폰 z 보다 뒤로 넘어가면 반납
         if (transform.position.z < _spawner.GetDespawnZ())
