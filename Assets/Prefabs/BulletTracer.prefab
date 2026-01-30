@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletTracer
   _speed: 300
-  _length: 4
-  _minDistance: 2
+  _length: 5
+  _minDistance: 1
 --- !u!120 &1608608914291132976
 LineRenderer:
   serializedVersion: 2
@@ -131,7 +131,7 @@ LineRenderer:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 0.8352941, a: 0}
       key1: {r: 1, g: 0.9333334, b: 0, a: 0.84705883}
-      key2: {r: 0, g: 0, b: 0, a: 0.60784316}
+      key2: {r: 0, g: 0, b: 0, a: 0.78431374}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -146,7 +146,7 @@ LineRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 32613
+      atime1: 21627
       atime2: 65535
       atime3: 0
       atime4: 0

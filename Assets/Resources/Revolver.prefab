@@ -98,7 +98,7 @@ MonoBehaviour:
   _tracerPrefab: {fileID: 2882075201696625023, guid: 91b33ea3293612e4bbbcdda85ff24a86, type: 3}
   _muzzleEffect: {fileID: 1758636624180805203}
   _continuousEffect: {fileID: 0}
-  _muzzleClip: {fileID: 0}
+  _muzzleSource: {fileID: 0}
   _impactWallEffect: {fileID: -6753986051678385841, guid: 60840607e665bf04587f413f0e80ddb3, type: 3}
   _impactEnemyEffect: {fileID: 2894638543918804393, guid: 2bf0b990a8edbb44b89688c8fc0a3f8d, type: 3}
   _isContinuous: 0
@@ -263,6 +263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 560585288466575159, guid: 41236ddb97b001d499cadd3503c086dc, type: 3}
+    - {fileID: 8453653679473905563, guid: 41236ddb97b001d499cadd3503c086dc, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
