@@ -434,10 +434,13 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             return;
         }
 
-        if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal);
+        // 맞았는지 안맞았는지
+        bool isHit = _hit.collider != null;
+
+        if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal, isHit);
         if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
 
-        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, isEnemy, normal);
+        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, isEnemy, normal, isHit);
 
         Attack(data, _hit);
     }
@@ -450,6 +453,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         List<Vector3> hitPoints = new List<Vector3>();
         List<bool> isEnemies = new List<bool>();
         List<Vector3> normals = new List<Vector3>();
+        List<bool> isHits = new List<bool>();
 
         // 산탄 수 만큼
         for (int i = 0; i < data.pelletCount; i++)
@@ -458,10 +462,15 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             RaycastHit hitInfo;
             Vector3 hitPoint = GetSpreadHitPoint(data, out bool isEnemy, out Vector3 normal, out hitInfo);
 
+            // 맞았는지
+            bool isHit = hitInfo.collider != null;
+
             // 리스트에 추가 (이펙트용)
             hitPoints.Add(hitPoint);
             isEnemies.Add(isEnemy);
             normals.Add(normal);
+            isHits.Add(isHit);
+
 
             // 개별 데미지 처리 (히트만)
             if (hitInfo.collider != null)
@@ -476,7 +485,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             // 반복문으로 
             for (int i = 0; i < hitPoints.Count; i++)
             {
-                _currentVisualHandler.FireImpact(hitPoints[i], isEnemies[i], normals[i]);
+                _currentVisualHandler.FireImpact(hitPoints[i], isEnemies[i], normals[i], isHits[i]);
             }
         }
         
@@ -578,14 +587,14 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
     // 산탄 RPC (배열로 받음)
     [PunRPC]
-    private void RPC_FireShotgun(Vector3[] hitPoints, bool[] isEnemies, Vector3[] normals)
+    private void RPC_FireShotgun(Vector3[] hitPoints, bool[] isEnemies, Vector3[] normals, bool[] isHits)
     {
         if (_currentVisualHandler != null)
         {
             // 받은 배열만큼 반복해서 이펙트
             for (int i = 0; i < hitPoints.Length; i++)
             {
-                _currentVisualHandler.FireImpact(hitPoints[i], isEnemies[i], normals[i]);
+                _currentVisualHandler.FireImpact(hitPoints[i], isEnemies[i], normals[i], isHits[i]);
             }
         }
         if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
@@ -593,12 +602,12 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
     // 단발 RPC
     [PunRPC]
-    private void RPC_FireOneShot(Vector3 hitPoint, bool isEnemy, Vector3 normal)
+    private void RPC_FireOneShot(Vector3 hitPoint, bool isEnemy, Vector3 normal, bool isHit)
     {
         // 리모트들은 3인칭전용에서 발사 이뤄짐
         if (_currentVisualHandler != null)
         {
-            _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal);
+            _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal, isHit);
         }
 
         // 애니메이션까지

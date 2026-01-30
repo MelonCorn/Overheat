@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d812a0eaf51b9ba49995ce05e52fdf4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletTracer
+  _speed: 300
+  _length: 4
+  _minDistance: 2
 --- !u!120 &1608608914291132976
 LineRenderer:
   serializedVersion: 2
@@ -107,15 +110,15 @@ LineRenderer:
         time: 0
         value: 0.05
         inSlope: 0.14527188
-        outSlope: 0.053447496
+        outSlope: 0.017
         tangentMode: 69
         weightedMode: 0
         inWeight: 0.33333334
         outWeight: 0.87430155
       - serializedVersion: 3
         time: 1
-        value: 0.1034475
-        inSlope: 0.053447496
+        value: 0.067
+        inSlope: 0.017
         outSlope: 0
         tangentMode: 69
         weightedMode: 0
@@ -127,8 +130,8 @@ LineRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 0.8352941, a: 0}
-      key1: {r: 1, g: 0.9333334, b: 0, a: 0.60784316}
-      key2: {r: 0, g: 0, b: 0, a: 0}
+      key1: {r: 1, g: 0.9333334, b: 0, a: 0.84705883}
+      key2: {r: 0, g: 0, b: 0, a: 0.60784316}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -143,8 +146,8 @@ LineRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 65535
-      atime2: 0
+      atime1: 32613
+      atime2: 65535
       atime3: 0
       atime4: 0
       atime5: 0
@@ -153,7 +156,7 @@ LineRenderer:
       m_Mode: 0
       m_ColorSpace: 0
       m_NumColorKeys: 2
-      m_NumAlphaKeys: 2
+      m_NumAlphaKeys: 3
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0

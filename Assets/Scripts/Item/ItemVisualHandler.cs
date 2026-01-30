@@ -9,6 +9,7 @@ public class ItemVisualHandler : MonoBehaviour
     [Header("이펙트 리소스")]
     [SerializeField] PoolableObject _tracerPrefab;      // 총알 궤적 프리팹
     [SerializeField] ParticleSystem _muzzleEffect;      // 화염 연기 등 총구 이펙트
+    [SerializeField] PoolableObject _continuousEffect;  // 지속형 이펙트 (사실 소화기)
     [SerializeField] AudioClip _muzzleClip;             // 화염 연기 소리 
 
     [Header("피격 이펙트")]
@@ -20,21 +21,26 @@ public class ItemVisualHandler : MonoBehaviour
 
     private float _fireInterval = 0.1f;         // 소총 연사 속도
 
+    private ContinuousParticle _currentEffect;  // 현재 지속 파티클
     private Coroutine _fireCoroutine;
 
     // 발사 속도 설정
     public void SetFireRate(float rate) => _fireInterval = rate;
 
    
-    // 단발 연출
-    public void FireImpact(Vector3 hitPoint, bool isEnemy, Vector3 hitNormal)
+    // 발사 연출
+    public void FireImpact(Vector3 hitPoint, bool isEnemy, Vector3 hitNormal, bool isHit)
     {
         // 단발 총구 이펙트
         if (_muzzleEffect != null) _muzzleEffect.Play();
         //if (_muzzleClip != null) PlayerHandler.LocalPlayer.PlayAudio(_muzzleClip);
 
-        // 피격 이펙트 결정 (적인지 아닌지)
-        PoolableObject targetEffect = (isEnemy == true) ? _impactEnemyEffect : _impactWallEffect;
+        // 피격 이펙트 결정 (맞췄는지 적인지 아닌지)
+        PoolableObject targetEffect = null;
+        if (isHit == true)
+        {
+            targetEffect = (isEnemy == true) ? _impactEnemyEffect : _impactWallEffect;
+        }
 
         if (_tracerPrefab != null && PoolManager.Instance != null)
         {
@@ -45,6 +51,7 @@ public class ItemVisualHandler : MonoBehaviour
             if (tracerScript != null)
             {
                 // 궤적 쏘고 도착하면 타겟 이펙트 터트림
+                // 못맞췄으면 임팩트 null보내서 허공에서 안터트림
                 tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, hitNormal, targetEffect);
             }
         }
@@ -56,7 +63,21 @@ public class ItemVisualHandler : MonoBehaviour
         // 지속형인지 (소화기, 용접기)
         if (_isContinuous)
         {
-            _muzzleEffect.Play();
+            // 이미 쏘고 있으면 패스
+            if (_currentEffect != null) return;
+
+            if (PoolManager.Instance != null)
+            {
+                // 풀에서 총구 하위로
+                PoolableObject obj = PoolManager.Instance.Spawn(_continuousEffect, _muzzlePoint);
+
+                // 로컬 위치 0으로 초기화
+                obj.transform.localPosition = Vector3.zero;
+                obj.transform.localRotation = Quaternion.identity;
+
+                // 스크립트 가져오기
+                _currentEffect = obj.GetComponent<ContinuousParticle>();
+            }
         }
         // 지속형 아니면
         else
@@ -75,7 +96,13 @@ public class ItemVisualHandler : MonoBehaviour
         // 지속형이면
         if (_isContinuous)
         {
-            _muzzleEffect.Stop();
+            // 뿜고 있던 게 있으면
+            if (_currentEffect != null)
+            {
+                // 부모 없애고 반납
+                _currentEffect.StopAndRelease();
+                _currentEffect = null;
+            }
         }
         // 아니면
         else
@@ -94,10 +121,7 @@ public class ItemVisualHandler : MonoBehaviour
     private void OnDisable()
     {
         // 소화기 뿌리는 중에 넣으면
-        if (_muzzleEffect != null)
-        {
-            _muzzleEffect.Stop();
-        }
+        StopLoop();
 
         // 발사 코루틴 정지
         if (_fireCoroutine != null)

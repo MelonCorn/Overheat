@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d812a0eaf51b9ba49995ce05e52fdf4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletTracer
+  _speed: 300
+  _length: 4
+  _minDistance: 2
 --- !u!120 &1608608914291132976
 LineRenderer:
   serializedVersion: 2

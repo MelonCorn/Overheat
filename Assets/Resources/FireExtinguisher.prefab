@@ -185,7 +185,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemVisualHandler
   _muzzlePoint: {fileID: 4520630773770223682}
   _tracerPrefab: {fileID: 2882075201696625023, guid: befa91347dbaaf44dac0bd2fec26ed44, type: 3}
-  _muzzleEffect: {fileID: 6811588522622842751}
+  _muzzleEffect: {fileID: 0}
+  _continuousEffect: {fileID: -3044118449348081963, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
   _muzzleClip: {fileID: 0}
   _impactWallEffect: {fileID: 0}
   _impactEnemyEffect: {fileID: 0}
@@ -307,8 +308,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.442, z: 0.171}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1991402665553695469}
+  m_Children: []
   m_Father: {fileID: 319865955058799500}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6205623793642808266
@@ -367,74 +367,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.24914922, y: 0.5179014, z: 0.2241663}
   m_Center: {x: 0, y: 0.26528728, z: 0}
---- !u!1001 &1790656986200398330
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 4520630773770223682}
-    m_Modifications:
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2560174141599663717, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: m_Name
-      value: MuzzleParticle_FireExtiguisher
-      objectReference: {fileID: 0}
-    - target: {fileID: 5070541523884715653, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
---- !u!4 &1991402665553695469 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 250885630346906391, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-  m_PrefabInstance: {fileID: 1790656986200398330}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &6811588522622842751 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 5070541523884715653, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
-  m_PrefabInstance: {fileID: 1790656986200398330}
-  m_PrefabAsset: {fileID: 0}
