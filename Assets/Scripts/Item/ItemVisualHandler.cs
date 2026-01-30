@@ -63,6 +63,9 @@ public class ItemVisualHandler : MonoBehaviour
         // 지속형인지 (소화기, 용접기)
         if (_isContinuous)
         {
+            // 프리팹 없으면 패스
+            if (_continuousEffect == null) return;
+
             // 이미 쏘고 있으면 패스
             if (_currentEffect != null) return;
 
