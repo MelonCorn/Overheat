@@ -34,6 +34,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     private bool _isRemoteFiring = false;
     private int _poseID = 0;                // 무기 자세 ID
     private float _aimAngle = 0f;           // 조준 각도 (위아래)
+    private float _targetWeight = 0f;       // 목표 웨이트
 
     private float _lastFireTime;    // 쿨타임 관리용
     private RaycastHit _hit;        // 공격 레이캐스트용
@@ -73,6 +74,9 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
         // 자동 무기 비주얼 처리
         UpdateVisualState(isFiring);
+
+        // 애니메이터 레이어 웨이트 부드럽게 전환
+        UpdateAnimatorWeight();
 
         // 연사 입력
         if (isFiring == true)
@@ -131,11 +135,29 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     // 애니메이터 갱신
     private void UpdateAnimPose(int poseID)
     {
-        Debug.Log($"애니메이터 갱신 시도 : 포즈 {poseID}");
-        if (_playerHandler.PlayerAnim != null)
+        if (_playerHandler.PlayerAnim == null) return;
+
+        _playerHandler.PlayerAnim.SetInteger("PoseID", poseID);
+
+        // 포즈에 따라 상체 웨이트 값 목표 지정
+        if (poseID == 0) _targetWeight = 0f; // 맨손
+        else _targetWeight = 1f;             // 무기
+    }
+
+    // 애니메이터 레이어 웨이트 부드럽게 전환
+    private void UpdateAnimatorWeight()
+    {
+        if (_playerHandler.PlayerAnim == null) return;
+
+        // 현재 웨이트값
+        float currentWeight = _playerHandler.PlayerAnim.GetLayerWeight(1);
+
+        // 현재 값과 목표 값이 다르면 
+        if (Mathf.Abs(currentWeight - _targetWeight) > 0.01f)
         {
-            Debug.Log($"애니메이터 갱신 성공");
-            _playerHandler.PlayerAnim.SetInteger("PoseID", poseID);
+            // 부드럽게 전환
+            float newWeight = Mathf.Lerp(currentWeight, _targetWeight, Time.deltaTime * 5f);
+            _playerHandler.PlayerAnim.SetLayerWeight(1, newWeight);
         }
     }
     #endregion
@@ -783,9 +805,6 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             // 발사 상태
             stream.SendNext(_inputHandler.IsFiring);
 
-            // 무기 자세
-            stream.SendNext(_poseID);
-
             // 조준 각도
             stream.SendNext(_aimAngle);
         }
@@ -793,7 +812,6 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         {
             // 데이터 받아서
             bool receiveFiring = (bool)stream.ReceiveNext();
-            int receivePoseID = (int)stream.ReceiveNext();
             _aimAngle = (float)stream.ReceiveNext();
 
             // 값 바뀌면 갱신
@@ -805,12 +823,6 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
                 // 여기서 바로 갱신
                 UpdateVisualState(_isRemoteFiring);
-            }
-            // 자세
-            if (_poseID != receivePoseID)
-            {
-                _poseID = receivePoseID;
-                UpdateAnimPose(_poseID);
             }
         }
     }
