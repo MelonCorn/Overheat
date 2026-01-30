@@ -34,6 +34,12 @@ MonoBehaviour:
   maxRecoilX: 0
   snappiness: 0
   returnSpeed: 0
+  visualRecoilAngle: {x: -10, y: 0, z: 0}
+  visualRecoilSnappiness: 15
+  visualRecoilReturnSpeed: 10
   pelletCount: 1
   spreadAngle: 0
+  fireClips:
+  - {fileID: 8300000, guid: af4e1445f458e264ea4bd435231657c1, type: 3}
+  - {fileID: 8300000, guid: 040c1912f4e25ab48983a08ea862e939, type: 3}
   isRepairTool: 1

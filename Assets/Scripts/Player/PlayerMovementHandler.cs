@@ -5,6 +5,7 @@ public class PlayerMovementHandler : MonoBehaviour
     private CharacterController _cc;
     private PlayerInputHandler _inputHandler;
     private PlayerStatHandler _statHandler;
+    private PlayerSoundHandler _soundHandler;
 
     [Header("이동 설정")]
     [SerializeField] float _walkSpeed = 5f;
@@ -37,16 +38,23 @@ public class PlayerMovementHandler : MonoBehaviour
 
     private RaycastHit _groundHit;
 
+    // 생성 직후 소리 방지용
+    private float _enableTime;
+
     private void Awake()
     {
         _cc = GetComponent<CharacterController>();
         _inputHandler = GetComponent<PlayerInputHandler>();
         _statHandler = GetComponent<PlayerStatHandler>();
+        _soundHandler = GetComponent<PlayerSoundHandler>();
     }
 
     private void OnEnable()
     {
         _inputHandler.OnJumpEvent += PerformJump;
+
+        // 활성화 시간 기록 (착지 소리 방지)
+        _enableTime = Time.time;
     }
 
     private void OnDisable()
@@ -127,6 +135,10 @@ public class PlayerMovementHandler : MonoBehaviour
             {
                 // 점프
                 _verticalVelocity.y = Mathf.Sqrt(_jumpPower * -2f * _gravity);
+
+                // 점프 소리
+                if (_soundHandler != null)
+                    _soundHandler.PlayJump();
             }
         }
     }
@@ -141,8 +153,13 @@ public class PlayerMovementHandler : MonoBehaviour
         _verticalVelocity.y += _gravity * Time.deltaTime;
     }
 
+
+    // 땅 체크
     private void CheckGround()
     {
+        // 갱신 전 상태
+        bool wasGrounded = _isGrounded;
+
         Vector3 sphereOrigin = transform.position + Vector3.up * _groundCheckOffset;
         _isGrounded = Physics.SphereCast(
             sphereOrigin,
@@ -152,13 +169,15 @@ public class PlayerMovementHandler : MonoBehaviour
             _groundCheckDistance,
             _groundLayer
         );
-    }
 
-    // 기즈모
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = _isGrounded ? Color.green : Color.red;
-        Vector3 sphereOrigin = transform.position + Vector3.up * _groundCheckOffset;
-        Gizmos.DrawWireSphere(sphereOrigin + (Vector3.down * _groundCheckDistance), _groundCheckRadius);
+        // 생성된지 0.5초 안됐으면 착지소리 금지
+        if (Time.time < _enableTime + 0.5f) return;
+
+        // 상태 달라지면 착지 소리 재생   /     나중에 경사 때문에 다다닥 소리 날 수도 있음
+        if (!wasGrounded && _isGrounded && _verticalVelocity.y < -3.0f)
+        {
+            if (_soundHandler != null)
+                _soundHandler.PlayLand();
+        }
     }
 }

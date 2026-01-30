@@ -76,8 +76,9 @@ public class SoundManager : MonoBehaviour
     private Dictionary<BGMType, AudioClip> _bgmTable = new Dictionary<BGMType, AudioClip>();
     private Dictionary<SFXType, AudioClip> _sfxTable = new Dictionary<SFXType, AudioClip>();
 
-    // 클립별 쿨타임용
-    private Dictionary<AudioClip, float> _sfxCooldowns = new Dictionary<AudioClip, float>(); 
+    // 클립별 쿨타임용 (로컬, 리모트)
+    private Dictionary<AudioClip, float> _localSfxCooldowns = new Dictionary<AudioClip, float>();
+    private Dictionary<AudioClip, float> _remoteSfxCooldowns = new Dictionary<AudioClip, float>(); 
 
     // 배경음 코루틴
     private Coroutine _bgmCoroutine;
@@ -251,20 +252,24 @@ public class SoundManager : MonoBehaviour
     }
 
     // 3D 효과음용
-    // 딕셔너리에 클립 찾아보고 쿨타임 됐으면 재생
-    public void PlayOneShot3D(AudioSource source, AudioClip clip)
+    // 딕셔너리에 클립 찾아보고 쿨타임 됐으면 재생 (로컬, 리모트 체크지만 네트워크 객체가 아닌 애들은 전부 리모트)
+    public void PlayOneShot3D(AudioSource source, AudioClip clip, bool isLocal = false)
     {
         // 둘 중 하나라도 없으면 무시
         if (clip == null || source == null) return;
 
+        // 로컬 쿨타임 리모트 쿨타임 선택
+        var targetCooldownDict = isLocal ? _localSfxCooldowns : _remoteSfxCooldowns;
+
+
         // 쿨타임 체크
-        if (_sfxCooldowns.TryGetValue(clip, out float lastTime))
+        if (targetCooldownDict.TryGetValue(clip, out float lastTime))
         {
             if (Time.time < lastTime + _sfxCoolDown) return;
         }
 
         // 쿨타임 갱신
-        _sfxCooldowns[clip] = Time.time;
+        targetCooldownDict[clip] = Time.time;
 
         // 믹서 그룹 맞추기 (SFX 볼륨 적용되게)
         if (_sfxSource.outputAudioMixerGroup != null)

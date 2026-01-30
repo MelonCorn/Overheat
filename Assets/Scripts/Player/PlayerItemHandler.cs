@@ -6,6 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 {
+    private PlayerSoundHandler _soundHandler;
+
     [Header("아이템 장착 위치)")]
     [SerializeField] Transform _fpsHolder; // 1인칭(로컬)
     [SerializeField] Transform _tpsHolder; // 3인칭(리모트)
@@ -21,7 +23,6 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
     // 현재 들고있는 아이템
     private GameObject _currentItem;             // 모델
-    private Animator _currentItemAnim;           // 애니메이터
     private PoolableObject _currentItemPoolable; // 반납용
 
     private ItemVisualHandler _currentVisualHandler;// 현재 무기 비주얼 핸들러
@@ -38,6 +39,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     {
         _inputHandler = GetComponent<PlayerInputHandler>();
         _statHandler = GetComponent<PlayerStatHandler>();
+        _soundHandler = GetComponent<PlayerSoundHandler>();
         _recoilHandler = GetComponentInChildren<PlayerRecoilHandler>();
         _itemMover = GetComponentInChildren<PlayerItemMoveHandler>();
     }
@@ -288,14 +290,16 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 아이템의 비주얼 핸들러 가져오기
         _currentVisualHandler = _currentItem.GetComponent<ItemVisualHandler>();
 
-        // 무기면 발사 속도 지정
+        // 무기면 
         if (_currentVisualHandler != null && data is WeaponData weaponData)
         {
-            _currentVisualHandler.SetFireRate(weaponData.fireRate);
+            // 로컬 확인
+            _currentVisualHandler.Init(photonView.IsMine);
+
+            // 확실하게
+            _currentWeaponData = weaponData;
         }
 
-        // 아이템의 애니메이터 가져오기
-        _currentItemAnim = _currentItem.GetComponent<Animator>();
     }
 
     // 아이템 장착 해제
@@ -324,7 +328,6 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             // 데이터 비우기
             _currentItem = null;
             _currentItemPoolable = null;
-            _currentItemAnim = null;
             _currentVisualHandler = null;
             _currentWeaponData = null;
             _isFiringEffectOn = false;
@@ -387,10 +390,14 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     {
         if (_statHandler == null) return;
 
-        // 섭취 소리 재생
-
         // 체력 회복
         _statHandler.Heal(data.healAmount);
+
+        // 섭취 소리 재생
+        if (_soundHandler != null)
+        {
+            _soundHandler.PlayEatSound(data.itemName);
+        }
 
         Debug.Log($"포션 사용: 체력 {data.healAmount} 회복");
 
@@ -441,8 +448,15 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 맞았는지 안맞았는지
         bool isHit = _hit.collider != null;
 
+        // 발사 사운드
+        if (_soundHandler != null)
+        {
+            // 사운드 재생
+            _soundHandler.PlayFireSound(data);
+        }
+
+
         if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal, isHit);
-        if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
 
         photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, isEnemy, normal, isHit);
 
@@ -483,6 +497,13 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             }
         }
 
+        // 발사 사운드
+        if (_soundHandler != null)
+        {
+            // 사운드 재생
+            _soundHandler.PlayFireSound(data);
+        }
+
         // 로컬 연출
         if (_currentVisualHandler != null)
         {
@@ -492,13 +513,10 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
                 _currentVisualHandler.FireImpact(hitPoints[i], isEnemies[i], normals[i], isHits[i]);
             }
         }
-        
-        // 애니메이션
-        if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
 
         // 리모트 배열로 변환해서 전송
         photonView.RPC(nameof(RPC_FireShotgun), RpcTarget.Others,
-            hitPoints.ToArray(), isEnemies.ToArray(), normals.ToArray());
+            hitPoints.ToArray(), isEnemies.ToArray(), normals.ToArray(), isHits.ToArray());
     }
 
     // 탄퍼짐 히트 포인트 계산
@@ -593,6 +611,13 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void RPC_FireShotgun(Vector3[] hitPoints, bool[] isEnemies, Vector3[] normals, bool[] isHits)
     {
+        // 발사 사운드
+        if (_soundHandler != null)
+        {
+            // 사운드 재생
+            _soundHandler.PlayFireSound(_currentWeaponData);
+        }
+
         if (_currentVisualHandler != null)
         {
             // 받은 배열만큼 반복해서 이펙트
@@ -601,21 +626,25 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
                 _currentVisualHandler.FireImpact(hitPoints[i], isEnemies[i], normals[i], isHits[i]);
             }
         }
-        if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
     }
 
     // 단발 RPC
     [PunRPC]
     private void RPC_FireOneShot(Vector3 hitPoint, bool isEnemy, Vector3 normal, bool isHit)
     {
+        // 발사 사운드
+        if (_soundHandler != null)
+        {
+            // 사운드 재생
+            _soundHandler.PlayFireSound(_currentWeaponData);
+        }
+
+
         // 리모트들은 3인칭전용에서 발사 이뤄짐
         if (_currentVisualHandler != null)
         {
             _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal, isHit);
         }
-
-        // 애니메이션까지
-        if (_currentItemAnim != null) _currentItemAnim.SetTrigger("Fire");
     }
 
     // 발사 레이캐스트

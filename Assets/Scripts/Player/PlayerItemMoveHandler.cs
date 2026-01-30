@@ -4,6 +4,7 @@ public class PlayerItemMoveHandler : MonoBehaviour
 {
     private PlayerInputHandler _inputHandler;     // 입력 상태 확인용
     private PlayerMovementHandler _moveHandler;   // 이동 상태 확인용     
+    private PlayerSoundHandler _soundHandler;     // 사운드 재생용
 
     [Header("타겟 트랜스폼")]
     [SerializeField] Transform _handTrans;        // 아이템 스웨이, 걷기, 충격
@@ -36,6 +37,7 @@ public class PlayerItemMoveHandler : MonoBehaviour
 
     // 이동 데이터
     private float _walkTimer = 0f;               // 누적 타이머
+    private float _lastStepTime;                 // 발소리 타임
     private Vector3 _currentWalkPos;             // 현재 걸음 위치
 
     // 착지 데이터
@@ -65,6 +67,7 @@ public class PlayerItemMoveHandler : MonoBehaviour
     {
         _inputHandler = GetComponentInParent<PlayerInputHandler>();
         _moveHandler = GetComponentInParent<PlayerMovementHandler>();
+        _soundHandler = GetComponentInParent<PlayerSoundHandler>();
 
 
         // 시작하면
@@ -183,6 +186,17 @@ public class PlayerItemMoveHandler : MonoBehaviour
 
             // 누적해서 나중에 이어가게
             _walkTimer += Time.deltaTime * speed;
+
+            // 발소리 타이머
+            if (_walkTimer > _lastStepTime + Mathf.PI)
+            {
+                // 시간 기록
+                _lastStepTime = _walkTimer;
+
+                // 발소리 재생
+                if (_soundHandler != null)
+                    _soundHandler.PlayWalk();
+            }
 
             // 8자 궤적
             // X(좌우)는 Cos 사용해서 둥글게 왔다갔다

@@ -3,7 +3,12 @@ using UnityEngine;
 public enum WeaponType
 {
     None,
-    Extinguisher,
+    Revolver,       // 리볼버
+    SMG,            // 기관단총
+    Shotgun,        // 샷건
+    BoltAction,     // 볼트액션
+    Welder,         // 용접기
+    Extinguisher,   // 소화기
 }
 
 
@@ -32,9 +37,21 @@ public class WeaponData : PlayerItemData
 
     [Header("산탄 설정")]
     public int pelletCount = 1;      // 발사체 개수
-    [Range(0f, 10f)]
+    [Range(0f, 20f)]
     public float spreadAngle = 0f;   // 탄퍼짐 정도
+
+    [Header("발사 클립")]
+    public AudioClip[] fireClips;
 
     [Header("도구 설정")]
     public bool isRepairTool = false; // 체크하면 수리 도구로 작동
+
+
+    // 발사 클립
+    public AudioClip GetFireClip()
+    {
+        if (fireClips != null && fireClips.Length > 0)
+            return fireClips[Random.Range(0, fireClips.Length)];
+        return null;
+    }
 }

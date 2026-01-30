@@ -10,6 +10,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     private PlayerStatHandler _statHandler;
     private PlayerInteractHandler _interactHandler;
     private PlayerItemHandler _itemHandler;
+    private PlayerSoundHandler _soundHandler;
     private AudioListener _audioListener;
 
     [Header("로컬 켤 것")]
@@ -43,6 +44,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         _statHandler = GetComponent<PlayerStatHandler>();
         _interactHandler = GetComponent<PlayerInteractHandler>();
         _itemHandler = GetComponent<PlayerItemHandler>();
+        _soundHandler = GetComponent<PlayerSoundHandler>();
         _audioListener = GetComponentInChildren<AudioListener>();
 
         // 스폰위치, 회전 넣고 시작
@@ -128,6 +130,9 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
                 MiniMapHandler.Instance.RegisterPlayer(transform);
             }
         }
+
+        // 로컬, 리모트 오디오 소스 설정
+        _soundHandler.SetttingAudioSource(photonView.IsMine);
     }
 
     private void Update()

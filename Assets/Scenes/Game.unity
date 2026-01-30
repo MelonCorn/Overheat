@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 1, g: 0.8135625, b: 0.5264151, a: 1}
+  m_FogColor: {r: 1, g: 0.654902, b: 0.5254902, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 60
@@ -2741,8 +2741,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c2ed712e0e6081468183a7f1bd86d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
-  _baseDistance: 500
-  _distancePerLevel: 50
+  _baseDistance: 300
+  _distancePerLevel: 100
   _progressSlider: {fileID: 514796227}
 --- !u!4 &1396107598
 Transform:
@@ -3264,6 +3264,7 @@ GameObject:
   - component: {fileID: 1679592413}
   - component: {fileID: 1679592412}
   - component: {fileID: 1679592411}
+  - component: {fileID: 1679592415}
   m_Layer: 9
   m_Name: Ground
   m_TagString: Ground
@@ -3318,7 +3319,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8c82d6d29fd92f94fbd1e2d766b30441, type: 2}
+  - {fileID: 2100000, guid: d7e3cf47d90a5e644bec3ccaf0112d15, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3364,6 +3365,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &1679592415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679592410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d15b878b54417641803903237615b87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GroundScoller
+  _scrollScale: 0.1
 --- !u!1 &1700292487
 GameObject:
   m_ObjectHideFlags: 0

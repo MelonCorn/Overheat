@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerStatHandler : MonoBehaviour
 {
+    private PlayerSoundHandler _soundHandler;
+
     [Header("체력 설정")]
     [SerializeField] int _maxHp = 100;
 
@@ -31,6 +33,11 @@ public class PlayerStatHandler : MonoBehaviour
 
     // 중복 실행 방지용
     private Coroutine _fadeCoroutine;
+
+    private void Awake()
+    {
+        _soundHandler = GetComponent<PlayerSoundHandler>();
+    }
 
     private void Start()
     {
@@ -93,6 +100,10 @@ public class PlayerStatHandler : MonoBehaviour
         _currentHp -= damage;
         Debug.Log($"체력 감소: {_currentHp}/{_maxHp}");
 
+        // 피격 사운드
+        if(_soundHandler != null)
+            _soundHandler.PlayHitSound();
+
         // 피격 피드백
         PlayFeedbackEffect(_hitColor);
 
@@ -130,6 +141,10 @@ public class PlayerStatHandler : MonoBehaviour
     private void Die()
     {
         PlayerHandler.localPlayer.Die();
+
+        // 사망 사운드
+        if (_soundHandler != null)
+            _soundHandler.PlayHitSound();
     }
     #endregion
 

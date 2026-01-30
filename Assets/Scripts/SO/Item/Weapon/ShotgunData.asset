@@ -38,4 +38,8 @@ MonoBehaviour:
   visualRecoilReturnSpeed: 10
   pelletCount: 6
   spreadAngle: 10
+  fireClips:
+  - {fileID: 8300000, guid: 097b7957933f033458be053f7412da5d, type: 3}
+  - {fileID: 8300000, guid: 5baf191fffd0e83418fd1a18aa6ac350, type: 3}
+  - {fileID: 8300000, guid: aa0dabf74ecddc5489a14ed0ca96d941, type: 3}
   isRepairTool: 0
