@@ -407,9 +407,13 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 쿨타임 갱신
         _lastFireTime = Time.time;
 
-        // 반동
+        // 카메라 반동
         if (_recoilHandler != null)
             _recoilHandler.RecoilFire(data);
+
+        // 비주얼 반동
+        if (_itemMover != null)
+            _itemMover.AddWeaponRecoil(data);
 
         // 탄 수가 1개보다 많으면 산탄 로직
         if (data.pelletCount > 1)

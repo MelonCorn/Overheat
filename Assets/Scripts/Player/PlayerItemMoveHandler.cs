@@ -34,18 +34,27 @@ public class PlayerItemMoveHandler : MonoBehaviour
     [Space]
     [SerializeField] float _walkOffset = -0.05f; // 아래로 살짝 내림
 
+    // 이동 데이터
     private float _walkTimer = 0f;               // 누적 타이머
     private Vector3 _currentWalkPos;             // 현재 걸음 위치
 
+    // 착지 데이터
     private float _targetShockY = 0f;            // 목표 충격값
     private float _currentShockY = 0f;           // 현재 충격값
     private bool _wasGrounded = true;            // 이전 프레임 땅 체크용
 
-    private Vector3 _handPos;   // 스웨이 위치
 
-    private Vector3 _equipPos;  // 장착 위치
+    // 목표 위치
+    private Vector3 _handPos;        // 스웨이 위치
+    private Vector3 _equipPos;       // 장착 위치
+    private Vector3 _currentSwayPos; // 현재 스웨이 위치
 
-    private Vector3 _currentSwayPos;    // 현재 스웨이 위치
+
+    // 무기 비주얼 반동
+    private Vector3 _targetWeaponRot;   // 목표 회전값
+    private Vector3 _currentWeaponRot;  // 현재 회전값
+    private float _visualSnappiness;    // 반동 적용 속도
+    private float _visualReturnSpeed;   // 복귀 속도
 
 
     // 아이템 장착 상태
@@ -86,8 +95,15 @@ public class PlayerItemMoveHandler : MonoBehaviour
         // 충격
         ShockMotion();
 
-        // 최종 계산된 값 적용 : 기준점 + 스웨이 + 걷기 + 충격
-        _handTrans.localPosition = _handPos + _currentSwayPos + _currentWalkPos + new Vector3(0, _currentShockY, 0); ;
+        // 반동
+        RecoilMotion();
+
+        // (HandSway) 최종 계산된 값 적용 : 기준점 + 스웨이 + 걷기 + 충격
+        _handTrans.localPosition = _handPos + _currentSwayPos + _currentWalkPos + new Vector3(0, _currentShockY, 0);
+
+        // (HandHolder) 최종 계산된 회전 값 적용 : 반동
+        _handHolderTrans.localRotation = Quaternion.Euler(_currentWeaponRot);
+
     }
 
     // 장착 상태 변경 (PlayerItemHandler에서 호출)
@@ -102,12 +118,18 @@ public class PlayerItemMoveHandler : MonoBehaviour
         // 바로 장착 해제 상태
         _isEquipped = false;
 
-        // 위치도 즉시 갱신
+        // 위치 초기화
         if (_handHolderTrans != null)
         {
-            // 원래 위치에서 StartPos만큼 내림
             _handHolderTrans.localPosition = _equipPos + _startOffset;
+
+            //  회전 초기화
+            _handHolderTrans.localRotation = Quaternion.identity;
         }
+
+        // 반동 변수 초기화
+        _targetWeaponRot = Vector3.zero;
+        _currentWeaponRot = Vector3.zero;
     }
 
     // 장착 모션
@@ -215,5 +237,36 @@ public class PlayerItemMoveHandler : MonoBehaviour
 
         // 지난 상태 갱신
         _wasGrounded = isGrounded;
+    }
+
+
+    // 반동 모션
+    private void RecoilMotion()
+    {
+        // 목표 회전은 항상 원점 돌아가게
+        _targetWeaponRot = Vector3.Lerp(_targetWeaponRot, Vector3.zero, _visualReturnSpeed * Time.deltaTime);
+
+        // 현재 회전은 항상 목표 회전 따라가게
+        _currentWeaponRot = Vector3.Slerp(_currentWeaponRot, _targetWeaponRot, _visualSnappiness * Time.deltaTime);
+    }
+
+    // 발사 반동 (PlayerItemHandler)
+    public void AddWeaponRecoil(WeaponData data)
+    {
+        if (data == null) return;
+
+        // 데이터 갱신
+        _visualSnappiness = data.visualRecoilSnappiness;    // 반동 적용 속도
+        _visualReturnSpeed = data.visualRecoilReturnSpeed;  // 복귀 속도
+
+        // 목표 각도
+        _targetWeaponRot = data.visualRecoilAngle;
+
+        // 현재 각도 초기화
+        _currentWeaponRot = Vector3.zero;
+
+        // 약간의 z 랜덤
+        float randomZ = Random.Range(-2f, 2f);
+        _targetWeaponRot += new Vector3(0f, 0f, randomZ);
     }
 }

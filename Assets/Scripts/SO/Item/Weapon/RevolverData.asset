@@ -19,8 +19,8 @@ MonoBehaviour:
     \uC801\uC744 \uCC98\uCE58\uD560 \uC218\uB294 \uC788\uC2B5\uB2C8\uB2E4."
   price: 50
   icon: {fileID: 21300000, guid: 3f07e121dff858b46be11c81416b617b, type: 3}
-  prefab: {fileID: 901158581646923471, guid: 3b0e7e3ab4d4dbb49aae975df50dcb4f, type: 3}
-  handPosOffset: {x: 0, y: 0, z: 0}
+  prefab: {fileID: 41101243199242733, guid: 3b0e7e3ab4d4dbb49aae975df50dcb4f, type: 3}
+  handPosOffset: {x: 0.005, y: 0.09, z: -0.16}
   handRotOffset: {x: 0, y: 0, z: 0}
   damage: 20
   range: 50
@@ -35,6 +35,9 @@ MonoBehaviour:
   maxRecoilX: 10
   snappiness: 20
   returnSpeed: 10
+  visualRecoilAngle: {x: -20, y: 0, z: 0}
+  visualRecoilSnappiness: 50
+  visualRecoilReturnSpeed: 10
   pelletCount: 1
   spreadAngle: 0
   isRepairTool: 0

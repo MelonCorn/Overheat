@@ -1,6 +1,10 @@
+using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(NetworkItem))]
+[RequireComponent(typeof(PoolableObject))]
+[RequireComponent(typeof(PhotonView))]
 public class ItemVisualHandler : MonoBehaviour
 {
     [Header("발사 위치")]

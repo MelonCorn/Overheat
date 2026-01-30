@@ -3912,8 +3912,8 @@ MonoBehaviour:
   _spawnZ: 105
   _despawnZ: 105
   _spawnDistanceInterval: 7
-  _spawnWidth: 15
-  _trackRadius: 6
+  _spawnWidth: 35
+  _trackRadius: 10
 --- !u!4 &1869453001
 Transform:
   m_ObjectHideFlags: 0
@@ -3923,7 +3923,7 @@ Transform:
   m_GameObject: {fileID: 1869452999}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
