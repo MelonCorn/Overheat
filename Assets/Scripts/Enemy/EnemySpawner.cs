@@ -73,15 +73,16 @@ public class EnemySpawner : MonoBehaviourPun
         // 엔진부터 꼬리칸 사이
         float zPos = TrainManager.Instance.GetLastZ();
 
-        // 엔진이 (0,0,0)이라 음수
-        // rearZ ~ 0 사이 랜덤인데 여유로 5정도 플마
+        // 엔진이 (0,0,0)이라 음수 맨 뒷칸은 음수
+        // -n ~ 0 사이 랜덤인데 여유로 5정도 더가기
         float randomZ = Random.Range(zPos - 5f, 5f);
 
         // X축 위치
         // 왼쪽(-) 아니면 오른쪽(+)
         float xPos = (Random.value > 0.5f) ? _spawnWidth : -_spawnWidth;
 
-        float yPos = 0f;
+        // 스포너 높이가 기본값
+        float yPos = transform.position.y;
 
         if (isRange) // 파괴형 (멀리서)
         {

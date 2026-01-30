@@ -260,7 +260,7 @@ MonoBehaviour:
   _teleportDistance: 5
   _runSpeed: 8
   _climbDuration: 1.5
-  _vaultDuration: 0.6
+  _vaultDuration: 0.3
   _chaseSpeed: 2.5
   _rotSpeed: 10
   _chaseRadius: 15

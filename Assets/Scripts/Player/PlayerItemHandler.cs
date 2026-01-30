@@ -60,8 +60,15 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     }
     private void Update()
     {
-        // 내꺼 아니면 무시
-        if (photonView.IsMine == false) return;
+        // 내꺼 아니면
+        if (photonView.IsMine == false)
+        {
+            // 애니메이터 레이어 웨이트 부드럽게 전환
+            UpdateAnimatorWeight();
+
+            // 딱 그까지만
+            return;
+        }
 
         // 각도 계산
         AimAngle();
@@ -74,9 +81,6 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
         // 자동 무기 비주얼 처리
         UpdateVisualState(isFiring);
-
-        // 애니메이터 레이어 웨이트 부드럽게 전환
-        UpdateAnimatorWeight();
 
         // 연사 입력
         if (isFiring == true)
@@ -156,7 +160,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         if (Mathf.Abs(currentWeight - _targetWeight) > 0.01f)
         {
             // 부드럽게 전환
-            float newWeight = Mathf.Lerp(currentWeight, _targetWeight, Time.deltaTime * 5f);
+            float newWeight = Mathf.Lerp(currentWeight, _targetWeight, Time.deltaTime * 10f);
             _playerHandler.PlayerAnim.SetLayerWeight(1, newWeight);
         }
     }
