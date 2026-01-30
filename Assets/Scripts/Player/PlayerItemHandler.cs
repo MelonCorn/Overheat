@@ -15,6 +15,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     [Header("적 레이어")]
     [SerializeField] LayerMask _enemyLayer;
 
+    private PlayerHandler _playerHandler;       // 두뇌
     private PlayerInputHandler _inputHandler;   // 입력
     private PlayerStatHandler _statHandler;     // 스탯
     private PlayerRecoilHandler _recoilHandler; // 반동
@@ -28,7 +29,11 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     private ItemVisualHandler _currentVisualHandler;// 현재 무기 비주얼 핸들러
     private WeaponData _currentWeaponData;          // 현재 무기 데이터
     private bool _isFiringEffectOn = false;         // 이펙트 중복 실행 방지용
+
+    // 네트워크 동기화 데이터
     private bool _isRemoteFiring = false;
+    private int _poseID = 0;                // 무기 자세 ID
+    private float _aimAngle = 0f;           // 조준 각도 (위아래)
 
     private float _lastFireTime;    // 쿨타임 관리용
     private RaycastHit _hit;        // 공격 레이캐스트용
@@ -37,6 +42,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
     private void Awake()
     {
+        _playerHandler = GetComponent<PlayerHandler>();
         _inputHandler = GetComponent<PlayerInputHandler>();
         _statHandler = GetComponent<PlayerStatHandler>();
         _soundHandler = GetComponent<PlayerSoundHandler>();
@@ -55,6 +61,9 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     {
         // 내꺼 아니면 무시
         if (photonView.IsMine == false) return;
+
+        // 각도 계산
+        AimAngle();
 
         // 단발 아이템은 무시해도 됨
         if (_currentWeaponData == null || _currentWeaponData.isAuto == false) return;
@@ -80,6 +89,56 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 아이템반납
         UnequipItem();
     }
+
+
+    #region 애니메이션
+    private void AimAngle()
+    {
+        if (_camera == null) return;
+
+        // 카메라의 X축 회전값 가져오기
+        float angle = _camera.localEulerAngles.x;
+
+        // 0 ~ 360 를 -180 ~ 180으로 변환
+        if (angle > 180) angle -= 360;
+
+        // 동기화 변수에 저장
+        _aimAngle = angle;
+    }
+
+    // 무기 타입 -> 자세 ID 변환 (매핑)
+    private int GetPoseID(WeaponType type)
+    {
+        switch (type)
+        {
+            case WeaponType.Revolver:
+                return 1;
+
+            case WeaponType.SMG:
+            case WeaponType.Shotgun:
+            case WeaponType.BoltAction:
+                return 2;
+
+            case WeaponType.Welder:
+            case WeaponType.Extinguisher:
+                return 0; 
+
+            default:
+                return 0;
+        }
+    }
+
+    // 애니메이터 갱신
+    private void UpdateAnimPose(int poseID)
+    {
+        Debug.Log($"애니메이터 갱신 시도 : 포즈 {poseID}");
+        if (_playerHandler.PlayerAnim != null)
+        {
+            Debug.Log($"애니메이터 갱신 성공");
+            _playerHandler.PlayerAnim.SetInteger("PoseID", poseID);
+        }
+    }
+    #endregion
 
 
     #region 비주얼
@@ -298,8 +357,19 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
             // 확실하게
             _currentWeaponData = weaponData;
-        }
 
+            // 무기 타입의 자세 ID
+            _poseID = GetPoseID(weaponData.type);
+        }
+        else
+        {
+            // 맨손 자세
+            _poseID = 0;
+            _currentWeaponData = null;
+        }
+        
+        // 애니메이터 즉시 적용
+        UpdateAnimPose(_poseID);
     }
 
     // 아이템 장착 해제
@@ -332,6 +402,10 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             _currentWeaponData = null;
             _isFiringEffectOn = false;
         }
+
+        // 자세 초기화
+        _poseID = 0;
+        UpdateAnimPose(0);
     }
     #endregion
 
@@ -706,20 +780,37 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting) 
         {
+            // 발사 상태
             stream.SendNext(_inputHandler.IsFiring);
+
+            // 무기 자세
+            stream.SendNext(_poseID);
+
+            // 조준 각도
+            stream.SendNext(_aimAngle);
         }
         else
         {
             // 데이터 받아서
             bool receiveFiring = (bool)stream.ReceiveNext();
+            int receivePoseID = (int)stream.ReceiveNext();
+            _aimAngle = (float)stream.ReceiveNext();
 
             // 값 바뀌면 갱신
+
+            // 발사 상태
             if (_isRemoteFiring != receiveFiring)
             {
                 _isRemoteFiring = receiveFiring;
 
                 // 여기서 바로 갱신
                 UpdateVisualState(_isRemoteFiring);
+            }
+            // 자세
+            if (_poseID != receivePoseID)
+            {
+                _poseID = receivePoseID;
+                UpdateAnimPose(_poseID);
             }
         }
     }

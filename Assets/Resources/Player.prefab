@@ -359,6 +359,7 @@ MonoBehaviour:
   _moveSmoothSpeed: 10
   _rotSmoothSpeed: 10
   _teleportDistance: 5
+  _animator: {fileID: 3418502337181163530}
   _aimObj: {fileID: 1879983947921891717}
   CurrentItem: 
 --- !u!114 &5230407840926473868
@@ -2664,6 +2665,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9100000, guid: dbf0e2f60ebd7444cad8c6dd24153b1e, type: 2}
     - target: {fileID: 9040396849666395112, guid: e792b5f59bf315845ab4fbb393f59b18, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9040396849666395112, guid: e792b5f59bf315845ab4fbb393f59b18, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
@@ -2680,6 +2685,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e792b5f59bf315845ab4fbb393f59b18, type: 3}
+--- !u!95 &3418502337181163530 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 9040396849666395112, guid: e792b5f59bf315845ab4fbb393f59b18, type: 3}
+  m_PrefabInstance: {fileID: 5910135352083590114}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7435756149816679846 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3833715676058777156, guid: e792b5f59bf315845ab4fbb393f59b18, type: 3}

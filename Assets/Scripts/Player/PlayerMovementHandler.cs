@@ -27,6 +27,8 @@ public class PlayerMovementHandler : MonoBehaviour
     [SerializeField] float _groundCheckDistance = 0.2f;
     [SerializeField] private bool _isGrounded; // 디버그용
 
+    public bool IsJump { get; private set; }    // 점프 상태 애니메이션용
+
     public bool IsGrounded => _isGrounded;
 
     public LayerMask GroundLayer => _groundLayer;
@@ -115,6 +117,9 @@ public class PlayerMovementHandler : MonoBehaviour
         // 공중
         else
         {
+            // 공중에선 점프 상태
+            if(IsJump == false) IsJump = true;
+
             // 관성
             _horizontalVelocity = Vector3.SmoothDamp(
                 _horizontalVelocity,
@@ -170,14 +175,18 @@ public class PlayerMovementHandler : MonoBehaviour
             _groundLayer
         );
 
-        // 생성된지 0.5초 안됐으면 착지소리 금지
-        if (Time.time < _enableTime + 0.5f) return;
-
-        // 상태 달라지면 착지 소리 재생   /     나중에 경사 때문에 다다닥 소리 날 수도 있음
-        if (!wasGrounded && _isGrounded && _verticalVelocity.y < -3.0f)
+        // 착지 순간
+        if (!wasGrounded && _isGrounded)
         {
-            if (_soundHandler != null)
-                _soundHandler.PlayLand();
+            // 점프 상태는 항상 갱신
+            IsJump = false;
+
+            // 생성된지 0.5초 지난 후 속도 빠를 때만
+            if (Time.time > _enableTime + 0.5f && _verticalVelocity.y < -3.0f)
+            {
+                if (_soundHandler != null)
+                    _soundHandler.PlayLand();
+            }
         }
     }
 }

@@ -6,6 +6,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 {
     public static PlayerHandler localPlayer;
 
+    private PlayerMovementHandler _movementHandler;
+    private PlayerInputHandler _inputHandler;
     private PlayerCameraHandler _cameraHandler;
     private PlayerStatHandler _statHandler;
     private PlayerInteractHandler _interactHandler;
@@ -25,21 +27,31 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     [SerializeField] float _rotSmoothSpeed = 10f;  // 회전
     [SerializeField] float _teleportDistance = 5f; // 순간이동
 
+    [Header("모델 애니메이터")]
+    [SerializeField] Animator _animator;
+
     [Header("플레이어 에임")]
     [SerializeField] GameObject _aimObj;        // 에임
 
-    private Vector3 _networkPosition;       // 네트워크 위치
-    private Quaternion _networkRotation;    // 네트워크 회전
+    // 네트워크 데이터 캐싱
+    private Vector3 _remotePosition;       // 네트워크 위치
+    private Quaternion _remoteRotation;    // 네트워크 회전
+    private float _remoteInputX;           // X 인풋
+    private float _remoteInputY;           // Y 인풋
+    private bool _remoteIsJump;            // 점프 상태
 
     public Transform CameraHolderTrans => _cameraHolder.transform;          // 홀더 트랜스폼
     public Transform CameraTrans => _cameraHandler.LocalCamera.transform;   // 진짜 카메라 트랜스폼
     public GameObject LocalAim => _aimObj;
+    public Animator PlayerAnim => _animator;
     public string CurrentItem = "";
 
     public bool IsDead { get; private set; }
 
     private void Awake()
     {
+        _inputHandler = GetComponent<PlayerInputHandler>();
+        _movementHandler = GetComponent<PlayerMovementHandler>();
         _cameraHandler = GetComponent<PlayerCameraHandler>();
         _statHandler = GetComponent<PlayerStatHandler>();
         _interactHandler = GetComponent<PlayerInteractHandler>();
@@ -48,8 +60,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         _audioListener = GetComponentInChildren<AudioListener>();
 
         // 스폰위치, 회전 넣고 시작
-        _networkPosition = transform.position;
-        _networkRotation = transform.rotation;
+        _remotePosition = transform.position;
+        _remoteRotation = transform.rotation;
     }
 
     private void OnEnable()
@@ -142,13 +154,21 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
 
         // 위치 보간
         // 거리 차이가 너무 벌어지면 텔포
-        if (Vector3.Distance(transform.position, _networkPosition) > _teleportDistance)
-            transform.position = _networkPosition;
+        if (Vector3.Distance(transform.position, _remotePosition) > _teleportDistance)
+            transform.position = _remotePosition;
         else
-            transform.position = Vector3.Lerp(transform.position, _networkPosition, Time.deltaTime * _moveSmoothSpeed);
+            transform.position = Vector3.Lerp(transform.position, _remotePosition, Time.deltaTime * _moveSmoothSpeed);
 
         // 회전 보간
-        transform.rotation = Quaternion.Lerp(transform.rotation, _networkRotation, Time.deltaTime * _rotSmoothSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, _remoteRotation, Time.deltaTime * _rotSmoothSpeed);
+
+        // 애니메이션 갱신
+        if (_animator != null)
+        {
+            _animator.SetFloat("InputX", _remoteInputX, 0.1f, Time.deltaTime);
+            _animator.SetFloat("InputY", _remoteInputY, 0.1f, Time.deltaTime);
+            _animator.SetBool("IsJump", _remoteIsJump);
+        }
     }
 
     private void OnDestroy()
@@ -308,14 +328,26 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
             stream.SendNext(transform.position);
             stream.SendNext(transform.rotation);
 
+            // 입력값
+            stream.SendNext(_inputHandler.MoveInput.x);
+            stream.SendNext(_inputHandler.MoveInput.y);
+
+            // 점프 상태
+            stream.SendNext(_movementHandler.IsJump);
+
             // 들고있는 아이템
             stream.SendNext(CurrentItem);
         }
         else
         {
             // 트랜스폼
-            _networkPosition = (Vector3)stream.ReceiveNext();
-            _networkRotation = (Quaternion)stream.ReceiveNext();
+            _remotePosition = (Vector3)stream.ReceiveNext();
+            _remoteRotation = (Quaternion)stream.ReceiveNext();
+
+            // 애니메이션
+            _remoteInputX = (float)stream.ReceiveNext();
+            _remoteInputY = (float)stream.ReceiveNext();
+            _remoteIsJump = (bool)stream.ReceiveNext();
 
             // 들고있는 아이템
             string receiveItem = (string)stream.ReceiveNext();

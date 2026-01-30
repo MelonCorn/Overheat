@@ -27,7 +27,7 @@ MonoBehaviour:
   hitLayer:
     serializedVersion: 2
     m_Bits: 545472
-  type: 0
+  type: 4
   recoilX: 10
   recoilY: 5
   maxRecoilX: 20

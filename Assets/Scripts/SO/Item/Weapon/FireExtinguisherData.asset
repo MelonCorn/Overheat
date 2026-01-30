@@ -21,18 +21,22 @@ MonoBehaviour:
   handPosOffset: {x: 0, y: -0.31, z: 0}
   handRotOffset: {x: 0, y: 0, z: 0}
   damage: 10
-  range: 2
-  fireRate: 0.05
+  range: 3
+  fireRate: 0.1
   isAuto: 1
   hitLayer:
     serializedVersion: 2
     m_Bits: 131072
-  type: 1
+  type: 6
   recoilX: 0
   recoilY: 0
   maxRecoilX: 0
   snappiness: 0
   returnSpeed: 0
+  visualRecoilAngle: {x: -10, y: 0, z: 0}
+  visualRecoilSnappiness: 15
+  visualRecoilReturnSpeed: 10
   pelletCount: 1
   spreadAngle: 0
+  fireClips: []
   isRepairTool: 0
