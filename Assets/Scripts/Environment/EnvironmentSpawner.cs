@@ -104,20 +104,39 @@ public class EnvironmentSpawner : MonoBehaviour
         // 선택된 오브젝트
         PoolableObject selectedPrefab = _prefabs[index];
 
-        // 랜덤 X 가운데 비움
+        // 랜덤 포지션 X 가운데 비움
         float randomX = 0f;
+
+        // 회전 각도
+        float baseYRot = 0f;
+
+
+        // 반반으로 왼쪽 오른쪽
         if (Random.value > 0.5f)
+        {
             randomX = Random.Range(_trackRadius, _spawnWidth);
+
+            // 안쪽 보도록
+            baseYRot = -90f;
+        }
         else
+        {
             randomX = Random.Range(-_spawnWidth, -_trackRadius);
 
+            baseYRot = 90f;
+        }
+
         // 스폰 위치
-        Vector3 spawnPos = new Vector3(randomX, 0, zPos);
+        Vector3 spawnPos = new Vector3(randomX, transform.position.y, zPos);
+
+        // 랜덤 Y인데 은근 안쪽이어야 함
+        float randomOffset = Random.Range(-45f, 45f);
+        Quaternion spawnRot = Quaternion.Euler(0f, baseYRot + randomOffset, 0f);
 
         // 생성
-        if(PoolManager.Instance != null)
+        if (PoolManager.Instance != null)
         {
-            PoolableObject spawnedObj = PoolManager.Instance.Spawn(selectedPrefab, spawnPos, Quaternion.identity);
+            PoolableObject spawnedObj = PoolManager.Instance.Spawn(selectedPrefab, spawnPos, spawnRot);
             var mover = spawnedObj.GetComponent<EnvironmentMove>();
             if (mover != null)
             {

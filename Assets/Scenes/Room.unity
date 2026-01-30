@@ -309,6 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   ActivePlayers: []
+  _starterItem: {fileID: 0}
   _isShop: 0
   _isWaitingRoom: 1
   _waitingCanvas: {fileID: 1413225718}
@@ -316,6 +317,7 @@ MonoBehaviour:
   _engineUI: {fileID: 0}
   _spectatorCamera: {fileID: 0}
   _enemySpawner: {fileID: 0}
+  _environmentSpawner: {fileID: 0}
   _lostItemSpawnPoint: {fileID: 0}
   _goldText: {fileID: 0}
   _SurviveDayText: {fileID: 0}
@@ -673,6 +675,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1767256785288966860, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
+      propertyPath: sceneViewId
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7715080884170364211, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
       propertyPath: sceneViewId
       value: 2
       objectReference: {fileID: 0}

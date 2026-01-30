@@ -3892,10 +3892,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnvironmentSpawner
   _prefabs:
-  - {fileID: -6525069753935771696, guid: 554786e150176d644b0873b1d7857cb3, type: 3}
+  - {fileID: 6746021234963015517, guid: e32f3f69e4117574a9609e468085550a, type: 3}
+  - {fileID: 2672271010026950060, guid: 7a8210a978d6fbd4b9c8638d25d60b47, type: 3}
+  - {fileID: 9139834044970024398, guid: 9c52d792708380e4a81176e15e40b9a4, type: 3}
+  - {fileID: 178263394931138987, guid: 575db788d401c3a4d8b2d6d385f05265, type: 3}
+  - {fileID: 820587011733401342, guid: f9a3cf9087c14974f8603c7a24373a91, type: 3}
+  - {fileID: 2004392574447862039, guid: a3062de07e59f994f8a19a77ba454afc, type: 3}
+  - {fileID: 6935628317975014046, guid: 5ab5622f0ee6df548a838c02109c2f82, type: 3}
+  - {fileID: 3551273543114961044, guid: fa120cd80b8e47f40a51661c871a75a9, type: 3}
+  - {fileID: 5894775585523301039, guid: 00f4c484d294fe34d922d59bdde82889, type: 3}
+  - {fileID: 3591011651388558186, guid: 8015dbe62077dd24cb682fb3ef3ae0a7, type: 3}
+  - {fileID: 2071761277704903281, guid: 2259b4e51a9c1924fa32f070e66214f7, type: 3}
+  - {fileID: 1765477509703182416, guid: 0d8e23ecbc1761d4c9593e64122b2c44, type: 3}
+  - {fileID: 41968785219061469, guid: 67c08e2362abf724f94b3449c2ca453e, type: 3}
+  - {fileID: 5953435050990248189, guid: a203f57d50491aa419d3befcdeae7a6c, type: 3}
+  - {fileID: 5665552241654460097, guid: c82c6b2d24a11934595320262fa28045, type: 3}
+  - {fileID: 8396674803713965904, guid: 66237ade7f283d64babb59721936d84c, type: 3}
+  - {fileID: 1401296539367482414, guid: 8028df3c8c862234e81540be7b5e34ef, type: 3}
   _spawnZ: 105
   _despawnZ: 105
-  _spawnDistanceInterval: 10
+  _spawnDistanceInterval: 7
   _spawnWidth: 15
   _trackRadius: 6
 --- !u!4 &1869453001
