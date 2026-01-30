@@ -6,10 +6,14 @@ using UnityEngine;
 public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInstantiateMagicCallback
 {
     [Header("불 설정")]
+    [SerializeField] ObjectAudioData _fireAudioData;  // 불 오디오 데이터
     [SerializeField] int _maxHp = 100;       // 불의 생명력
     [SerializeField] int _damage = 5;        // 열차에 주는 도트 데미지
     [SerializeField] float _interval = 2.0f; // 데미지 주기
     [SerializeField] float _shrinkSpeed = 5f;// 줄어드는 속도
+
+    private AudioSource _audioSource;        // 오디오 소스
+    private Collider _collider;              
 
     private int _currentHp;                  // 현재 체력
     private float _defaultScale;             // 기본 크기
@@ -25,6 +29,9 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         // 초기화
         _currentHp = _maxHp;
         _defaultScale = transform.localScale.x;
+
+        _audioSource = GetComponent<AudioSource>();
+        _collider = GetComponent<Collider>();
     }
 
     private void OnEnable()
@@ -36,6 +43,21 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
 
         _targetScale = Vector3.one * _defaultScale;
         transform.localScale = Vector3.one * _defaultScale;
+
+        // 콜라이더 켜기
+        if (_collider != null) _collider.enabled = true;
+
+        if (SoundManager.Instance != null)
+        {
+            // 불 터지는 소리 3D 재생
+            SoundManager.Instance.PlayOneShot3D(_audioSource, _fireAudioData.GetRandomClip());
+        }
+
+        if (FireSoundManager.Instance != null)
+        {
+            // 불 리스트에 등록
+            FireSoundManager.Instance.RegisterFire(transform);
+        }
 
         // 도트 데미지 시작 (방장만)
         if (PhotonNetwork.IsMasterClient)
@@ -50,6 +72,12 @@ public class TrainFire : MonoBehaviourPun, IDamageable, IPunObservable, IPunInst
         // 걍 또 해버림
         _targetTrain = null;
         _isInit = false;
+
+        if (FireSoundManager.Instance != null)
+        {
+            // 불 리스트에서 삭제
+            FireSoundManager.Instance.UnregisterFire(transform);
+        }
     }
 
     private void Update()
