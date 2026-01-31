@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BulletTracer
   _speed: 300
   _length: 5
-  _minDistance: 1
+  _minDistance: 2
 --- !u!120 &1608608914291132976
 LineRenderer:
   serializedVersion: 2

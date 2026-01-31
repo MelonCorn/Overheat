@@ -28,7 +28,6 @@ public class ImpactEffect : MonoBehaviour
         // 사운드 매니저 재생 요청 (3D + 쿨타임 적용)
         if (_audioSource != null && _audioData != null && SoundManager.Instance != null)
         {
-            Debug.Log("임팩트 소리 재생");
             SoundManager.Instance.PlayOneShot3D(_audioSource, _audioData.GetRandomClip());
         }
 

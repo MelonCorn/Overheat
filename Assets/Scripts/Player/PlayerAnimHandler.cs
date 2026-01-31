@@ -11,6 +11,9 @@ public class PlayerAnimHandler : MonoBehaviour
     [Header("부드러움 설정")]
     [SerializeField] float _rotSpeed = 20f; // 반응 속도
 
+    [Header("허리 각도 보정 설정")]
+    [SerializeField] float _downMultiplier = 1.3f; // 아래로 볼 때 각도 증폭용
+
     // 척추 리스트
     private List<Transform> _spines = new List<Transform>();
 
@@ -73,12 +76,34 @@ public class PlayerAnimHandler : MonoBehaviour
         _spines[0].Rotate(Vector3.up, angleDiff * _itemHandler.TargetWeight, Space.World);
 
 
+        // X 기울기 보정
+        // 현재 허리 방향
+        Vector3 currentDir = _spines[0].forward;
+
+        // 수평 방향
+        Vector3 horizonDir = currentDir;
+        horizonDir.y = 0;
+        horizonDir.Normalize();
+
+        // 수평선과 허리가 얼마나 기울어졌는지 계산
+        float pitchDiff = Vector3.SignedAngle(horizonDir, currentDir, _spines[0].right);
+
+        // 기울어진만큼 반대로 돌려서 수평으로 만듬
+        _spines[0].Rotate(Vector3.right, -pitchDiff * _itemHandler.TargetWeight, Space.Self);
+
+
 
 
         // 허리 상하 보정
         // 목표 각도
         float targetAngle = _itemHandler.AimAngle;
-        
+
+        // 아래를 본다면 증폭
+        if (targetAngle > 0)
+        {
+            targetAngle *= _downMultiplier;
+        }
+
         // 각도 부드럽게 설정
         _currentAngle = Mathf.Lerp(_currentAngle, targetAngle, Time.deltaTime * _rotSpeed);
         
