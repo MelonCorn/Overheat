@@ -11,9 +11,6 @@ public class PlayerAnimHandler : MonoBehaviour
     [Header("부드러움 설정")]
     [SerializeField] float _rotSpeed = 20f; // 반응 속도
 
-    [Header("허리 각도 보정 설정")]
-    [SerializeField] float _downMultiplier = 1.3f; // 아래로 볼 때 각도 증폭용
-
     // 척추 리스트
     private List<Transform> _spines = new List<Transform>();
 
@@ -32,8 +29,8 @@ public class PlayerAnimHandler : MonoBehaviour
         AddSpine(HumanBodyBones.Spine);
         AddSpine(HumanBodyBones.Chest);
         AddSpine(HumanBodyBones.UpperChest);
-        AddSpine(HumanBodyBones.Neck);
-        AddSpine(HumanBodyBones.Head);
+        //AddSpine(HumanBodyBones.Neck);
+        //AddSpine(HumanBodyBones.Head);
     }
 
     // 척추 리스트 추가
@@ -55,7 +52,14 @@ public class PlayerAnimHandler : MonoBehaviour
 
         if (_spines.Count == 0 || _itemHandler == null) return;
 
-
+        // 무기 데이터 상하좌우 보정값
+        float yawOffset = 0f;
+        float pitchOffset = 0f;
+        if (_itemHandler.CurrentWeaponData != null)
+        {
+            yawOffset = _itemHandler.CurrentWeaponData.spineYawOffset;
+            pitchOffset = _itemHandler.CurrentWeaponData.spinePitchOffset;
+        }
 
         // 허리 좌우 보정
         // 목표 방향
@@ -69,11 +73,14 @@ public class PlayerAnimHandler : MonoBehaviour
         currentForward.Normalize();
 
         // 두 방향의 차이 (목표로부터 얼마나 틀어졌나)
-        float angleDiff = Vector3.SignedAngle(currentForward, targetForward, Vector3.up);
+        float yawDiff = Vector3.SignedAngle(currentForward, targetForward, Vector3.up);
+
+        // (기본 보정 + 무기 보정 ) * 웨이트
+        float finalYaw = (yawDiff + yawOffset) * _itemHandler.TargetWeight;
 
         // 차이만큼 돌려주기
         // 웨이트 값 곱해서 부드럽게 섞이게
-        _spines[0].Rotate(Vector3.up, angleDiff * _itemHandler.TargetWeight, Space.World);
+        _spines[0].Rotate(Vector3.up, finalYaw, Space.World);
 
 
         // X 기울기 보정
@@ -96,12 +103,18 @@ public class PlayerAnimHandler : MonoBehaviour
 
         // 허리 상하 보정
         // 목표 각도
-        float targetAngle = _itemHandler.AimAngle;
+        // 에임 각도 + (무기 보정 * 웨이트)
+        float targetAngle = _itemHandler.AimAngle + (pitchOffset * _itemHandler.TargetWeight);
 
-        // 아래를 본다면 증폭
+        // 아래를 본다면
         if (targetAngle > 0)
         {
-            targetAngle *= _downMultiplier;
+            targetAngle *= _itemHandler.CurrentWeaponData._downMultiplier;
+        }
+        // 위를 본다면
+        else
+        {
+            targetAngle *= _itemHandler.CurrentWeaponData._upMultiplier;
         }
 
         // 각도 부드럽게 설정
@@ -109,12 +122,20 @@ public class PlayerAnimHandler : MonoBehaviour
         
         // 척추본 수 만큼 각도 나누기
         float anglePerBone = _currentAngle / _spines.Count;
-        
+
+        // 바라보는 방향
+        targetForward = transform.forward;
+        targetForward.y = 0;
+        targetForward.Normalize();
+
+        // 목표 방향 기준 수평 오른쪽 축
+        Vector3 targetRightAxis = Vector3.Cross(Vector3.up, targetForward);
+
         // 회전 적용
         foreach (Transform spine in _spines)
         {
             // 나눈 각도 회전
-            spine.Rotate(Vector3.right, anglePerBone);
+            spine.Rotate(targetRightAxis, anglePerBone, Space.World);
         }
     }
 }

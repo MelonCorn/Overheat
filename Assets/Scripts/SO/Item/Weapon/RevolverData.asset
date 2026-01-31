@@ -22,6 +22,8 @@ MonoBehaviour:
   prefab: {fileID: 41101243199242733, guid: 3b0e7e3ab4d4dbb49aae975df50dcb4f, type: 3}
   handPosOffset: {x: 0.005, y: 0.09, z: -0.16}
   handRotOffset: {x: 0, y: 0, z: 0}
+  tpsHandPosOffset: {x: 0.015, y: -0.015, z: -0.062}
+  tpsHandRotOffset: {x: 281.8941, y: 8.759613, z: 232.7947}
   damage: 20
   range: 50
   fireRate: 0.5

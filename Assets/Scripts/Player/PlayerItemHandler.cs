@@ -45,6 +45,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
     public float AimAngle => _aimAngle;
     public float TargetWeight => _targetWeight;
+    public WeaponData CurrentWeaponData => _currentWeaponData;
 
     private void Awake()
     {
@@ -348,16 +349,22 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             // 로컬 체크 (내꺼고, 부모가 1인칭 홀더일 때)
             bool isLocalMode = photonView.IsMine && parent == _fpsHolder;
 
+            // 일단 부모 기준 0,0,0
+            itemObj.transform.localPosition = Vector3.zero;
+            itemObj.transform.localRotation = Quaternion.identity;
+
             // 로컬 1인칭 보정
             if (isLocalMode)
             {
-                // 일단 부모 기준 0,0,0
-                itemObj.transform.localPosition = Vector3.zero;
-                itemObj.transform.localRotation = Quaternion.identity;
-
                 // 오프셋 적용
                 itemObj.transform.localPosition = data.handPosOffset;
                 itemObj.transform.localRotation = Quaternion.Euler(data.handRotOffset);
+            }
+            // 리모트 3인칭 보정
+            else
+            {
+                itemObj.transform.localPosition = data.tpsHandPosOffset;
+                itemObj.transform.localRotation = Quaternion.Euler(data.tpsHandRotOffset);
             }
 
             // 로컬 레이어로 변경

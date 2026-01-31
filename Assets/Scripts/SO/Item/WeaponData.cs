@@ -47,6 +47,13 @@ public class WeaponData : PlayerItemData
     [Range(0f, 20f)]
     public float spreadAngle = 0f;   // 탄퍼짐 정도
 
+
+    [Header("애니메이션 자세 보정")]
+    public float _upMultiplier;             // 위로 볼 때 증폭
+    public float _downMultiplier;           // 아래로 볼 때 증폭
+    public float spineYawOffset = 0f;       // 좌우
+    public float spinePitchOffset = 0f;     // 상하
+
     [Header("발사 클립")]
     public AudioClip[] fireClips;
 
