@@ -13,16 +13,15 @@ MonoBehaviour:
   m_Name: PlayerAudioData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAudioData
   walkGroundClips:
-  - {fileID: 8300000, guid: 1a0faf1d00af07d4dbf52f3131c70a5b, type: 3}
-  - {fileID: 8300000, guid: 7c05b980084cc954c8bada5b733c9a6f, type: 3}
-  - {fileID: 8300000, guid: 02ab7229e96f2d046ac0ec11901e55a0, type: 3}
-  - {fileID: 8300000, guid: d732ebc5ca265df42a92f4a27e22e031, type: 3}
-  - {fileID: 8300000, guid: a08178ac91a004f4dab408e8a9540cfe, type: 3}
+  - {fileID: 8300000, guid: 99d83de8fa59f5245bbae7d632b3782c, type: 3}
+  - {fileID: 8300000, guid: 17a4faec2f312b04b93b6a358f6a7ea2, type: 3}
+  - {fileID: 8300000, guid: c741c446c1a85b94e8193a73f8ef9900, type: 3}
+  - {fileID: 8300000, guid: dcd7557cbca03734c912594a64654486, type: 3}
+  - {fileID: 8300000, guid: bb387544055a18741a610b12bf8b7441, type: 3}
   walkTrainClips:
-  - {fileID: 8300000, guid: 9ed3abb09321a344aaeaf5ecae2f6a9e, type: 3}
-  - {fileID: 8300000, guid: 9d5d34fd3683ed24fbed4c999a6ebde3, type: 3}
-  - {fileID: 8300000, guid: 20a661763f81ffe478566e47490f78f0, type: 3}
-  - {fileID: 8300000, guid: 3f9b53aeaacd4164b9424cae29fd0ecf, type: 3}
+  - {fileID: 8300000, guid: 736ffe7d0bc367d419cd417b21353f22, type: 3}
+  - {fileID: 8300000, guid: e53239c77fbe1614fbe9cfbcdc37df64, type: 3}
+  - {fileID: 8300000, guid: 18c1d0412ea72244ca6a4518f7712c2d, type: 3}
   jumpGroundClips:
   - {fileID: 8300000, guid: f4fc6a491f43e8847a07752626b8b57f, type: 3}
   jumpTrainClips:

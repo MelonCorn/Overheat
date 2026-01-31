@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7128177838027378208}
   - component: {fileID: -3044118449348081963}
   - component: {fileID: 8894581246606916796}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: MuzzleParticle_FireExtiguisher
   m_TagString: Untagged
   m_Icon: {fileID: 0}

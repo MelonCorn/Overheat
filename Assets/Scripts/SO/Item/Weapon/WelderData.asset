@@ -27,7 +27,7 @@ MonoBehaviour:
   isAuto: 1
   hitLayer:
     serializedVersion: 2
-    m_Bits: 545408
+    m_Bits: 544960
   type: 5
   recoilX: 0
   recoilY: 0
@@ -39,7 +39,9 @@ MonoBehaviour:
   visualRecoilReturnSpeed: 10
   pelletCount: 1
   spreadAngle: 0
-  fireClips:
-  - {fileID: 8300000, guid: af4e1445f458e264ea4bd435231657c1, type: 3}
-  - {fileID: 8300000, guid: 040c1912f4e25ab48983a08ea862e939, type: 3}
+  fireClips: []
+  impactEnemyEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
+  impactTrainFloorEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
+  impactGroundEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
+  impactDefaultEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
   isRepairTool: 1

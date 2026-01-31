@@ -19,18 +19,17 @@ public class ItemVisualHandler : MonoBehaviour
     [Header("지속용 설정")]
     [SerializeField] AudioSource _muzzleSource;         // 지속용 오디오 소스
 
-    [Header("피격 이펙트")]
-    [SerializeField] PoolableObject _impactWallEffect;  // 벽 파티클
-    [SerializeField] PoolableObject _impactEnemyEffect; // 피격 파티클
-
     [Header("설정")]
     [SerializeField] bool _isContinuous = false;    // 지속형인지
 
     private ContinuousParticle _currentEffect;  // 현재 지속 파티클
+    private WeaponData _data;
 
     // 초기화
-    public void Init(bool isLocal)
+    public void Init(WeaponData data, bool isLocal)
     {
+        _data = data;
+
         // 지속형 설정
         if (_isContinuous)
         {
@@ -46,9 +45,6 @@ public class ItemVisualHandler : MonoBehaviour
             {
                 // 리모트는 3D
                 _muzzleSource.spatialBlend = 1f;
-                _muzzleSource.rolloffMode = AudioRolloffMode.Linear;       // 선형
-                _muzzleSource.minDistance = 2f;                            // 최소거리
-                _muzzleSource.maxDistance = 25f;                           // 최대거리
                 _muzzleSource.dopplerLevel = 0f;                           // 도플러효과 끄기
             }
         }
@@ -56,17 +52,10 @@ public class ItemVisualHandler : MonoBehaviour
 
    
     // 발사 연출
-    public void FireImpact(Vector3 hitPoint, bool isEnemy, Vector3 hitNormal, bool isHit)
+    public void FireImpact(Vector3 hitPoint, Vector3 hitNormal, PoolableObject impactPrefab)
     {
         // 단발 총구 이펙트
         if (_muzzleEffect != null) _muzzleEffect.Play();
-
-        // 피격 이펙트 결정 (맞췄는지 적인지 아닌지)
-        PoolableObject targetEffect = null;
-        if (isHit == true)
-        {
-            targetEffect = (isEnemy == true) ? _impactEnemyEffect : _impactWallEffect;
-        }
 
         if (_tracerPrefab != null && PoolManager.Instance != null)
         {
@@ -76,9 +65,9 @@ public class ItemVisualHandler : MonoBehaviour
 
             if (tracerScript != null)
             {
-                // 궤적 쏘고 도착하면 타겟 이펙트 터트림
+                // 궤적 쏘고 도착하면 임팩트 터트림
                 // 못맞췄으면 임팩트 null보내서 허공에서 안터트림
-                tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, hitNormal, targetEffect);
+                tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, hitNormal, impactPrefab);
             }
         }
     }

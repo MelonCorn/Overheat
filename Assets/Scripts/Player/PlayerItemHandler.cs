@@ -12,8 +12,10 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     [SerializeField] Transform _fpsHolder; // 1인칭(로컬)
     [SerializeField] Transform _tpsHolder; // 3인칭(리모트)
 
-    [Header("적 레이어")]
-    [SerializeField] LayerMask _enemyLayer;
+    [Header("레이어 체크")]
+    [SerializeField] LayerMask _enemyLayer;     // 적
+    [SerializeField] LayerMask _groundLayer;    // 땅
+    [SerializeField] LayerMask _trainFloorLayer;// 열차 바닥
 
     private PlayerHandler _playerHandler;       // 두뇌
     private PlayerInputHandler _inputHandler;   // 입력
@@ -40,6 +42,8 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     private RaycastHit _hit;        // 공격 레이캐스트용
 
     private Coroutine _equipCoroutine; // 로컬 장착 코루틴
+
+    public float AimAngle => _aimAngle;
 
     private void Awake()
     {
@@ -71,7 +75,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         }
 
         // 각도 계산
-        AimAngle();
+        SetAimAngle();
 
         // 단발 아이템은 무시해도 됨
         if (_currentWeaponData == null || _currentWeaponData.isAuto == false) return;
@@ -99,8 +103,10 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     }
 
 
+    // ----------------------------------------------
+
     #region 애니메이션
-    private void AimAngle()
+    private void SetAimAngle()
     {
         if (_camera == null) return;
 
@@ -166,6 +172,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     }
     #endregion
 
+    // ----------------------------------------------
 
     #region 비주얼
 
@@ -197,8 +204,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     }
     #endregion
 
-
-
+    // ----------------------------------------------
 
     #region 아이템 장착
 
@@ -378,8 +384,8 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 무기면 
         if (_currentVisualHandler != null && data is WeaponData weaponData)
         {
-            // 로컬 확인
-            _currentVisualHandler.Init(photonView.IsMine);
+            // 무기 데이터, 로컬 확인
+            _currentVisualHandler.Init(weaponData, photonView.IsMine);
 
             // 확실하게
             _currentWeaponData = weaponData;
@@ -435,7 +441,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     }
     #endregion
 
-
+    // ----------------------------------------------
 
     #region 아이템 사용
     // 아이템 사용 시도 (단발/클릭)
@@ -514,14 +520,6 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 쿨타임 갱신
         _lastFireTime = Time.time;
 
-        // 카메라 반동
-        if (_recoilHandler != null)
-            _recoilHandler.RecoilFire(data);
-
-        // 비주얼 반동
-        if (_itemMover != null)
-            _itemMover.AddWeaponRecoil(data);
-
         // 탄 수가 1개보다 많으면 산탄 로직
         if (data.pelletCount > 1)
         {
@@ -532,21 +530,29 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         {
             UseOneShot(data);
         }
+
+        // 카메라 반동
+        if (_recoilHandler != null)
+            _recoilHandler.RecoilFire(data);
+
+        // 비주얼 반동
+        if (_itemMover != null)
+            _itemMover.AddWeaponRecoil(data);
     }
 
     // 단발로직
     private void UseOneShot(WeaponData data)
     {
-        Vector3 hitPoint = GetHitPoint(data, out bool isEnemy, out Vector3 normal);
+        // 무기 데이터 넣고 레이어 검사
+        // 반환은 히트포인트, out으로 표면 방향, 콜라이더
+        Vector3 hitPoint = GetHitPoint(data, out Vector3 normal, out Collider hitCollider);
 
+        // 소화기는 즉시
         if (data.type == WeaponType.Extinguisher)
         {
             Attack(data, _hit);
             return;
         }
-
-        // 맞았는지 안맞았는지
-        bool isHit = _hit.collider != null;
 
         // 발사 사운드
         if (_soundHandler != null)
@@ -555,11 +561,21 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             _soundHandler.PlayFireSound(data);
         }
 
+        // 충돌 타입 
+        ImpactType impactType = GetImpactType(hitCollider);
 
-        if (_currentVisualHandler != null) _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal, isHit);
+        if (_currentVisualHandler != null)
+        {
+            // 임팩트 타입에 맞는 프리팹 가져오기
+            PoolableObject impactPrefab = GetImpactEffect(data, impactType);
+            // 발사 이펙트
+            _currentVisualHandler.FireImpact(hitPoint, normal, impactPrefab);
+        }
 
-        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, isEnemy, normal, isHit);
+        // 리모트한테도 실행
+        photonView.RPC(nameof(RPC_FireOneShot), RpcTarget.Others, hitPoint, normal, (int)impactType);
 
+        // 실제 공격
         Attack(data, _hit);
     }
 
@@ -569,25 +585,23 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 여러 발 히트 정보 계산
         // 네트워크 전송용 리스트
         List<Vector3> hitPoints = new List<Vector3>();
-        List<bool> isEnemies = new List<bool>();
         List<Vector3> normals = new List<Vector3>();
-        List<bool> isHits = new List<bool>();
+        List<int> impactTypes = new List<int>();
 
         // 산탄 수 만큼
         for (int i = 0; i < data.pelletCount; i++)
         {
             // 랜덤 확산 적용된 히트 정보
             RaycastHit hitInfo;
-            Vector3 hitPoint = GetSpreadHitPoint(data, out bool isEnemy, out Vector3 normal, out hitInfo);
+            Vector3 hitPoint = GetSpreadHitPoint(data, out Vector3 normal, out hitInfo);
 
-            // 맞았는지
-            bool isHit = hitInfo.collider != null;
+            // 콜라이더로 타입 결정
+            ImpactType type = GetImpactType(hitInfo.collider);
 
             // 리스트에 추가 (이펙트용)
             hitPoints.Add(hitPoint);
-            isEnemies.Add(isEnemy);
             normals.Add(normal);
-            isHits.Add(isHit);
+            impactTypes.Add((int)type);
 
 
             // 개별 데미지 처리 (히트만)
@@ -610,106 +624,23 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             // 반복문으로 
             for (int i = 0; i < hitPoints.Count; i++)
             {
-                _currentVisualHandler.FireImpact(hitPoints[i], isEnemies[i], normals[i], isHits[i]);
+                // 각자 맞은 타입의 임팩트 프리팹 가져오기
+                PoolableObject impactPrefab = GetImpactEffect(data, (ImpactType)impactTypes[i]);
+                // 각자 발사 이펙트
+                _currentVisualHandler.FireImpact(hitPoints[i], normals[i], impactPrefab);
             }
         }
 
         // 리모트 배열로 변환해서 전송
         photonView.RPC(nameof(RPC_FireShotgun), RpcTarget.Others,
-            hitPoints.ToArray(), isEnemies.ToArray(), normals.ToArray(), isHits.ToArray());
+            hitPoints.ToArray(), normals.ToArray(), impactTypes.ToArray());
     }
 
-    // 탄퍼짐 히트 포인트 계산
-    private Vector3 GetSpreadHitPoint(WeaponData data, out bool isEnemy, out Vector3 normal, out RaycastHit hitInfo)
-    {
-        isEnemy = false;
-        normal = Vector3.zero;
-        hitInfo = new RaycastHit();
 
-        // 카메라 없으면 그냥 앞에
-        if (_camera == null) return transform.position + transform.forward * data.range;
-
-        // 탄퍼짐 계산
-        // 화면 중앙에서 랜덤한 원형 범위 내의 점
-        Vector2 spread = Random.insideUnitCircle * data.spreadAngle * 0.01f; // 0.01f는 민감도 조절용
-
-        // 카메라 앞방향 + 랜덤 퍼짐 (X, Y축 기준)
-        Vector3 direction = _camera.forward +
-                           (_camera.right * spread.x) +
-                           (_camera.up * spread.y);
-
-        // 정규화
-        direction.Normalize();
-
-        // 그 방향 레이
-        Ray ray = new Ray(_camera.position, direction);
-
-        // 레이캐스트
-        if (Physics.Raycast(ray, out hitInfo, data.range, data.hitLayer))
-        {
-            // 적이면 적 트루
-            if ((_enemyLayer.value & (1 << hitInfo.collider.gameObject.layer)) != 0)
-            {
-                isEnemy = true;
-            }
-            // 표면 방향
-            normal = hitInfo.normal;
-            
-            // 히트 포인트
-            return hitInfo.point;
-        }
-        // 아무도 안맞앗으면
-        else
-        {
-            // 안맞으면 Quaternion.LookRotation(Vector3.zero) 되니까
-            normal = -direction;
-
-            // 끝점
-            return ray.origin + (ray.direction * data.range);
-        }
-    }
-
-    // 레이캐스트 맞은 위치 계산
-    private Vector3 GetHitPoint(WeaponData data, out bool isEnemy, out Vector3 normal)
-    {
-        // out 기본값  
-        isEnemy = false;        // (벽)
-        normal = Vector3.zero;  // 표면 방향
-
-        // 카메라 없으면 정면에 사거리만큼
-        if (_camera == null) return transform.position + transform.forward * data.range;
-
-        // 원점으로부터 정면 방향으로 레이 생성
-        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
-
-        // 레이를 쏴서 맞으면 그 위치 안 맞으면 사거리 끝 위치
-        if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
-        {
-            // 적인지 체크
-            if ((_enemyLayer.value & (1 << _hit.collider.gameObject.layer)) != 0)
-            {
-                isEnemy = true;
-            }
-
-            // 표면 방향
-            normal = _hit.normal;
-
-            // 위치
-            return _hit.point;
-        }
-        // 안 맞았으면 끝점
-        else
-        {
-            // 안맞으면 Quaternion.LookRotation(Vector3.zero) 되니까
-            normal = -ray.direction;
-
-            return ray.origin + (ray.direction * data.range);
-        }
-    }
 
     // 산탄 RPC (배열로 받음)
     [PunRPC]
-    private void RPC_FireShotgun(Vector3[] hitPoints, bool[] isEnemies, Vector3[] normals, bool[] isHits)
+    private void RPC_FireShotgun(Vector3[] hitPoints, Vector3[] normals, int[] impactTypes)
     {
         // 발사 사운드
         if (_soundHandler != null)
@@ -723,14 +654,16 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             // 받은 배열만큼 반복해서 이펙트
             for (int i = 0; i < hitPoints.Length; i++)
             {
-                _currentVisualHandler.FireImpact(hitPoints[i], isEnemies[i], normals[i], isHits[i]);
+                // 임팩트 타입에 맞는 프리팹 가져오기
+                PoolableObject impactPrefab = GetImpactEffect(_currentWeaponData, (ImpactType)impactTypes[i]);
+                _currentVisualHandler.FireImpact(hitPoints[i], normals[i], impactPrefab);
             }
         }
     }
 
     // 단발 RPC
     [PunRPC]
-    private void RPC_FireOneShot(Vector3 hitPoint, bool isEnemy, Vector3 normal, bool isHit)
+    private void RPC_FireOneShot(Vector3 hitPoint, Vector3 normal, int impactType)
     {
         // 발사 사운드
         if (_soundHandler != null)
@@ -739,11 +672,12 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
             _soundHandler.PlayFireSound(_currentWeaponData);
         }
 
-
         // 리모트들은 3인칭전용에서 발사 이뤄짐
         if (_currentVisualHandler != null)
         {
-            _currentVisualHandler.FireImpact(hitPoint, isEnemy, normal, isHit);
+            // 임팩트 타입에 맞는 프리팹 가져오기
+            PoolableObject impactPrefab = GetImpactEffect(_currentWeaponData, (ImpactType)impactType);
+            _currentVisualHandler.FireImpact(hitPoint, normal, impactPrefab);
         }
     }
 
@@ -795,6 +729,136 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     #endregion
 
 
+    #region 히트 정보 계산
+    // 탄퍼짐 히트 포인트 계산
+    private Vector3 GetSpreadHitPoint(WeaponData data, out Vector3 normal, out RaycastHit hitInfo)
+    {
+        normal = Vector3.zero;
+        hitInfo = new RaycastHit();
+
+        // 카메라 없으면 그냥 앞에
+        if (_camera == null) return transform.position + transform.forward * data.range;
+
+        // 탄퍼짐 계산
+        // 화면 중앙에서 랜덤한 원형 범위 내의 점
+        Vector2 spread = Random.insideUnitCircle * data.spreadAngle * 0.01f; // 0.01f는 민감도 조절용
+
+        // 카메라 앞방향 + 랜덤 퍼짐 (X, Y축 기준)
+        Vector3 direction = _camera.forward +
+                           (_camera.right * spread.x) +
+                           (_camera.up * spread.y);
+
+        // 정규화
+        direction.Normalize();
+
+        // 그 방향 레이
+        Ray ray = new Ray(_camera.position, direction);
+
+        // 레이캐스트
+        if (Physics.Raycast(ray, out hitInfo, data.range, data.hitLayer))
+        {
+            // 표면 방향
+            normal = hitInfo.normal;
+
+            // 히트 포인트
+            return hitInfo.point;
+        }
+        // 아무도 안맞앗으면
+        else
+        {
+            // 안맞으면 Quaternion.LookRotation(Vector3.zero) 되니까
+            normal = -direction;
+
+            // 끝점
+            return ray.origin + (ray.direction * data.range);
+        }
+    }
+
+    // 레이캐스트 맞은 위치 계산
+    private Vector3 GetHitPoint(WeaponData data, out Vector3 normal, out Collider hitCollider)
+    {
+        // out 기본값  
+        normal = Vector3.zero;  // 표면 방향
+        hitCollider = null;     // 콜라이더
+
+        // 카메라 없으면 정면에 사거리만큼
+        if (_camera == null) return transform.position + transform.forward * data.range;
+
+        // 원점으로부터 정면 방향으로 레이 생성
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
+        // 레이를 쏴서 맞으면 그 위치 안 맞으면 사거리 끝 위치
+        if (Physics.Raycast(ray, out _hit, data.range, data.hitLayer))
+        {
+            // 표면 방향
+            normal = _hit.normal;
+
+            //콜라이더
+            hitCollider = _hit.collider;
+
+            // 위치
+            return _hit.point;
+        }
+        // 안 맞았으면 끝점
+        else
+        {
+            // 안맞으면 Quaternion.LookRotation(Vector3.zero) 되니까
+            normal = -ray.direction;
+
+            return ray.origin + (ray.direction * data.range);
+        }
+    }
+
+    // 맞은 콜라이더 타입 반환
+    private ImpactType GetImpactType(Collider collider)
+    {
+        // 맞은거 없으면 None
+        if (collider == null) return ImpactType.None;
+
+        // 콜라이더의 오브젝트
+        GameObject target = collider.gameObject;
+
+        // 타겟 레이어를 비트 마스크로 변환
+        int targetLayerMask = (1 << target.layer);
+
+        // 적 체크
+        if ((_enemyLayer.value & targetLayerMask) != 0)
+        {
+            return ImpactType.Enemy;
+        }
+
+        // 땅 체크
+        if ((_groundLayer.value & targetLayerMask) != 0)
+        {
+            return ImpactType.Ground;
+        }
+
+        // 열차 바닥 체크
+        if ((_trainFloorLayer.value & targetLayerMask) != 0)
+        {
+            return ImpactType.TrainFloor;
+        }
+
+        // 나머지는 기본
+        return ImpactType.Defualt;
+    }
+
+    // 무기 데이터와 타입에 맞는 임팩트 프리팹 반환
+    private PoolableObject GetImpactEffect(WeaponData data, ImpactType type)
+    {
+        switch (type)
+        {
+            case ImpactType.Enemy: return data.impactEnemyEffect;
+            case ImpactType.Ground: return data.impactGroundEffect;
+            case ImpactType.TrainFloor: return data.impactTrainFloorEffect;
+            case ImpactType.Defualt: return data.impactDefaultEffect;
+            default: return null;
+        }
+    }
+
+    #endregion
+    
+    // ----------------------------------------------
 
     // 카메라 설정
     public void SetCamera(Transform cameraTrans)
@@ -802,6 +866,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         _camera = cameraTrans;
     }
 
+    // 네트워크 동기화
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting) 

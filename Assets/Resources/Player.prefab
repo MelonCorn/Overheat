@@ -473,6 +473,12 @@ MonoBehaviour:
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 16384
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  _trainFloorLayer:
+    serializedVersion: 2
+    m_Bits: 524288
 --- !u!114 &6267243236096800557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -489,7 +495,7 @@ MonoBehaviour:
   _footStepSource: {fileID: 5547945773963722378}
   _weaponSource: {fileID: 4342075398853146942}
   _hitSource: {fileID: 5892968805727539225}
-  _etcSource: {fileID: 0}
+  _etcSource: {fileID: 2413456799657990729}
   _trainFloorLayer:
     serializedVersion: 2
     m_Bits: 524288
@@ -793,7 +799,7 @@ GameObject:
   - component: {fileID: 2694771758144908035}
   - component: {fileID: 2413456799657990729}
   m_Layer: 8
-  m_Name: ItemSource
+  m_Name: EtcSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -836,7 +842,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 10
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -956,7 +962,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.3
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -965,7 +971,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 25
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -1310,7 +1316,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 25
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -1871,7 +1877,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.3
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1880,7 +1886,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 10
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -2043,7 +2049,7 @@ Camera:
   m_Depth: 10
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 720887
+    m_Bits: 1769463
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

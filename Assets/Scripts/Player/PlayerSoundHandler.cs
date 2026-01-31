@@ -51,10 +51,7 @@ public class PlayerSoundHandler : MonoBehaviourPun
             {
                 // 리모트는 3D
                 source.spatialBlend = 1f;
-                source.rolloffMode = AudioRolloffMode.Linear;       // 선형
-                source.minDistance = 2f;                            // 최소거리
-                source.maxDistance = 25f;                           // 최대거리
-                source.dopplerLevel = 0f;                           // 도플러효과 끄기
+                source.dopplerLevel = 0f;
             }
         }
     }

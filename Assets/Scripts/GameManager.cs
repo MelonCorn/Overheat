@@ -321,9 +321,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             // 적 청소
             CleanupEnemy();
 
-            // 적 투사체 청소
-            CleanupEnemyProjectile();
-
             // 유실물 청소
             CleanupLostItems();
 
@@ -632,8 +629,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         // 적 청소
         CleanupEnemy();
-        // 적 투사체 청소
-        CleanupEnemyProjectile();
+
         // 아이템 청소
         CleanupLostItems();
 
@@ -655,10 +651,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 게임오버 타임라인 재생
         if (_timelineManager != null)
         {
-            // 방장은 엔진 폭발 예약
-            if (PhotonNetwork.IsMasterClient == true)
-                StartCoroutine(EngineExplosion());
-
             // 타임라인 재생 완료 대기 (페이드 인 -> 파괴 타임라인 재생 -> 페이드 아웃)
             yield return StartCoroutine(PlayTimeline(TimelineType.GameOver));
         }
@@ -675,27 +667,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             // 이제 다 같이 대기실로 이동
             photonView.RPC(nameof(RPC_LoadSceneAsync), RpcTarget.All, "Room");
-        }
-    }
-
-
-    // 엔진 폭발 예약
-    private IEnumerator EngineExplosion()
-    {
-        // 페이드 인 시간
-        float fadeInTime = (LoadingManager.Instance != null) ? LoadingManager.Instance.FadeDuration : 1f;
-        yield return new WaitForSeconds(fadeInTime);
-
-        // 카메라가 열차를 잡을 시간 조금
-        yield return new WaitForSeconds(2f);
-
-        // 폭발
-        if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
-        {
-            TrainNode engine = TrainManager.Instance.TrainNodes[0];
-
-            if (engine != null)
-                engine.photonView.RPC("ExplodeRPC", RpcTarget.All);
         }
     }
 
@@ -754,26 +725,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log($"[적 청소] {enemies.Length} 마리의 적을 화면에서 치웠습니다.");
     }
 
-    // 적 투사체 청소
-    private void CleanupEnemyProjectile()
-    {
-        // 적 스크립트 가진 모든 객체 수집
-        var enemyProjectiles = FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None);
-
-        // 적 순회
-        foreach (var projectile in enemyProjectiles)
-        {
-            if (projectile != null)
-            {
-                // 비활성화
-                projectile.gameObject.SetActive(false);
-            }
-        }
-
-        Debug.Log($"[적 투사체 청소] {enemyProjectiles.Length} 개의 적 투사체를 화면에서 치웠습니다.");
-    }
-
-
     // 타임라인 재생 코루틴
     private IEnumerator PlayTimeline(TimelineType type)
     {
@@ -822,6 +773,21 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             LoadingManager.Instance.RequestFadeOut();
             yield return new WaitForSeconds(LoadingManager.Instance.FadeDuration);
         }
+    }
+
+
+    // 타임 라인 재생 중 열차 폭파 시그널
+    public void ExplodeTrain()
+    {
+        // 폭발
+        if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
+        {
+            TrainNode engine = TrainManager.Instance.TrainNodes[0];
+
+            // 엔진 폭발
+            engine.ExplodeRPC();
+        }
+
     }
 
 

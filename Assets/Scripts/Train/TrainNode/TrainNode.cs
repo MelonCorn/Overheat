@@ -7,6 +7,7 @@ using UnityEngine;
 public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicCallback, // 네트워크 객체 생성 후 데이터 콜백
                                             IDamageable, IRepairable        // 피해, 수리
 {
+    protected AudioSource _audioSource;
     protected Collider _collider;
     protected Rigidbody _rigidbody;
 
@@ -29,8 +30,13 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     [SerializeField] float _fireProbability = 20f; // 피격 시 화재 발생 확률
 
     [Header("폭발 연출 설정")]
+    [SerializeField] GameObject _explosiveParticle; // 시네머신 폭발 파티클
+    [SerializeField] GameObject _explosivePrefab; // 일반 폭발 파티클 프리팹
     [SerializeField] float _explosionForce = 10f; // 날아가는 힘
     [SerializeField] float _torqueForce = 5f;     // 회전하는 힘 (굴리기)
+
+    [Header("오디오 설정")]
+    [SerializeField] ObjectAudioData _audioData;
 
     // 파괴 타겟 레이어
     protected LayerMask _localPlayerLayer;   // 로컬플레이어
@@ -56,6 +62,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
         _collider = GetComponent<Collider>();
         _rigidbody = GetComponent<Rigidbody>();
         _navMeshLink = GetComponentInChildren<NavMeshLink>();
@@ -342,13 +349,33 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
     IEnumerator ExplodeCoroutine()
     {
-        Debug.Log($"{name} 쾅!");
+        // 폭발 파티클
+        // 게임오버 시 시네머신용 활성화
+        if(GameManager.Instance.IsGameOver == true)
+        {
+            if (_explosiveParticle != null)
+            {
+                _explosiveParticle.SetActive(true);
+            }
+        }
+        // 아니면 폭발 프리팹 생성
+        else
+        {
+            if (_explosivePrefab != null && _explosiveParticle != null)
+                Instantiate(_explosivePrefab, _explosiveParticle.transform.position, Quaternion.identity);
+        }
+
+        // 폭발 사운드 재생
+        if(TrainIndex != 0 && _audioSource != null && _audioData != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayOneShot3D(_audioSource, _audioData.GetRandomClip());
+        }
 
         // 날려버리기
         BlowAway();
 
         // 연출 딜레이
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(0.3f);
 
         // 뒷차 연쇄 작용
         if (_nextTrain != null) _nextTrain.Explode();

@@ -10,7 +10,14 @@ public enum WeaponType
     Welder,         // 용접기
     Extinguisher,   // 소화기
 }
-
+public enum ImpactType
+{
+    None,       
+    Enemy,      // 적
+    TrainFloor, // 열차 바닥
+    Ground,     // 땅 (모래)
+    Defualt,    // 나머지 기본
+}
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Shop/Weapon Item")]
 public class WeaponData : PlayerItemData
@@ -42,6 +49,12 @@ public class WeaponData : PlayerItemData
 
     [Header("발사 클립")]
     public AudioClip[] fireClips;
+
+    [Header("이펙트 설정")]
+    public PoolableObject impactEnemyEffect;        // 적        (피)
+    public PoolableObject impactTrainFloorEffect;   // 열차 바닥 (나무)
+    public PoolableObject impactGroundEffect;       // 땅        (모래)
+    public PoolableObject impactDefaultEffect;      // 기본      (스파크)
 
     [Header("도구 설정")]
     public bool isRepairTool = false; // 체크하면 수리 도구로 작동

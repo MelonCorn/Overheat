@@ -196,11 +196,9 @@ public class QuickSlotManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("아이템 아이콘 가져오기 시도");
                 // 아이템 리스트에서 아이콘 가져오기
                 if (ItemManager.Instance.ItemDict.ContainsKey(QuickSlot[i]))
                 {
-                    Debug.Log("아이템 아이콘 발견");
                     _slotImages[i].sprite = ItemManager.Instance.ItemDict[QuickSlot[i]].icon;
 
                     // 예측 상태에 따라 반투명, 불투명

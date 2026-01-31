@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4462945228478230142}
   - component: {fileID: 1608608914291132976}
   - component: {fileID: 2882075201696625023}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: BulletTracer_Continuos
   m_TagString: Untagged
   m_Icon: {fileID: 0}

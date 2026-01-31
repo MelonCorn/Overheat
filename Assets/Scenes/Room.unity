@@ -627,6 +627,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 793354934}
     m_Modifications:
+    - target: {fileID: -6265812214435289808, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -6265812214435289808, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 150980348517921138, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
       propertyPath: m_Name
       value: Engine_Train
@@ -678,6 +686,10 @@ PrefabInstance:
     - target: {fileID: 1767256785288966860, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
       propertyPath: sceneViewId
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6643782600324714060, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7715080884170364211, guid: c4de0c27f1f56044a90a01b209ef4599, type: 3}
       propertyPath: sceneViewId
