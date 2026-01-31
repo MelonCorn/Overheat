@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fcd39477c616a64ea46a73933a31ed3, type: 3}
+  m_Name: TurretAudioData
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectAudioData
+  objectClips:
+  - {fileID: 8300000, guid: 05c8501767b51354ca4059481b74c1fc, type: 3}
+  - {fileID: 8300000, guid: 302baa2a7a5144f4492148bb51883987, type: 3}
+  - {fileID: 8300000, guid: 678a5e68234aeec4e97dac20743fb294, type: 3}
+  - {fileID: 8300000, guid: 130a38811391648448db6ac0a8275f72, type: 3}
+  - {fileID: 8300000, guid: fdf15ed5beff9cf42b0f04c2d1909a6c, type: 3}
+  - {fileID: 8300000, guid: f59e7136fcee8a1439c753b33c55e315, type: 3}
+  - {fileID: 8300000, guid: 44c3cda92eee69b448d25080abb87881, type: 3}
+  - {fileID: 8300000, guid: 6567f48a69f7032469d0e1360237f3a3, type: 3}
+  - {fileID: 8300000, guid: 304fb285b46268f479d86713ad79da34, type: 3}
+  - {fileID: 8300000, guid: c3f7fe76816dfb94facac04572ec75cb, type: 3}

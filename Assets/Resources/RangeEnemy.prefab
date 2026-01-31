@@ -272,7 +272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyRange
   _maxHp: 100
-  _damage: 10
+  _damage: 5
   _attackRange: 2
   _attackRate: 1
   _moveSmoothSpeed: 10
@@ -282,6 +282,13 @@ MonoBehaviour:
   _shootRange: 15
   _rotSpeed: 5
   _smoothTime: 0.5
+  _minHeight: 0
+  _maxHeight: 15
+  _minShots: 3
+  _maxShots: 6
+  _moveRadius: 5
+  _movingSpeed: 1
+  _movingChance: 1
   _projectilePrefab: {fileID: 3810995863615009395, guid: ee665bff31fd58343859730cabfd7565, type: 3}
   _firePoint: {fileID: 8234832183667491119}
 --- !u!114 &3836888502562610475
