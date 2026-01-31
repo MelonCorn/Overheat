@@ -15,8 +15,8 @@ public class EnemySpawner : MonoBehaviourPun
 
     [Header("범위 설정")]
     [SerializeField] float _spawnWidth = 20f;    // 적 생성 시 좌우 거리
-    [SerializeField] float _flyMinHeight = 1f;   // 파괴형 적 최소 높이
-    [SerializeField] float _flyMaxHeight = 5f;   // 파괴형 적 최대 높이
+    [SerializeField] float _flyMinHeight = 0f;   // 파괴형 적 최소 높이
+    [SerializeField] float _flyMaxHeight = 15f;   // 파괴형 적 최대 높이
 
     private float _timer;
 
@@ -63,8 +63,8 @@ public class EnemySpawner : MonoBehaviourPun
 
         // 랜덤하게 적 타입 결정 (50:50)
         // 나중에 스테이지 난이도에 따라 확률 조정 가능
-        bool isRange = Random.value > 0.5f;
-        //bool isRange = true;
+        //bool isRange = Random.value > 0.5f;
+        bool isRange = true;
 
         // 스폰 포인트 선언
         Vector3 spawnPos = Vector3.zero;

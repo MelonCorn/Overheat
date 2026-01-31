@@ -14,6 +14,10 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     [SerializeField] protected float _attackRange = 2f; // 범위
     [SerializeField] protected float _attackRate = 1f;  // 간격
 
+    [Header("드랍 골드량")]
+    [SerializeField] protected int _minGold = 5;        // 최소 골드
+    [SerializeField] protected int _maxGold = 20;       // 최대 골드
+
     [Header("네트워크 동기화 설정")]
     [SerializeField] float _moveSmoothSpeed = 10f;
     [SerializeField] float _rotSmoothSpeed = 10f;
@@ -177,6 +181,16 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
         // 방장이 반납 시작
         if (PhotonNetwork.IsMasterClient == true)
         {
+            if (GameManager.Instance != null)
+            {
+                // 골드 랜덤 보상
+                int reward = Random.Range(_minGold, _maxGold + 1);
+                // 골드 추가
+                GameManager.Instance.AddGold(reward);
+
+                Debug.Log($"[적 처치] 골드 획득 : {reward}");
+            }
+
             StartCoroutine(Despawn());
         }
     }
