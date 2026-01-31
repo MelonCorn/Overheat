@@ -214,7 +214,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     private void SetCamera()
     {
         _interactHandler.SetCamera(CameraTrans);
-        _itemHandler.SetCamera(CameraTrans);
+        _itemHandler.SetCamera(CameraHolderTrans);
     }
 
     // 메인 카메라 오디오 리스터 상태 전환

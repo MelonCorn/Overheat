@@ -44,6 +44,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
     private Coroutine _equipCoroutine; // 로컬 장착 코루틴
 
     public float AimAngle => _aimAngle;
+    public float TargetWeight => _targetWeight;
 
     private void Awake()
     {
@@ -873,7 +874,6 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         {
             // 발사 상태
             stream.SendNext(_inputHandler.IsFiring);
-
             // 조준 각도
             stream.SendNext(_aimAngle);
         }

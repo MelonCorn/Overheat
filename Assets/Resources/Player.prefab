@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 4411880462178130062}
   - component: {fileID: 1243383332005046132}
   - component: {fileID: 6267243236096800557}
+  - component: {fileID: 7507156749113311288}
   - component: {fileID: 5231009159725759405}
   - component: {fileID: 1076891085264245779}
   - component: {fileID: 5499606231288934782}
@@ -452,7 +453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractHandler
   _interactText: {fileID: 8711338845781096233}
-  _reachDistance: 3
+  _reachDistance: 2
   _interactLayer:
     serializedVersion: 2
     m_Bits: 7168
@@ -500,6 +501,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 524288
   _rayDistance: 1.5
+--- !u!114 &7507156749113311288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1756186601399181371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32a94f7ed2e18b84e95ecb13a73c495f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimHandler
+  _rotSpeed: 20
+  _spineOffset: 0
 --- !u!114 &5231009159725759405
 MonoBehaviour:
   m_ObjectHideFlags: 0
