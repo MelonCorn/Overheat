@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
-using WebSocketSharp;
 
 [RequireComponent(typeof(NetworkPool))]
 public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
@@ -60,6 +59,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public event Action<int> OnGoldChanged; // 골드 변화 알림
 
+    // 무기 파티클 재생 전용
+    public readonly WaitForEndOfFrame EndOfFrame = new WaitForEndOfFrame();
 
     private PlayerSpawner _spawner;         // 플레이어 스포너
     private TimelineManager _timelineManager;// 타임라인 매니저
@@ -138,8 +139,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
 
         // 텍스트 갱신
-        UpdateGoldText();
-        UpdateDayText();
+        UpdateGold();
+        UpdateDay();
 
         // 유실물 복구 시작
         if (PhotonNetwork.IsMasterClient == true)
@@ -319,7 +320,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if(_isWaitingRoom == false)
         {
             // 적 청소
-            CleanupEnemy();
+            //CleanupEnemy();
 
             // 유실물 청소
             CleanupLostItems();
@@ -425,7 +426,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         GameData.Gold += amount;
 
         // UI 갱신
-        UpdateGoldText();
+        UpdateGold();
     }
 
     // 골드 사용 시도
@@ -440,7 +441,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             GameData.Gold -= amount;
 
             // UI 갱신
-            UpdateGoldText();
+            UpdateGold();
 
             return true;
         }
@@ -449,8 +450,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
 
-    // 골드 텍스트 갱신
-    private void UpdateGoldText()
+    // 골드 갱신
+    private void UpdateGold()
     {
         _goldText?.SetText($"{GameData.Gold:N0}");
 
@@ -458,10 +459,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         OnGoldChanged?.Invoke(GameData.Gold);
     }
 
-    // 생존일 텍스트 갱신
-    private void UpdateDayText()
+    // 생존일 갱신
+    private void UpdateDay()
     {
         _SurviveDayText?.SetText($"{GameData.SurviveDay} 일차");
+
+        // 환경 시간대 설정
+        SceneEnvironmentManager.Instance.SetEnvironmentTime();
     }
 
     #endregion
@@ -628,7 +632,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
 
         // 적 청소
-        CleanupEnemy();
+        //CleanupEnemy();
 
         // 아이템 청소
         CleanupLostItems();
@@ -810,7 +814,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 GameData.Gold = receiveGold;
 
-                UpdateGoldText();
+                UpdateGold();
             }
 
             // 생존일
@@ -818,7 +822,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 GameData.SurviveDay = receiveDay;
 
-                UpdateDayText();
+                UpdateDay();
             }
         }
     }
