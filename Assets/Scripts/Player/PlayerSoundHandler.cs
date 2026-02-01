@@ -59,13 +59,13 @@ public class PlayerSoundHandler : MonoBehaviourPun
 
 
     // 걷기 (PlayerItemMoveHandler)
-    public void PlayWalk() => PlaySoundAction(FootStepSoundType.Walk);
+    public void PlayWalk() => PlayFootStepSound(FootStepSoundType.Walk);
 
     // 점프 (PlayerMovementHandler)
-    public void PlayJump() => PlaySoundAction(FootStepSoundType.Jump);
+    public void PlayJump() => PlayFootStepSound(FootStepSoundType.Jump);
 
     // 착지 (PlayerMovementHandler)
-    public void PlayLand() => PlaySoundAction(FootStepSoundType.Land);
+    public void PlayLand() => PlayFootStepSound(FootStepSoundType.Land);
 
 
     // 피격 (PlayerStatHandler)
@@ -104,6 +104,26 @@ public class PlayerSoundHandler : MonoBehaviourPun
             photonView.RPC(nameof(RPC_ItemSound), RpcTarget.Others, itemName);
     }
 
+    // 상호작용 (PlayerInteractHandler)
+    public void PlayInteractSound(AudioClip clip)
+    {
+        if (clip == null) return;
+
+        // 로컬만 재생
+        PlayClip(_etcSource, clip);
+    }
+
+    // 아이템 스왑 (PlayerItemHandler)
+    public void PlaySwapSound()
+    {
+        if (_audioData == null) return;
+
+        AudioClip clip = _audioData.GetSwapClip();
+
+        // 로컬만 재생
+        PlayClip(_etcSource, clip);
+    }
+
     // 발사 (ItemVisualHandler)
     public void PlayFireSound(WeaponData weaponData)
     {
@@ -116,7 +136,7 @@ public class PlayerSoundHandler : MonoBehaviourPun
 
 
     // 타입에 맞는 사운드 재생
-    private void PlaySoundAction(FootStepSoundType type)
+    private void PlayFootStepSound(FootStepSoundType type)
     {
         // 바닥 재질 확인
         bool isTrain = IsTrainFloor();

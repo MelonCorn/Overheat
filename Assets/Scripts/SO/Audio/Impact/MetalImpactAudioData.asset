@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MetalImpactAudioData
   m_EditorClassIdentifier: Assembly-CSharp::ObjectAudioData
   objectClips:
-  - {fileID: 8300000, guid: 14839e7a375581842a21e9c2f1ed08cf, type: 3}
-  - {fileID: 8300000, guid: e964dc6b16ca6ff4c9bff9f363ce91a2, type: 3}
-  - {fileID: 8300000, guid: a61dda4ae84e5d74993ccec293f3bf22, type: 3}
+  - {fileID: 8300000, guid: 275112c740669374aabe86aa0a4eb140, type: 3}
+  - {fileID: 8300000, guid: 0e79c34891136c840b9a0856abb35f7b, type: 3}
+  - {fileID: 8300000, guid: 7984cbc03afb9214fa423bb000e1713a, type: 3}
+  - {fileID: 8300000, guid: 088236c677a045242b1fbdb8dd731bd1, type: 3}

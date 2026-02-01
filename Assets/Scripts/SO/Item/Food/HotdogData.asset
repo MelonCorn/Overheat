@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ab5894ae7fdd464b8adaa1a72d87cdb, type: 3}
+  m_Name: HotdogData
+  m_EditorClassIdentifier: Assembly-CSharp::PotionData
+  displayName: "\uD56B\uB3C4\uADF8"
+  itemName: Hotdog
+  desc: "\uB728\uAC70\uC6B4 \uD0DC\uC591\uC544\uB798 \uB728\uAC70\uC6B4 \uD56B\uB3C4\uADF8"
+  price: 25
+  icon: {fileID: 21300000, guid: 7377013011b4c3348809ff574abe799e, type: 3}
+  prefab: {fileID: 655816982191141092, guid: ee56f0262912a0a46b704e71aa6bb541, type: 3}
+  handPosOffset: {x: 0, y: 0.07, z: -0.04}
+  handRotOffset: {x: 0, y: 0, z: 0}
+  tpsHandPosOffset: {x: -0.004, y: 0.079, z: -0.012}
+  tpsHandRotOffset: {x: 342.7743, y: 85.76997, z: 255.61551}
+  healAmount: 80
+  eatClip: {fileID: 8300000, guid: 276d7d711d99031439677cbb8f64fd85, type: 3}

@@ -23,8 +23,8 @@ public class QuickSlotManager : MonoBehaviour
     [SerializeField] Sprite _defaultSprite;     // ºóÄ­ ½ºÇÁ¶óÀÌÆ®
     [SerializeField] Outline[] _slotOutlines;   // Äü½½·Ô °¢ ¾Æ¿ô¶óÀÎ
 
-    [Header("Å×½ºÆ®¿ë ½ºÅ¸ÅÍÆÑ")]
-    [SerializeField] string _starterItemName = "Pistol";
+    [Header("½ºÅ¸ÅÍÆÑ")]
+    [SerializeField] string _starterItemName = "Revolver";
 
 
 

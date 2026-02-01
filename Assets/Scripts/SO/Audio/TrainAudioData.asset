@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: TrainAudioData
   m_EditorClassIdentifier: Assembly-CSharp::ObjectAudioData
   objectClips:
-  - {fileID: 8300000, guid: e98ee531205b41f4bb3db5931d029416, type: 3}
-  - {fileID: 8300000, guid: e0e3f7362b37f5b41b94c06f9fd6025e, type: 3}
-  - {fileID: 8300000, guid: 22f9aec258e66cd46add343c44b6f2dc, type: 3}
-  - {fileID: 8300000, guid: 6d9addfd39e558c4da68e08aac7cefb4, type: 3}
-  - {fileID: 8300000, guid: 75ad552e06ebc5b458f945689118147d, type: 3}
-  - {fileID: 8300000, guid: 606f1ae368a54db42bcef0cd2e393633, type: 3}
-  - {fileID: 8300000, guid: 9cbaee1d2b4122d419770cd3b857367e, type: 3}
-  - {fileID: 8300000, guid: 84829247f475eda469fe8865cbf86c85, type: 3}
-  - {fileID: 8300000, guid: 718b26e8759198e4288133b49c22db68, type: 3}
-  - {fileID: 8300000, guid: 53308fccb9e743748b9dee24f63a1395, type: 3}
+  - {fileID: 8300000, guid: 757d3fc5a66e040408f41af3b697facf, type: 3}
+  - {fileID: 8300000, guid: e49015a7df227b9489e5d91f91924bc3, type: 3}
+  - {fileID: 8300000, guid: c775fb43a55b2b941a33d7a340f09371, type: 3}
+  - {fileID: 8300000, guid: 0f0a2e4425903c24188e75fbccbc0109, type: 3}
+  - {fileID: 8300000, guid: efabc1818023c0f47b2ca6cf5e244c59, type: 3}
+  - {fileID: 8300000, guid: 6b1f89bfbe42e524dbb30b7bdb4a32fb, type: 3}
+  - {fileID: 8300000, guid: 9293708fcbef6054594c2d8a5d757cb9, type: 3}
+  - {fileID: 8300000, guid: 8a6ee175f5b29f64e8921420e987f223, type: 3}
+  - {fileID: 8300000, guid: 4f29f2a64f7660943be28019de505712, type: 3}
+  - {fileID: 8300000, guid: 7ac7e002559bd294dae3d4cf61959fef, type: 3}

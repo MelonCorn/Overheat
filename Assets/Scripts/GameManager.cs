@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             Instance = null;
         }
     }
-
+     
     private IEnumerator Start()
     {
         yield return null;
@@ -337,11 +337,23 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             // 엔진 ui 비활성화
             if (_engineUI != null) _engineUI.SetActive(false);
 
-            // 상점도 아닐 때
+            // 상점도 아닐 때 (인게임 )
             if(_isShop == false)
             {
                 // 환경 오브젝트 끌어당기기
                 if (_environmentSpawner) _environmentSpawner.Repositon();
+
+                // 증기기관 증기 청소
+                if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
+                {
+                    TrainNode engine = TrainManager.Instance.TrainNodes[0];
+
+                    if(engine is EngineNode engineNode)
+                    {
+                        // 증기 파티클 청소
+                        engineNode.ClearSteam();
+                    }
+                }
             }
         }
         else

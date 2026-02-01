@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInteractable
 {
-    [Header("아이템 정보")]
     public string ItemName { get; private set; }
+
+    [Header("상호작용 오디오 데이터")]
+    [SerializeField] ObjectAudioData _audioData;
 
     private Collider _collider;         // 줍기용
     private Renderer[] _renderers;      // 일단 피드백용 렌더러
@@ -190,10 +192,10 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         }
     }
 
-    public void OnInteract()
+    public AudioClip OnInteract()
     {
         // 활성화 상태 체크
-        if (gameObject.activeSelf == false) return;
+        if (gameObject.activeSelf == false) return null;
 
         Debug.Log("아이템을 퀵슬롯에 추가 시도");
 
@@ -204,10 +206,12 @@ public class NetworkItem : MonoBehaviourPun, IPunInstantiateMagicCallback, IInte
         if (slotIndex != -1)
         {
             OnPickItem(slotIndex);
+            return _audioData.GetRandomClip();
         }
         else
         {
             Debug.Log("인벤토리가 꽉 찼습니다");
+            return null;
         }
     }
 

@@ -32,7 +32,7 @@ public class SceneEnvironmentManager : MonoBehaviour
         Instance = this;
     }
 
-    public void SetEnvironmentTime()
+    public void SetEnvironmentTime()                
     {
         bool isNight = (GameData.SurviveDay % 2 == 0);
 

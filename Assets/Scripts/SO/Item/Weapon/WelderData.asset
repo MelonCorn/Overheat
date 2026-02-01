@@ -24,7 +24,7 @@ MonoBehaviour:
   tpsHandPosOffset: {x: -0.297, y: 0.144, z: -0.244}
   tpsHandRotOffset: {x: 278.79205, y: 77.44759, z: 160.65474}
   damage: 2
-  range: 2
+  range: 3
   fireRate: 0.1
   isAuto: 1
   hitLayer:

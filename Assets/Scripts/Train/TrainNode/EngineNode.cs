@@ -7,6 +7,9 @@ public class EngineNode : TrainNode
     [Header("보일러")]
     [SerializeField] Boiler _boiler;
 
+    [Header("증기 파티클")]
+    [SerializeField] ParticleSystem _steamParticle;
+
     [Header("네트워크 동기화 무시 설정")]
     [SerializeField] float _networkIgnoreTime;
 
@@ -126,6 +129,12 @@ public class EngineNode : TrainNode
         {
             _boiler.AddFuel(amount);
         }
+    }
+
+    // 증기 파티클 청소
+    public void ClearSteam()
+    {
+        _steamParticle.Clear();
     }
 
     // 동기화 (방장이 계산한 연료와 속도를 클라이언트에게 전송)

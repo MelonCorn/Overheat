@@ -30,5 +30,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 27c789459f1246e479cfb093f55d3d16, type: 3}
   landTrainClips:
   - {fileID: 8300000, guid: 089e3a52055c7c644b89d8baac889531, type: 3}
+  itemSwapClips:
+  - {fileID: 8300000, guid: 4e4e55c5ece833f44b1c848009c45c38, type: 3}
+  - {fileID: 8300000, guid: 2ea29b0080149484f827c059369cca9d, type: 3}
   hitClips: []
-  dieClip: {fileID: 0}
+  dieClip: {fileID: 8300000, guid: 954b24f0e5c0ec8439437b14dff731f5, type: 3}

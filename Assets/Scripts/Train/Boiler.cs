@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class Boiler : MonoBehaviour, IInteractable
 {
+
+    [Header("보일러 오디오 데이터")]
+    [SerializeField] ObjectAudioData _boilerAudioData;
+
     // 연결된 엔진
     private EngineNode _engineNode;
 
@@ -131,14 +135,17 @@ public class Boiler : MonoBehaviour, IInteractable
         return $"연료 : {(int)_currentFuel} / {(int)_maxFuel}";
     }
 
-    public void OnInteract()
+    public AudioClip OnInteract()
     {
+        // 랜덤 클립 미리 가져오기
+        AudioClip clip = _boilerAudioData.GetRandomClip();
+
         // 상점 (아무나, 맨손)
         if (GameManager.Instance.IsShop == true)
         {
             // 씬 전환 요청
             GameManager.Instance.RequestChangeScene();
-            return;
+            return clip;
         }
 
         // 대기실 (방장만, 맨손)
@@ -157,11 +164,11 @@ public class Boiler : MonoBehaviour, IInteractable
                     GameManager.Instance.RequestChangeScene();
                 }
             }
-            return;
+            return clip;
         }
 
         // null 방어
-        if (QuickSlotManager.Instance == null) return;
+        if (QuickSlotManager.Instance == null) return null;
 
         string handItem = QuickSlotManager.Instance.CurrentSlotItemName;
         int slotIndex = QuickSlotManager.Instance.CurrentSlotIndex;
@@ -181,5 +188,7 @@ public class Boiler : MonoBehaviour, IInteractable
                 QuickSlotManager.Instance.RemoveItem(slotIndex, handItem);
             }
         }
+
+        return clip;
     }
 }

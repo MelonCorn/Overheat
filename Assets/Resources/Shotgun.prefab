@@ -103,6 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc6f2b02c4cef0d409d3c6f04461660a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkItem
+  _audioData: {fileID: 11400000, guid: 2331f82e1de3e6f41b3fca591ab4d55b, type: 2}
 --- !u!114 &3198083835323459020
 MonoBehaviour:
   m_ObjectHideFlags: 0

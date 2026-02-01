@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fcd39477c616a64ea46a73933a31ed3, type: 3}
+  m_Name: BoilerAudioData
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectAudioData
+  objectClips:
+  - {fileID: 8300000, guid: 302bef8de1ccf7645a4dec0feec0d599, type: 3}
+  - {fileID: 8300000, guid: b97b44cc61a2f3845a5e7e110b46f28f, type: 3}
+  - {fileID: 8300000, guid: bb9dc5d4860f357418f78b2778550504, type: 3}
+  - {fileID: 8300000, guid: 576c44f962864f9428d29d5e2a8c8167, type: 3}
+  - {fileID: 8300000, guid: 9721fb79f08306048980867cd5fa5c43, type: 3}
+  - {fileID: 8300000, guid: 663422bd8d462c54cb6b5a182215baaa, type: 3}
+  - {fileID: 8300000, guid: 8ce9bb6365baf84499aa11de56898357, type: 3}
+  - {fileID: 8300000, guid: 18442303664e90041a618de8ae96dc67, type: 3}
+  - {fileID: 8300000, guid: 8813e286b3a72874fb614b912bf38654, type: 3}

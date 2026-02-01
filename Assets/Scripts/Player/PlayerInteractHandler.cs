@@ -7,6 +7,11 @@ public class PlayerInteractHandler : MonoBehaviour
 {
     private PlayerMovementHandler _movementHandler;
     private PlayerInputHandler _inputHandler;
+    private PlayerItemHandler _itemHandler;
+    private PlayerSoundHandler _soundHandler;
+
+    [Header("드랍 오디오 데이터")]
+    [SerializeField] ObjectAudioData _dropAudioData;
 
     [Header("상호작용 텍스트")]
     [SerializeField] TextMeshProUGUI _interactText;
@@ -25,6 +30,8 @@ public class PlayerInteractHandler : MonoBehaviour
     {
         _movementHandler = GetComponent<PlayerMovementHandler>();
         _inputHandler = GetComponent<PlayerInputHandler>();
+        _itemHandler = GetComponent<PlayerItemHandler>();
+        _soundHandler = GetComponent<PlayerSoundHandler>();
     }
 
     private void Start()
@@ -99,8 +106,23 @@ public class PlayerInteractHandler : MonoBehaviour
         // 상호작용 대상 존재하면
         if (_currentInteractable != null)
         {
+            // 대상이 아이템이면
+            bool isNetworkItem = _currentInteractable is NetworkItem;
+
+            if (isNetworkItem == true && _itemHandler != null)
+            {
+                // 장착 사운드 스킵 설정
+                _itemHandler.SkipEquipSound();
+            }
+
             // 상호작용 실행
-            _currentInteractable.OnInteract();
+            AudioClip clip = _currentInteractable.OnInteract();
+
+            if (clip != null && _soundHandler != null)
+            {
+                // 상호작용 사운드 재생
+                _soundHandler.PlayInteractSound(clip);
+            }
         }
     }
 
@@ -117,6 +139,14 @@ public class PlayerInteractHandler : MonoBehaviour
 
         // 아이템 버리기 (생성)
         SpawnItemNetwork(itemName);
+
+        // 드랍 사운드
+        if(_dropAudioData != null & _soundHandler != null)
+        {
+            AudioClip clip = _dropAudioData.GetRandomClip();
+
+            _soundHandler.PlayInteractSound(clip);
+        }
     }
 
 

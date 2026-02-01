@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fcd39477c616a64ea46a73933a31ed3, type: 3}
+  m_Name: SocketStoreAudioData
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectAudioData
+  objectClips:
+  - {fileID: 8300000, guid: 830f5b301ade6a24381c9c9553545c49, type: 3}
+  - {fileID: 8300000, guid: 830f5b301ade6a24381c9c9553545c49, type: 3}

@@ -15,6 +15,9 @@ public class PlayerAudioData : ScriptableObject
     public AudioClip[] landGroundClips;
     public AudioClip[] landTrainClips;
 
+    [Header("스왑 사운드")]
+    public AudioClip[] itemSwapClips;
+
     [Header("전투 사운드")]
     public AudioClip[] hitClips;
     public AudioClip dieClip;
@@ -52,6 +55,14 @@ public class PlayerAudioData : ScriptableObject
     {
         if (hitClips != null && hitClips.Length > 0)
             return hitClips[Random.Range(0, hitClips.Length)];
+        return null;
+    }
+    
+    // 스왑
+    public AudioClip GetSwapClip()
+    {
+        if (itemSwapClips != null && itemSwapClips.Length > 0)
+            return itemSwapClips[Random.Range(0, itemSwapClips.Length)];
         return null;
     }
 }

@@ -8,6 +8,10 @@ public class ShopTerminal : MonoBehaviour, IInteractable
     [Header("상점 매니저")]
     [SerializeField] ShopManager _shopManager;
 
+    [Header("단말기 클립")]
+    [SerializeField] AudioClip _terminalOnClip;
+    [SerializeField] AudioClip _terminalOffClip;
+
     [Header("단말기 카메라 위치")]
     [SerializeField] Transform _viewPoint;
 
@@ -22,6 +26,12 @@ public class ShopTerminal : MonoBehaviour, IInteractable
     [SerializeField] CanvasGroup _terminalCanvasGroup;      // 사용 상태 아니면 레이캐스트 블록 상태 off
 
     public static bool IsUsing = false;             // 사용 상태
+
+    private PlayerInputHandler _localPlayerInputHandler;
+    private PlayerMovementHandler _localPlayerMovementHandler;
+    private PlayerCameraHandler _localPlayerCameraHandler;
+    private PlayerRecoilHandler _localPlayerRecoilHandler;
+    private PlayerSoundHandler _localPlayerSoundHandler;
 
     private void Awake()
     {
@@ -54,9 +64,10 @@ public class ShopTerminal : MonoBehaviour, IInteractable
         IsUsing = false;
     }
 
-    public void OnInteract()
+    public AudioClip OnInteract()
     {
-        if (IsUsing) return;
+        if (IsUsing) return null;
+
         // 사용 상태로 전환
         IsUsing = true;
         // 단말기 UI 상호작용 가능
@@ -67,34 +78,47 @@ public class ShopTerminal : MonoBehaviour, IInteractable
         if (PlayerHandler.localPlayer != null)
         {
             // 플레이어 입력
-            var input = PlayerHandler.localPlayer.GetComponent<PlayerInputHandler>();
+            if(_localPlayerInputHandler == null)
+                _localPlayerInputHandler = PlayerHandler.localPlayer.GetComponent<PlayerInputHandler>();
+
             // 플레이어 움직임
-            var move = PlayerHandler.localPlayer.GetComponent<PlayerMovementHandler>();
+            if (_localPlayerMovementHandler == null)
+                _localPlayerMovementHandler = PlayerHandler.localPlayer.GetComponent<PlayerMovementHandler>();
+
             // 플레이어 카메라
-            var cam = PlayerHandler.localPlayer.GetComponent<PlayerCameraHandler>();
+            if (_localPlayerCameraHandler == null)
+                _localPlayerCameraHandler = PlayerHandler.localPlayer.GetComponent<PlayerCameraHandler>();
+
             // 플레이어 반동
-            var recoil = PlayerHandler.localPlayer.GetComponentInChildren<PlayerRecoilHandler>();
+            if (_localPlayerRecoilHandler == null)
+                _localPlayerRecoilHandler = PlayerHandler.localPlayer.GetComponentInChildren<PlayerRecoilHandler>();
+
+            // 플레이어 사운드
+            if (_localPlayerSoundHandler == null)
+                _localPlayerSoundHandler = PlayerHandler.localPlayer.GetComponent<PlayerSoundHandler>();
 
             // 카메라 등록 안되어 있으면
             if (_terminalCanvas.worldCamera == null)
             {
                 // 플레이어의 카메라 등록
-                _terminalCanvas.worldCamera = cam.LocalCamera;
+                _terminalCanvas.worldCamera = _localPlayerCameraHandler.LocalCamera;
             }
 
             // 플레이어 입력 UI로 전환
-            if (input) input.SetInputActive(false);
+            if (_localPlayerInputHandler) _localPlayerInputHandler.SetInputActive(false);
             // 플레이어 얼음
-            if (move) move.enabled = false;
+            if (_localPlayerMovementHandler) _localPlayerMovementHandler.enabled = false;
             // 카메라 납치
-            if (cam) cam.MoveCameraToTarget(_viewPoint, _moveDuration);
+            if (_localPlayerCameraHandler) _localPlayerCameraHandler.MoveCameraToTarget(_viewPoint, _moveDuration);
             // 반동 Off
-            if (recoil) recoil.enabled = false;
+            if (_localPlayerRecoilHandler) _localPlayerRecoilHandler.enabled = false;
         }
 
         // 마우스 커서 풀기
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
+        return _terminalOnClip;
     }
 
     // 단말기 종료
@@ -109,16 +133,16 @@ public class ShopTerminal : MonoBehaviour, IInteractable
         if (PlayerHandler.localPlayer != null)
         {
             // 플레이어 입력 플레이어로 전환
-            var input = PlayerHandler.localPlayer.GetComponent<PlayerInputHandler>();
-            if (input) input.SetInputActive(true);
+            if (_localPlayerInputHandler) _localPlayerInputHandler.SetInputActive(true);
 
             // 카메라 돌려보내기
-            var cam = PlayerHandler.localPlayer.GetComponent<PlayerCameraHandler>();
-            if (cam) cam.ReturnCameraToPlayer(_moveDuration);
+            if (_localPlayerCameraHandler) _localPlayerCameraHandler.ReturnCameraToPlayer(_moveDuration);
 
             // 플레이어 얼음땡
-            var move = PlayerHandler.localPlayer.GetComponent<PlayerMovementHandler>();
-            if (move) move.enabled = true;
+            if (_localPlayerMovementHandler) _localPlayerMovementHandler.enabled = true;
+
+            // 닫기 사운드 재생
+            if (_localPlayerSoundHandler) _localPlayerSoundHandler.PlayInteractSound(_terminalOffClip);
 
             // 얼음땡 기다리고 반동 허용
             StartCoroutine(EnableRecoilDelay(_moveDuration));

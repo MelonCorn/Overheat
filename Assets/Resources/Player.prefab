@@ -385,7 +385,7 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 528576
-  _groundCheckRadius: 0.4
+  _groundCheckRadius: 0.5
   _groundCheckOffset: 0.5
   _groundCheckDistance: 0.2
   _isGrounded: 0
@@ -452,6 +452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49a6ebf5a70c0f54fbcef7f4a9ac431f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractHandler
+  _dropAudioData: {fileID: 11400000, guid: 85477f166c17a9349aa6fee97f7fb6a4, type: 2}
   _interactText: {fileID: 8711338845781096233}
   _reachDistance: 2
   _interactLayer:

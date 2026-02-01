@@ -1,10 +1,12 @@
 using UnityEngine;
-using Photon.Pun;
 
 public class ItemDispenser : MonoBehaviour, IInteractable
 {
     [Header("공급할 아이템")]
     [SerializeField] string _targetItemName = "Coal";   // 일단 석탄 포대 밖에 없어서 기본은 Coal
+
+    [Header("상호작용 오디오 데이터")]
+    [SerializeField] ObjectAudioData _audioData;
 
     private string _targetDisplayName;  // 표시 이름 (한글)
 
@@ -21,24 +23,19 @@ public class ItemDispenser : MonoBehaviour, IInteractable
 
         return $"{_targetDisplayName} 획득";
     }
-                    
-    public void OnInteract()
+                   
+    // 상호작용 인터페이스 구현
+    // 오디오 클립 반환
+    public AudioClip OnInteract()
     {
-        Debug.Log("아이템 수급 시도");
-
         // 아이템 획득 시도 그리고 퀵슬롯 번호 가져옴 (false는 예측 안해도 된다는 의미)
         int slot = QuickSlotManager.Instance.TryAddItem(_targetItemName, false);
 
         // 획득
         if (slot != -1)
-        {
-            Debug.Log($"{_targetItemName} 획득!");
-            // 사운드, 이펙트 재생
-        }
+            return _audioData.GetRandomClip();
         // 실패
         else
-        {
-            Debug.Log("인벤토리가 가득 찼습니다.");
-        }
+            return null;
     }
 }

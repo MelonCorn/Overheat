@@ -43,6 +43,9 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
     private Coroutine _equipCoroutine; // 로컬 장착 코루틴
 
+
+    private bool _skipEquipSound = false;   // 장착 사운드
+
     public float AimAngle => _aimAngle;
     public float TargetWeight => _targetWeight;
     public WeaponData CurrentWeaponData => _currentWeaponData;
@@ -244,6 +247,21 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         // 게임매니저 없으면 끝
         if (GameManager.Instance == null) yield break;
 
+        // 장착 소리 스킵 체크 상태라면
+        if (_skipEquipSound == true)
+        {
+            // 소리 안내고 그냥 초기화만
+            _skipEquipSound = false;
+        }
+        else
+        {
+            // 소리 재생
+            if (_soundHandler != null)
+            {
+                _soundHandler.PlaySwapSound();
+            }
+        }
+
         // 아이템 데이터 가져오기
         ShopItem itemData = GameManager.Instance.FindItemData(newItem);
 
@@ -299,6 +317,11 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         }
     }
 
+    // 장착 사운드 스킵
+    public void SkipEquipSound()
+    {
+        _skipEquipSound = true;
+    }
 
     // 아이템 생성
     private void CreateItem(PlayerItemData data, Transform parent)
