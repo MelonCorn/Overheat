@@ -342,18 +342,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 // 환경 오브젝트 끌어당기기
                 if (_environmentSpawner) _environmentSpawner.Repositon();
-
-                // 증기기관 증기 청소
-                if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
-                {
-                    TrainNode engine = TrainManager.Instance.TrainNodes[0];
-
-                    if(engine is EngineNode engineNode)
-                    {
-                        // 증기 파티클 청소
-                        engineNode.ClearSteam();
-                    }
-                }
             }
         }
         else
@@ -804,6 +792,36 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             engine.ExplodeRPC();
         }
 
+    }
+
+
+    // 증기 파티클 재생 시그널
+    public void PlayEngineSteam()
+    {
+        if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
+        {
+            TrainNode engine = TrainManager.Instance.TrainNodes[0];
+
+            if (engine is EngineNode engineNode)
+            {
+                // 증기 파티클 재생
+                engineNode.PlaySteam();
+            }
+        }
+    }
+    // 증기 파티클 중지 시그널
+    public void StopEngineSteam()
+    {
+        if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
+        {
+            TrainNode engine = TrainManager.Instance.TrainNodes[0];
+
+            if (engine is EngineNode engineNode)
+            {
+                // 증기 파티클 중지
+                engineNode.StopSteam();
+            }
+        }
     }
 
 

@@ -131,11 +131,9 @@ public class EngineNode : TrainNode
         }
     }
 
-    // 증기 파티클 청소
-    public void ClearSteam()
-    {
-        _steamParticle.Clear();
-    }
+    // 증기 파티클
+    public void PlaySteam() => _steamParticle.Play();
+    public void StopSteam() => _steamParticle.Stop();
 
     // 동기화 (방장이 계산한 연료와 속도를 클라이언트에게 전송)
     public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
