@@ -1,9 +1,11 @@
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 [RequireComponent(typeof(PoolableObject))]
 public class ContinuousParticle : MonoBehaviour
 {
+    private Transform _targetMuzzle;
     private ParticleSystem _particle;
     private PoolableObject _poolObj;
 
@@ -18,13 +20,34 @@ public class ContinuousParticle : MonoBehaviour
         // 켜질 때 파티클 재생
         _particle.Play();
     }
+    public void Play(Transform muzzle)
+    {
+        _targetMuzzle = muzzle;
+
+        // 켜자마자 총구 위치로
+        UpdatePosition();
+
+        // 파티클 재생
+        _particle.Play();
+    }
+    private void LateUpdate()
+    {
+        if (_targetMuzzle == null) return;
+
+        // LateUpdate 애니메이션 재생 이후 총구 위치로 업데이트
+        UpdatePosition();
+    }
+
+    // 총구 위치로 항상 고정
+    private void UpdatePosition()
+    {
+        transform.position = _targetMuzzle.position;
+        transform.rotation = _targetMuzzle.rotation;
+    }
 
     // 스탑 호출
     public void StopAndRelease()
     {
-        // 부모 없음
-        transform.SetParent(null);
-
         // 발사 중지
         _particle.Stop();
 
@@ -39,6 +62,9 @@ public class ContinuousParticle : MonoBehaviour
         {
             yield return new WaitForSeconds(0.5f);
         }
+
+        // 다 끝나고 추적 중단
+        _targetMuzzle = null;
 
         // 풀 반납
         if (_poolObj != null) _poolObj.Release();
