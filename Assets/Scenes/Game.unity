@@ -901,7 +901,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 307752606}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.008865121, y: 0.96992654, z: -0.03573832, w: -0.24059653}
+  m_LocalRotation: {x: -0.008865126, y: 0.96992654, z: -0.03573832, w: -0.2405967}
   m_LocalPosition: {x: 6.46, y: 1.59, z: 3.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1209,12 +1209,27 @@ MonoBehaviour:
   m_Events:
     m_Signals:
     - {fileID: 11400000, guid: 241892c67ab5eab4c962ee3e4ab0e101, type: 2}
+    - {fileID: 11400000, guid: 5e6965dc2737a8a419891f054e6fc6ad, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 1878544095}
           m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
           m_MethodName: ExplodeTrain
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1878544095}
+          m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+          m_MethodName: PlayEngineSteam
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -2276,7 +2291,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 461482520}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.07433057, y: 0.9231704, z: -0.29965186, w: -0.22899835}
+  m_LocalRotation: {x: -0.074330606, y: 0.9231704, z: -0.29965183, w: -0.2289985}
   m_LocalPosition: {x: 6.46, y: 10.6, z: 3.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3118,6 +3133,8 @@ PlayableDirector:
     value: {fileID: 1746314928}
   - key: {fileID: -6586229940204261747, guid: a96d0dbfe720a7d41ba231da8c884bb1, type: 2}
     value: {fileID: 1746314932}
+  - key: {fileID: 4011352043974512899, guid: a96d0dbfe720a7d41ba231da8c884bb1, type: 2}
+    value: {fileID: 339193396}
   m_ExposedReferences:
     m_References:
     - 5b6260332df885247aa88c9c134c7d28: {fileID: 307752607}
@@ -3851,7 +3868,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1367032027}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.013335026, y: 0.98348504, z: -0.08141003, w: -0.16109562}
+  m_LocalRotation: {x: -0.013335025, y: 0.98348504, z: -0.08141002, w: -0.1610956}
   m_LocalPosition: {x: 5.78, y: 3.59, z: 8.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4757,7 +4774,7 @@ MonoBehaviour:
     skyboxMaterial: {fileID: 2100000, guid: cc421da483ed06c49933077a621bff25, type: 2}
     lightColor: {r: 0, g: 0, b: 0, a: 1}
     fogColor: {r: 0.05882353, g: 0, b: 0.2901961, a: 1}
-    ambientColor: {r: 0.38039216, g: 0.38039216, b: 0.38039216, a: 1}
+    ambientColor: {r: 0.15686275, g: 0.15686275, b: 0.15686275, a: 1}
 --- !u!1 &1743679955
 GameObject:
   m_ObjectHideFlags: 0
@@ -4900,7 +4917,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 16777215
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
