@@ -1210,6 +1210,7 @@ MonoBehaviour:
     m_Signals:
     - {fileID: 11400000, guid: 241892c67ab5eab4c962ee3e4ab0e101, type: 2}
     - {fileID: 11400000, guid: 5e6965dc2737a8a419891f054e6fc6ad, type: 2}
+    - {fileID: 11400000, guid: 2caadfd66cb098e40b978259c1c7b1f8, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
@@ -1230,6 +1231,20 @@ MonoBehaviour:
         - m_Target: {fileID: 1878544095}
           m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
           m_MethodName: PlayEngineSteam
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1878544095}
+          m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+          m_MethodName: StopEngineSteam
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
