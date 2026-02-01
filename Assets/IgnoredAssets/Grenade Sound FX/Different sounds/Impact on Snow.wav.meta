@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3463a927c35c1cc49ad973ba8380ba6b
+guid: c7b9c820050cb3b429a80eac208e1376
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -20,3 +20,10 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 147490
+  packageName: Grenade Sound FX
+  packageVersion: 2.0
+  assetPath: Assets/Grenade Sound FX/Different sounds/Impact on Snow.wav
+  uploadId: 722860

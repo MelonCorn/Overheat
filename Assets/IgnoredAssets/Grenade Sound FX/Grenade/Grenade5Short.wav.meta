@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ad1026ce43264824dbea77c3f7793faa
+guid: 8b3f676fe7b41044495a2964396b8ba3
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -20,3 +20,10 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 147490
+  packageName: Grenade Sound FX
+  packageVersion: 2.0
+  assetPath: Assets/Grenade Sound FX/Grenade/Grenade5Short.wav
+  uploadId: 722860

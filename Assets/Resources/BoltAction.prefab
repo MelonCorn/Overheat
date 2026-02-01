@@ -299,7 +299,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1485289973904145341, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
       propertyPath: moveWithTransform
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2210111855007771975, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
       propertyPath: m_LocalPosition.x

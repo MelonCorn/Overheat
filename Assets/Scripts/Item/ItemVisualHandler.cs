@@ -1,7 +1,6 @@
 using Photon.Pun;
 using System.Collections;
 using UnityEngine;
-using static Unity.VisualScripting.Member;
 
 [RequireComponent(typeof(NetworkItem))]
 [RequireComponent(typeof(PoolableObject))]
@@ -23,13 +22,10 @@ public class ItemVisualHandler : MonoBehaviour
     [SerializeField] bool _isContinuous = false;    // 지속형인지
 
     private ContinuousParticle _currentEffect;  // 현재 지속 파티클
-    private WeaponData _data;
 
     // 초기화
-    public void Init(WeaponData data, bool isLocal)
+    public void Init( bool isLocal)
     {
-        _data = data;
-
         // 지속형 설정
         if (_isContinuous)
         {
@@ -53,9 +49,13 @@ public class ItemVisualHandler : MonoBehaviour
    
     // 발사 연출
     public void FireImpact(Vector3 hitPoint, Vector3 hitNormal, PoolableObject impactPrefab)
-    {
+    { 
         // 단발 총구 이펙트
-        if (_muzzleEffect != null) _muzzleEffect.Play();
+        if (_muzzleEffect != null)
+        {
+            _muzzleEffect.transform.position = _muzzlePoint.position;
+            _muzzleEffect.Play();
+        }
 
         if (_tracerPrefab != null && PoolManager.Instance != null)
         {
@@ -70,6 +70,17 @@ public class ItemVisualHandler : MonoBehaviour
                 tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, hitNormal, impactPrefab);
             }
         }
+        //StartCoroutine(Fire(hitPoint, hitNormal, impactPrefab));
+    }
+
+    private IEnumerator Fire(Vector3 hitPoint, Vector3 hitNormal, PoolableObject impactPrefab)
+    {
+        // 이번 프레임 끝까지 대기
+        // 애니메이션 위치 보정을 LateUpdate에서 하기 떄문에
+        // 파티클의 위치가 이상할 수 있음
+        yield return GameManager.Instance.EndOfFrame;
+
+       
     }
 
     // 연사 루프 연출
@@ -89,16 +100,36 @@ public class ItemVisualHandler : MonoBehaviour
 
             if (PoolManager.Instance != null)
             {
-                // 풀에서 총구 하위로
-                PoolableObject obj = PoolManager.Instance.Spawn(_continuousEffect, _muzzlePoint);
+                // 풀
+                PoolableObject obj = PoolManager.Instance.Spawn(_continuousEffect, null);
+
+                // 지속형 이펙트의 하위 모든 오브젝트 레이어를
+                // 무기의 레이어로 변경 (로컬, 리모트 구분) 
+                SetLayer(obj.gameObject, gameObject.layer);
 
                 // 로컬 위치 0으로 초기화
                 obj.transform.localPosition = Vector3.zero;
                 obj.transform.localRotation = Quaternion.identity;
 
                 // 스크립트 가져오기
-                _currentEffect = obj.GetComponent<ContinuousParticle>();
+                if(obj.TryGetComponent<ContinuousParticle>(out ContinuousParticle continuousParticle))
+                {
+                    _currentEffect = continuousParticle;
+                    continuousParticle.Play(_muzzlePoint);
+
+                }
             }
+        }
+    }
+
+    // 지속 이펙트용 레이어 변경 재귀 함수
+    private void SetLayer(GameObject obj, int newLayer)
+    {
+        obj.layer = newLayer;
+
+        foreach (Transform child in obj.transform)
+        {
+            SetLayer(child.gameObject, newLayer);
         }
     }
 

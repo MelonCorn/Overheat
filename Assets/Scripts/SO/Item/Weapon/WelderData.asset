@@ -21,6 +21,8 @@ MonoBehaviour:
   prefab: {fileID: 9183523427240285185, guid: d4e35d10e6a39624b8e78a5d863ba00e, type: 3}
   handPosOffset: {x: 0.338, y: -0.364, z: 0.546}
   handRotOffset: {x: 0, y: 0, z: 0}
+  tpsHandPosOffset: {x: -0.297, y: 0.144, z: -0.244}
+  tpsHandRotOffset: {x: 278.79205, y: 77.44759, z: 160.65474}
   damage: 2
   range: 2
   fireRate: 0.1
@@ -39,6 +41,10 @@ MonoBehaviour:
   visualRecoilReturnSpeed: 10
   pelletCount: 1
   spreadAngle: 0
+  _upMultiplier: 0.8
+  _downMultiplier: 1.16
+  spineYawOffset: 13.43
+  spinePitchOffset: 8.33
   fireClips: []
   impactEnemyEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
   impactTrainFloorEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}

@@ -195,6 +195,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4697095764430333949}
     m_Modifications:
+    - target: {fileID: 664441260305997380, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485289973904145341, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1741746336290360330, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2210111855007771975, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.002
@@ -235,9 +247,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2738114384509522398, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3851404131260803021, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4034536369108210229, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6417167403092524325, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7116568213147212831, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7550421340084894846, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
       propertyPath: m_Name
       value: MuzzleParticle
+      objectReference: {fileID: 0}
+    - target: {fileID: 7707794190683968624, guid: dd415fb3502e7e447a770cf0b68344c8, type: 3}
+      propertyPath: moveWithTransform
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

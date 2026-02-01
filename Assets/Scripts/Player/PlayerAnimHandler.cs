@@ -11,6 +11,10 @@ public class PlayerAnimHandler : MonoBehaviour
     [Header("부드러움 설정")]
     [SerializeField] float _rotSpeed = 20f; // 반응 속도
 
+    [Header("상하 회전 증폭")]
+    [SerializeField] float _upMultiplier = 1.1f;
+    [SerializeField] float _downMultiplier = 1.1f;     
+
     // 척추 리스트
     private List<Transform> _spines = new List<Transform>();
 
@@ -55,6 +59,7 @@ public class PlayerAnimHandler : MonoBehaviour
         // 무기 데이터 상하좌우 보정값
         float yawOffset = 0f;
         float pitchOffset = 0f;
+
         if (_itemHandler.CurrentWeaponData != null)
         {
             yawOffset = _itemHandler.CurrentWeaponData.spineYawOffset;
@@ -98,7 +103,21 @@ public class PlayerAnimHandler : MonoBehaviour
         // 기울어진만큼 반대로 돌려서 수평으로 만듬
         _spines[0].Rotate(Vector3.right, -pitchDiff * _itemHandler.TargetWeight, Space.Self);
 
+        // 상하 증폭 기본값
+        float finalDown = _downMultiplier;
+        float finalUp = _upMultiplier;
 
+        // 무기 있으면
+        if (_itemHandler.CurrentWeaponData != null)
+        {
+            // 가져와서
+            float weaponDown = _itemHandler.CurrentWeaponData._downMultiplier;
+            float weaponUp = _itemHandler.CurrentWeaponData._upMultiplier;
+
+            // 웨이트 0 ~ 1 에 따라 사이를 변동
+            finalDown = Mathf.Lerp(_downMultiplier, weaponDown, _itemHandler.TargetWeight);
+            finalUp = Mathf.Lerp(_upMultiplier, weaponUp, _itemHandler.TargetWeight);
+        }
 
 
         // 허리 상하 보정
@@ -109,12 +128,12 @@ public class PlayerAnimHandler : MonoBehaviour
         // 아래를 본다면
         if (targetAngle > 0)
         {
-            targetAngle *= _itemHandler.CurrentWeaponData._downMultiplier;
+            targetAngle *= finalDown;
         }
         // 위를 본다면
         else
         {
-            targetAngle *= _itemHandler.CurrentWeaponData._upMultiplier;
+            targetAngle *= finalUp;
         }
 
         // 각도 부드럽게 설정

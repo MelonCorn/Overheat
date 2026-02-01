@@ -42,6 +42,10 @@ MonoBehaviour:
   visualRecoilReturnSpeed: 10
   pelletCount: 1
   spreadAngle: 0
+  _upMultiplier: 0.82
+  _downMultiplier: 1.31
+  spineYawOffset: 1.2
+  spinePitchOffset: 8.72
   fireClips:
   - {fileID: 8300000, guid: cbcab4cf823ac2c489592a7e98dbb041, type: 3}
   - {fileID: 8300000, guid: 8d1dc3f3060b09040a79eb5fba926ac1, type: 3}

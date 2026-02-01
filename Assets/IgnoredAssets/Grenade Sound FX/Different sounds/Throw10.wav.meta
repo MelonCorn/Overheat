@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bbf2cbdc3e065704f82125ec109ee24e
+guid: ac1cb04ab9cfeb74c8de45aa81c06351
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -20,3 +20,10 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 147490
+  packageName: Grenade Sound FX
+  packageVersion: 2.0
+  assetPath: Assets/Grenade Sound FX/Different sounds/Throw10.wav
+  uploadId: 722860

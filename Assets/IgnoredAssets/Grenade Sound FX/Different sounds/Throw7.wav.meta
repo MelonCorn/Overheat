@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 675d3a5a2c65aca4bb713a6ff5b91fb0
+guid: 79f48574cbf0be842b5c7133147f3f9f
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -20,3 +20,10 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 147490
+  packageName: Grenade Sound FX
+  packageVersion: 2.0
+  assetPath: Assets/Grenade Sound FX/Different sounds/Throw7.wav
+  uploadId: 722860

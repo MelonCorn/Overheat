@@ -128,16 +128,14 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         switch (type)
         {
             case WeaponType.Revolver:
+            case WeaponType.Welder:
+            case WeaponType.Extinguisher:
                 return 1;
 
             case WeaponType.SMG:
             case WeaponType.Shotgun:
             case WeaponType.BoltAction:
                 return 2;
-
-            case WeaponType.Welder:
-            case WeaponType.Extinguisher:
-                return 0; 
 
             default:
                 return 0;
@@ -393,7 +391,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         if (_currentVisualHandler != null && data is WeaponData weaponData)
         {
             // 무기 데이터, 로컬 확인
-            _currentVisualHandler.Init(weaponData, photonView.IsMine);
+            _currentVisualHandler.Init(photonView.IsMine);
 
             // 확실하게
             _currentWeaponData = weaponData;

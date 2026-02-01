@@ -187,10 +187,8 @@ MonoBehaviour:
   _muzzlePoint: {fileID: 4520630773770223682}
   _tracerPrefab: {fileID: 2882075201696625023, guid: befa91347dbaaf44dac0bd2fec26ed44, type: 3}
   _muzzleEffect: {fileID: 0}
-  _continuousEffect: {fileID: -3044118449348081963, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
+  _continuousEffect: {fileID: 314964603237008212, guid: 89029cae92e699e48b945f3fc1e21a11, type: 3}
   _muzzleSource: {fileID: 3470099240326104702}
-  _impactWallEffect: {fileID: 0}
-  _impactEnemyEffect: {fileID: 0}
   _isContinuous: 1
 --- !u!82 &3470099240326104702
 AudioSource:
