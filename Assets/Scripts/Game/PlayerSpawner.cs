@@ -6,7 +6,7 @@ using System.Collections;
 public class PlayerSpawner : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject _playerPrefab;
-    [SerializeField] Transform _spawnPoint;
+    [SerializeField] Transform[] _spawnPoints;
     [SerializeField] float interval = 1.5f; // 간격
 
     // 플레이어 스폰
@@ -29,14 +29,11 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
         // 내 네트워크 번호
         int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
 
-        // 번호만큼 간격 띄워서
-        Vector3 offset = new Vector3(0f, 0f, (actorNumber - 1) * interval);
-
-        // 최종 스폰 위치
-        Vector3 finalPos = _spawnPoint.position + offset;
+        // 번호의 스폰 포인트
+        Transform spawnPoint = _spawnPoints[actorNumber - 1];
 
         // 객체 스폰
-        GameObject player = PhotonNetwork.Instantiate(_playerPrefab.name, finalPos, Quaternion.identity);
+        GameObject player = PhotonNetwork.Instantiate(_playerPrefab.name, spawnPoint.position, Quaternion.identity);
         PlayerHandler.localPlayer = player.GetComponent<PlayerHandler>();
 
         Debug.Log("로컬 플레이어 스폰 완료");
