@@ -244,11 +244,19 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (_waitingPanel != null) _waitingPanel.SetActive(false);
 
         // 상점일 때
-        if (IsShop == true && _timelineManager != null)
+        if (IsShop == true)
         {
-            // 상점 도착 타임라인 재생
-            // 페이드 인 -> 도착 타임라인 -> 페이드 아웃
-            yield return StartCoroutine(PlayTimeline(TimelineType.ShopArrival));
+            if (_timelineManager != null)
+            {
+                // 상점 도착 타임라인 재생
+                // 페이드 인 -> 도착 타임라인 -> 페이드 아웃
+                yield return StartCoroutine(PlayTimeline(TimelineType.ShopArrival));
+            }
+        }
+        // 상점도 아닌데 대기실도 아닐 때 (인게임)
+        else if (IsWaitingRoom == false)
+        {
+            PlayTrainWheel();   // 바퀴 회전
         }
 
         // 플레이어 스폰
@@ -820,6 +828,39 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 // 증기 파티클 중지
                 engineNode.StopSteam();
+            }
+        }
+    }
+
+    // 바퀴 재생 시그널
+    public void PlayTrainWheel()
+    {
+        if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
+        {
+            // 모든 열차 순회
+            foreach(var node in TrainManager.Instance.TrainNodes)
+            {
+                if(node != null)
+                {
+                    // 바퀴 애니메이션 재생
+                    node.StartWheel();
+                }
+            }
+        }
+    }
+    // 바퀴 브레이크 시그널
+    public void BreakTrainWheel()
+    {
+        if (TrainManager.Instance != null && TrainManager.Instance.TrainNodes.Count > 0)
+        {
+            // 모든 열차 순회
+            foreach (var node in TrainManager.Instance.TrainNodes)
+            {
+                if (node != null)
+                {
+                    // 바퀴 중지 애니메이션 재생
+                    node.BreakWheel();
+                }
             }
         }
     }

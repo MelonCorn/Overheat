@@ -10,6 +10,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     protected AudioSource _audioSource;
     protected Collider _collider;
     protected Rigidbody _rigidbody;
+    protected Animator _animator;
 
     protected int _maxHp;         // 최대 체력
     protected int _currentHp;     // 현재 체력
@@ -65,6 +66,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         _audioSource = GetComponent<AudioSource>();
         _collider = GetComponent<Collider>();
         _rigidbody = GetComponent<Rigidbody>();
+        _animator = GetComponentInChildren<Animator>();
         _navMeshLink = GetComponentInChildren<NavMeshLink>();
     }
 
@@ -89,6 +91,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
             TestTrainUIManager.Instance.CreateUI(this);
         }
 
+        // 폭발 대상 레이어 수동 정리
 
         // LocalPlayer 레이어 설정
         int layerIndex = LayerMask.NameToLayer("LocalPlayer");
@@ -204,6 +207,27 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         }
         // 콜라이더 없으면 그냥 원래 위치
         return transform.position;
+    }
+
+
+    // 바퀴 출발 애니메이션
+    public void StartWheel()
+    {
+        if (_animator != null)
+        {
+            _animator.ResetTrigger("Break");
+            _animator.SetTrigger("Move");
+        }
+    }
+
+    // 바퀴 정지 애니메이션
+    public void BreakWheel()
+    {
+        if (_animator != null)
+        {
+            _animator.ResetTrigger("Move");
+            _animator.SetTrigger("Break");
+        }
     }
     #endregion
 

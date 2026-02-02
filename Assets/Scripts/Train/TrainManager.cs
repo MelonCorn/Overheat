@@ -47,6 +47,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
     [Header("열차 부모")]
     [SerializeField] Transform _trainGroup;
 
+    [Header("상점용 판떼기")]
+    [SerializeField] GameObject _shopBlockPrefab;
+
 
     public event Action<bool, string> OnUpgradeResult; // 열차 업그레이드 결과 알림
     public event Action OnTrainListUpdated; // 열차 새로고침 알림
@@ -65,6 +68,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
     // 잘린 열차
     private List<TrainNode> _deadTrains = new List<TrainNode>();
+
+    // 현재 판떼기
+    private GameObject _currentBlockade;
 
     // 엔진 노드
     public EngineNode MainEngine
@@ -193,6 +199,9 @@ public class TrainManager : MonoBehaviourPunCallbacks
             {
                 SpawnTrain((TrainType)types[i], levels[i], contents[i]);
             }
+
+            // 열차 다 소환하고 마지막 열차 뒤에 판떼기로 막기  
+            UpdateShopBlock();
 
             // 구독자들에게 새로고침 알림
             OnTrainListUpdated?.Invoke();
@@ -410,6 +419,8 @@ public class TrainManager : MonoBehaviourPunCallbacks
             UpdateRoomProperties();
         }
     }
+
+    // 죽은 열차 청소
     public void CleanupDeadTrain()
     {
         foreach (var train in _deadTrains)
@@ -705,6 +716,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 룸 프로퍼티 갱신
         UpdateRoomProperties();
     }
+
     // 마지막 추가 위치 정렬 (상점용)
     private void AlignLast()
     {
@@ -741,6 +753,39 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
         // 열차 생성
         StartCoroutine(SpawnTrainCoroutine());
+    }
+
+
+    // 상점에서 맨 뒤 열차 판떼기 업데이트
+    private void UpdateShopBlock()
+    {
+        // 판떼기 있으면 제거
+        if (_currentBlockade != null)
+        {
+            Destroy(_currentBlockade);
+            _currentBlockade = null;
+        }
+
+        // 열차 하나도 없으면 패스
+        if (_currentTrainNodes.Count == 0) return;
+
+        // 마지막 열차 노드 가져오기
+        TrainNode lastNode = _currentTrainNodes[_currentTrainNodes.Count - 1];
+        if (lastNode == null) return;
+
+        // 마지막 열차 후방 연결부 가져오기
+        Transform socket = lastNode.RearSocket;
+
+        if (_shopBlockPrefab != null && socket != null)
+        {
+            // 판떼기 생성
+            // 소켓을 부모로 해서 생성
+            _currentBlockade = Instantiate(_shopBlockPrefab, socket);
+
+            // 로컬 좌표 초기화
+            _currentBlockade.transform.localPosition = Vector3.zero;
+            _currentBlockade.transform.localRotation = Quaternion.identity;
+        }
     }
 
     // 열차 업그레이드 요청 (상점용)
