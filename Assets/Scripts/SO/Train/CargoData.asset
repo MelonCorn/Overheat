@@ -14,14 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TrainDataSO
   displayName: "\uD654\uBB3C\uCE78"
   itemName: Cargo
-  desc: "\uC5EC\uB7EC\uAC00\uC9C0 \uBB3C\uAC74\uB4E4\uC744 \uC218\uB0A9\uD560 \uC218
-    \uC788\uC2B5\uB2C8\uB2E4."
-  price: 100
+  desc: "\uC0AC\uB9C9\uC758 \uC628\uAC16 \uC4F0\uB808\uAE30\uB97C \uC794\uB729\n\n\uC2E4\uC744
+    \uC218 \uC788\uC2B5\uB2C8\uB2E4.\n\n\n\uACF5\uAC04\uC774 \uBD80\uC871\uD558\uBA74\n\n\uD55C
+    \uCE78 \uB354 \uC0AC\uC8E0 \uBB50.."
+  price: 300
   icon: {fileID: 21300000, guid: 815030f9b8247c24cb0bba7c405e6b7c, type: 3}
   type: 2
   prefab: {fileID: 8555217796217155076, guid: 809fed2a0f5b063469cc82d96cf22ea4, type: 3}
   levelDatas:
   - maxHP: 100
-    upgradePrice: 100
+    upgradePrice: 150
   - maxHP: 150
     upgradePrice: 250
+  - maxHP: 225
+    upgradePrice: 400
+  - maxHP: 300
+    upgradePrice: 600
+  - maxHP: 400
+    upgradePrice: 800
+  - maxHP: 450
+    upgradePrice: 1100
+  - maxHP: 500
+    upgradePrice: 1500

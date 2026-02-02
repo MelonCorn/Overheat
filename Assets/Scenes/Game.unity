@@ -901,7 +901,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 307752606}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.008865129, y: 0.96992654, z: -0.035738327, w: -0.24059671}
+  m_LocalRotation: {x: -0.000094028896, y: 0.9996947, z: -0.0038513795, w: -0.024406996}
   m_LocalPosition: {x: 6.46, y: 1.59, z: 3.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -957,8 +957,8 @@ PlayableDirector:
     value: {fileID: 339193396}
   - key: {fileID: -3328398367288809068, guid: 716b89445f45796439ede1337027d79f, type: 2}
     value: {fileID: 485665596}
-  - key: {fileID: -2349558755027948804, guid: 716b89445f45796439ede1337027d79f, type: 2}
-    value: {fileID: 485665598}
+  - key: {fileID: -6678444545195873359, guid: 716b89445f45796439ede1337027d79f, type: 2}
+    value: {fileID: 1878544098}
   m_ExposedReferences:
     m_References:
     - 96064a32baffafd40b8ff8c0a3fc6928: {fileID: 411145746}
@@ -1215,6 +1215,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 241892c67ab5eab4c962ee3e4ab0e101, type: 2}
     - {fileID: 11400000, guid: 5e6965dc2737a8a419891f054e6fc6ad, type: 2}
     - {fileID: 11400000, guid: 2caadfd66cb098e40b978259c1c7b1f8, type: 2}
+    - {fileID: 11400000, guid: e0f6c684e3b5fbe499a5b9613275644c, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
@@ -1249,6 +1250,32 @@ MonoBehaviour:
         - m_Target: {fileID: 1878544095}
           m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
           m_MethodName: StopEngineSteam
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1878544095}
+          m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+          m_MethodName: PlayEngineSteam
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1878544095}
+          m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+          m_MethodName: StopRolling
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -2310,7 +2337,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 461482520}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.074330606, y: 0.9231703, z: -0.29965177, w: -0.22899851}
+  m_LocalRotation: {x: -0.0009226578, y: 0.9989876, z: -0.03779152, w: -0.024389701}
   m_LocalPosition: {x: 6.46, y: 10.6, z: 3.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3359,14 +3386,14 @@ PlayableDirector:
     value: {fileID: 292440073}
   - key: {fileID: 7635396145900195342, guid: a96d0dbfe720a7d41ba231da8c884bb1, type: 2}
     value: {fileID: 1746314928}
-  - key: {fileID: -6586229940204261747, guid: a96d0dbfe720a7d41ba231da8c884bb1, type: 2}
-    value: {fileID: 1746314932}
   - key: {fileID: 4011352043974512899, guid: a96d0dbfe720a7d41ba231da8c884bb1, type: 2}
     value: {fileID: 339193396}
   - key: {fileID: -2681868519981289893, guid: a96d0dbfe720a7d41ba231da8c884bb1, type: 2}
     value: {fileID: 854473919}
   - key: {fileID: -1350945936898695437, guid: a96d0dbfe720a7d41ba231da8c884bb1, type: 2}
     value: {fileID: 854473920}
+  - key: {fileID: 4241600807435403568, guid: a96d0dbfe720a7d41ba231da8c884bb1, type: 2}
+    value: {fileID: 1878544098}
   m_ExposedReferences:
     m_References:
     - 5b6260332df885247aa88c9c134c7d28: {fileID: 307752607}
@@ -3406,7 +3433,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 0.1
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -4293,7 +4320,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1367032027}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.013335023, y: 0.98348504, z: -0.08141002, w: -0.1610956}
+  m_LocalRotation: {x: -0.00023152922, y: 0.9997179, z: -0.010994044, w: -0.021053469}
   m_LocalPosition: {x: 5.78, y: 3.59, z: 8.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5342,7 +5369,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 16777215
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -6007,6 +6034,7 @@ GameObject:
   - component: {fileID: 1878544095}
   - component: {fileID: 1878544097}
   - component: {fileID: 1878544094}
+  - component: {fileID: 1878544098}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6107,6 +6135,103 @@ MonoBehaviour:
   - {fileID: 3751205622491053344, guid: b4388e63f7eac554eb0679dca1d5e8b1, type: 3}
   - {fileID: 2748390949015410194, guid: d5000d49449974545835a59bd2ca16f7, type: 3}
   - {fileID: 6863976466020935766, guid: fde0a6a32c2d83e4aada12b21885503a, type: 3}
+--- !u!82 &1878544098
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878544093}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 8717761051597121275, guid: b4053a34aa3c47642b40e25be766edb3, type: 2}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 4e2987e747beb3a4b87cbfd52fe9ae24, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.05
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 256
+  DopplerLevel: 0
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1881315411
 GameObject:
   m_ObjectHideFlags: 0
@@ -6647,7 +6772,7 @@ SceneRoots:
   - {fileID: 1826963491}
   - {fileID: 1881315413}
   - {fileID: 771979427}
-  - {fileID: 854473918}
   - {fileID: 1898154541}
+  - {fileID: 854473918}
   - {fileID: 339193393}
   - {fileID: 1953363504}

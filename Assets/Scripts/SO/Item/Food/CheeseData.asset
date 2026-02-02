@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PotionData
   displayName: "\uCE58\uC988"
   itemName: Cheese
-  desc: "\uAFB8\uB9BF\uAFB8"
-  price: 15
+  desc: "\uAD6C\uBA4D\uC774 \uC22D\uC22D \uB6AB\uB9B0 \uAC8C \uAF2D \uB2F9\uC2E0\uC758\n\n\uC5F4\uCC28\uB97C
+    \uB2EE\uC558\uC2B5\uB2C8\uB2E4.\n\n\n\uD55C\uC785 \uBCA0\uC5B4 \uBB3C\uBA74 \uC11C\uBD80\uC758
+    \uC9C4\uD55C\n\n\uD48D\uBBF8\uB97C \uB290\uB084 \uC218 \uC788\uC2B5\uB2C8\uB2E4.\n\n\n<color=#808080>\uC0AC\uC2E4
+    \uADF8\uB0E5 \uC9E0 \uB9DB\uC784</color>"
+  price: 100
   icon: {fileID: 21300000, guid: 7377013011b4c3348809ff574abe799e, type: 3}
   prefab: {fileID: 7234592569855223706, guid: fe613404001bd0743b00278eb92481db, type: 3}
   handPosOffset: {x: -0.048, y: 0.108, z: -0.084}
   handRotOffset: {x: 0.6146571, y: 345.4291, z: 4.8049417}
   tpsHandPosOffset: {x: 0.032, y: 0.0794, z: -0.089}
   tpsHandRotOffset: {x: 334.0894, y: 80.4046, z: 93.21752}
-  healAmount: 100
+  healAmount: 50
   eatClip: {fileID: 8300000, guid: 2e207677223abf7459dc6f3782491927, type: 3}

@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private PlayerSpawner _spawner;         // 플레이어 스포너
     private TimelineManager _timelineManager;// 타임라인 매니저
+    private AudioSource _audioSource;
 
     private HashSet<int> _loadedActorNumbers = new HashSet<int>();  // 준비 완료된 플레이어
 
@@ -78,10 +79,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             Destroy(gameObject);
         }
 
+        _audioSource = GetComponent<AudioSource>();
+
         // 네트워크 풀 사용
         NetworkPool customPool = GetComponent<NetworkPool>();
 
         PhotonNetwork.PrefabPool = customPool;
+
     }
 
     private void OnDestroy()
@@ -870,6 +874,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    // 롤링 루프 중지 시그널
+    public void StopRolling()
+    {
+        // 열차 롤링 끄기
+        if (_audioSource != null) _audioSource.Stop();
+    }
 
     #region Pun 콜백
 

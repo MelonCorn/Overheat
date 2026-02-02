@@ -21,3 +21,4 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 0741dd357b719bb4b91076c7514b3f8f, type: 3}
   - {fileID: 8300000, guid: 665014b7ea624e940b80e34e663cd77a, type: 3}
   - {fileID: 8300000, guid: e601863b9b8e31e469392f58cf45e22f, type: 3}
+  steamClip: {fileID: 8300000, guid: 41eea4368fbdc7e4a847a913bd1f6e05, type: 3}

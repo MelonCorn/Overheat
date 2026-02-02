@@ -24,6 +24,10 @@ MonoBehaviour:
     upgradePrice: 200
   - maxHP: 450
     upgradePrice: 500
+  - maxHP: 550
+    upgradePrice: 750
+  - maxHP: 700
+    upgradePrice: 1200
   engineLevelData:
   - maxSpeed: 40
     minSpeed: 10
@@ -35,3 +39,13 @@ MonoBehaviour:
     maxFuel: 120
     burnRate: 5
     accel: 1.1
+  - maxSpeed: 70
+    minSpeed: 20
+    maxFuel: 135
+    burnRate: 4.5
+    accel: 1.1
+  - maxSpeed: 80
+    minSpeed: 25
+    maxFuel: 140
+    burnRate: 4.5
+    accel: 1.2

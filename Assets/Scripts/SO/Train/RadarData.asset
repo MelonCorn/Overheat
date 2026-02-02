@@ -14,15 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TrainData
   displayName: "\uB808\uC774\uB354"
   itemName: Radar
-  desc: "\uBBF8\uB2C8\uB9F5\uC774 \uD65C\uC131\uD654\uB418\uACE0 \uC544\uAD70\uACFC
-    \uC801\uC774 \uD45C\uC2DC\uB429\uB2C8\uB2E4.\n\n\uD558\uB098\uB9CC \uBCF4\uC720\uD558\uACE0
-    \uC788\uC5B4\uB3C4 \uBBF8\uB2C8\uB9F5\uC774 \uD65C\uC131\uD654\uB429\uB2C8\uB2E4.\t"
-  price: 300
+  desc: "\uBBF8\uB2C8\uB9F5\uC744 \uD65C\uC131\uD654\uD558\uACE0\n\n\uC8FC\uBCC0
+    \uC544\uAD70\uACFC \uC801\uB4E4\uC744 \uC2A4\uCE94\uD569\uB2C8\uB2E4.\n\n\n\uD558\uB098\uB9CC
+    \uC788\uC73C\uBA74 \uB429\uB2C8\uB2E4.\n\n\n\uB450 \uAC1C \uB2E8\uB2E4\uACE0\n\n\uC801\uC774
+    4K\uB85C \uBCF4\uC774\uC9C4 \uC54A\uC544\uC694."
+  price: 500
   icon: {fileID: 21300000, guid: 815030f9b8247c24cb0bba7c405e6b7c, type: 3}
   type: 4
   prefab: {fileID: 1662029028200433979, guid: 7eba71cd512f67a4892cf29cbe4532ec, type: 3}
   levelDatas:
   - maxHP: 150
-    upgradePrice: 100
+    upgradePrice: 300
   - maxHP: 200
-    upgradePrice: 150
+    upgradePrice: 450
+  - maxHP: 300
+    upgradePrice: 600
+  - maxHP: 350
+    upgradePrice: 800
+  - maxHP: 450
+    upgradePrice: 1000
+  - maxHP: 600
+    upgradePrice: 1300
+  - maxHP: 800
+    upgradePrice: 1500

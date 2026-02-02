@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   displayName: "\uC6A9\uC811\uAE30"
   itemName: Welder
-  desc: "\uC5F4\uCC28\uB97C \uC218\uB9AC\uD560 \uC218 \uC788\uB294 \uB3C4\uAD6C\uC785\uB2C8\uB2E4.\n\uBE44\uC0C1
-    \uC2DC\uC5D0\uB294 \uC801\uB3C4 \uACF5\uACA9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
-  price: 100
+  desc: "\uAD6C\uBA4D \uB09C \uCCA0\uD310\uC744 \uC21C\uC2DD\uAC04\uC5D0\n\n\uC774\uC5B4
+    \uBD99\uC785\uB2C8\uB2E4.\n\n\n\uC608\uC220\uC801\uC778 \uC19C\uC528\uB294 \uD544\uC694
+    \uC5C6\uC5B4\uC694.\n\n\n\uC800\uD76C\uB294 \uADF8\uC800 \uC55E\uC73C\uB85C \uB098\uC544\uAC08\n\n\uC5F4\uCC28\uB9CC
+    \uC788\uC73C\uBA74 \uB418\uC796\uC544\uC694?"
+  price: 300
   icon: {fileID: 21300000, guid: 56bbc6b42271d4177ac313247f47ac1f, type: 3}
   prefab: {fileID: 9183523427240285185, guid: d4e35d10e6a39624b8e78a5d863ba00e, type: 3}
   handPosOffset: {x: 0.136, y: -0.132, z: -0.12}

@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   displayName: "\uAE30\uAD00\uB2E8\uCD1D"
   itemName: SMG
-  desc: "\uC5F0\uC0AC\uB825\uC774 \uC88B\uC544 \uC2DC\uC6D0\uC2DC\uC6D0\uD569\uB2C8\uB2E4."
-  price: 120
+  desc: "\uC870\uC900 \uADF8\uB534 \uADC0\uCC2E\uC740 \uAC78 \uC65C \uD558\uB098\uC694
+    ?\n\n\n\uADF8\uB0E5 \uBC29\uC544\uC1E0 \uB2F9\uAE30\uACE0\n\n\uB4DC\uB974\uB975
+    \uAE01\uC5B4\uBC84\uB9AC\uC8E0 ?\n\n\n\uC870\uC900 \uC2E4\uB825\uC774 \uD615\uD3B8\uC5C6\uC5B4\uB3C4\n\n\uB9DE\uD790
+    \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+  price: 425
   icon: {fileID: 21300000, guid: 3f07e121dff858b46be11c81416b617b, type: 3}
   prefab: {fileID: 6289075476768356749, guid: 4c75e6dcd4b5bcf438999829a6160f4a, type: 3}
   handPosOffset: {x: -0.001, y: -0.004, z: 0.002}

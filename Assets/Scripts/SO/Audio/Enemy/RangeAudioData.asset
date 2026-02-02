@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RangeAudioData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAudioData
   attackClips:
-  - {fileID: 8300000, guid: e2cc3dd515298c04085f2fe33311ba05, type: 3}
-  - {fileID: 8300000, guid: ad66d4c4a6aa9434292ae459df35d845, type: 3}
+  - {fileID: 8300000, guid: b9b4167a0f7647f4da6fda3793241129, type: 3}
+  - {fileID: 8300000, guid: 96adc9341f935e8409b1c79b812219f3, type: 3}
   dieClips:
   - {fileID: 8300000, guid: 954b24f0e5c0ec8439437b14dff731f5, type: 3}
   - {fileID: 8300000, guid: 92373ba3c92c47448834ae894abec966, type: 3}

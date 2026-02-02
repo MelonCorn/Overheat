@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   displayName: "\uB9AC\uBCFC\uBC84"
   itemName: Revolver
-  desc: "\uD55C \uBC1C \uD55C \uBC1C \uAC15\uB825\uD558\uC9C0\uB9CC \uB9CE\uC740
-    \uC801\uC744 \uCC98\uB9AC\uD558\uAE30\uC5D4 \uBB34\uB9AC\uAC00 \uC788\uC2B5\uB2C8\uB2E4.\n\n\uADF8\uB798\uB3C4
-    \uC801\uC744 \uCC98\uCE58\uD560 \uC218\uB294 \uC788\uC2B5\uB2C8\uB2E4."
-  price: 50
+  desc: "\uC11C\uBD80\uC758 \uB85C\uB9DD,\n\n\uADF8 \uC790\uCCB4\uC785\uB2C8\uB2E4.\n\n\n\uC11C\uBD80
+    \uC601\uD654\uC758 \uC8FC\uC778\uACF5\uC774 \uB41C\n\n\uAE30\uBD84\uC744 \uB290\uAEF4\uBCF4\uC790\uAD6C\uC694
+    !\n"
+  price: 75
   icon: {fileID: 21300000, guid: 3f07e121dff858b46be11c81416b617b, type: 3}
   prefab: {fileID: 41101243199242733, guid: 3b0e7e3ab4d4dbb49aae975df50dcb4f, type: 3}
   handPosOffset: {x: 0.005, y: 0.09, z: -0.16}

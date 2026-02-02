@@ -13,6 +13,9 @@ public class ShopAudioData : ScriptableObject
     [Header("업그레이드")]
     public AudioClip[] upgradeClips;    // 업그레이드 완료
 
+    [Header("도착")]
+    public AudioClip steamClip;         // 도착 증기
+
     // 랜덤 클릭
     public AudioClip GetRandomClickClip()
     {

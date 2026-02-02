@@ -130,10 +130,8 @@ public class RailSpawner : MonoBehaviour
     // 레일 생성
     private RailMove SpawnRail(Vector3 pos, Quaternion rot)
     {
-        Debug.Log("열차 생성1");
         // 풀 매니저 있어야 함
         if (PoolManager.Instance == null) return null;
-        Debug.Log("열차 생성2");
 
         // 풀에서 레일 가져옴
         PoolableObject obj = PoolManager.Instance.Spawn(_railPrefab, pos, rot);

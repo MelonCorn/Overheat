@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   displayName: "\uBCFC\uD2B8 \uC561\uC158"
   itemName: BoltAction
-  desc: "\uC2DC\uC6D0\uC2DC\uC6D0\uD55C \uBCFC\uD2B8\uC561"
-  price: 200
+  desc: "\uCE68\uCC29\uD55C \uC0AC\uB78C\uB4E4\uC744 \uC704\uD55C\n\n\uBB34\uAE30\uC785\uB2C8\uB2E4.\n\n\n\uBA40\uB9AC\uC11C
+    \uB6F0\uC5B4\uC624\uB294 \uB188\uB4E4 \uC774\uB9C8\uC5D0\n\n\uD55C \uBC1C \uD55C
+    \uBC1C \uC815\uC131\uC2A4\uB7FD\uAC8C \uC3D8\uC138\uC694.\n\n\n\uBE57\uB098\uAC00\uBA74
+    \uAE30\uB3C4\uB098 \uD558\uC8E0 ?"
+  price: 500
   icon: {fileID: 21300000, guid: 3f07e121dff858b46be11c81416b617b, type: 3}
   prefab: {fileID: 4701079223056545360, guid: b4388e63f7eac554eb0679dca1d5e8b1, type: 3}
   handPosOffset: {x: -0.013, y: 0.019, z: -0.192}

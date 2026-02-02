@@ -504,6 +504,14 @@ public class ShopManager : MonoBehaviourPun
     {
         PlayUpgradeSound();
     }
+
+    // 도착 증기 소리
+    public void PlayArrivalSteamSound()
+    {
+        if (_audioData == null) return;
+
+        PlaySound(_audioData.steamClip);
+    }
     #endregion
 }
 
