@@ -376,6 +376,19 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
             GameManager.Instance.CheckAllPlayersDead();
     }
 
+    // 로컬 전용 인게임 바닥 감지
+    private void OnControllerColliderHit(ControllerColliderHit other)
+    {
+        // 내꺼 아니거나 사망상태면 무시
+        if (photonView.IsMine == false || IsDead == true) return;
+
+        // Warning 이라는 물체에 닿으면 사망
+        if (other.gameObject.layer == LayerMask.NameToLayer("Warning"))
+        {
+            Die();
+        }
+    }
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
