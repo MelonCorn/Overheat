@@ -11,12 +11,18 @@ public class RadarNode : TrainNode
     // 0 개면 레이더 비활성화
     private static int _activeRadarCount = 0;
 
+    [Header("회전 레이더")]
+    [SerializeField] RadarRotate _radar;
+
     public override void Init(TrainData data, int level)
     {
         base.Init(data, level);
 
         // 생성되면 등록
         _activeRadarCount++;
+
+        // 레이더회전 On
+        _radar.enabled = true;
 
         // 레이더 체크
         UpdateRadarUI();
@@ -47,6 +53,9 @@ public class RadarNode : TrainNode
     {
         base.ExplodeRPC();
 
+        // 레이더회전 OFF
+        _radar.enabled = false;
+
         // 감소
         if (_activeRadarCount > 0)
         {
@@ -54,6 +63,20 @@ public class RadarNode : TrainNode
 
             // 레이더 체크
             UpdateRadarUI();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // CutTail로 잘렸는데 ExplodeRPC전에 씬 넘어가버리는 경우
+        if (_radar.enabled == true)
+        {
+            if (_activeRadarCount > 0)
+            {
+                _activeRadarCount--;
+
+                UpdateRadarUI();
+            }
         }
     }
 }
