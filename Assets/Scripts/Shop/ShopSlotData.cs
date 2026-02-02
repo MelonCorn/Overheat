@@ -39,7 +39,7 @@ public class ShopSlotData : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private void OnClickSlot()
     {
         // 데이터로 결제 요청
-        _shopManager?.TryPurchaseItem(_data);
+        if(_shopManager) _shopManager.TryPurchaseItem(_data);
 
         // 버튼 선택되는거 바로 풀기
         EventSystem.current.SetSelectedGameObject(null);

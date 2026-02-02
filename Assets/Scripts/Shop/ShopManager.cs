@@ -28,6 +28,10 @@ public class ShopManager : MonoBehaviourPun
     [SerializeField] ShopUpgradeData _upgradePrefab;    // 열차 업그레이드 리스트용 프리팹
     [SerializeField] Transform _trainUpgradeParent;     // 열차 리스트 부모
 
+    [Header("상점 오디오 설정")]
+    [SerializeField] ShopAudioData _audioData;
+    [SerializeField] AudioSource _audioSource;
+
     // 활성화된 슬롯들
     private List<ShopSlotData> _activeShopSlots = new List<ShopSlotData>();
     private List<ShopUpgradeData> _activeUpgradeSlots = new List<ShopUpgradeData>();
@@ -221,6 +225,9 @@ public class ShopManager : MonoBehaviourPun
     // 상점 구매 버튼
     public void TryPurchaseItem(ShopItem itemData)
     {
+        // 버튼 누르는 소리
+        PlayClickSound();
+
         // 구매 버튼을 누른 사람은 로딩 팝업 활성화
         if (_loadingPopup != null) _loadingPopup.SetActive(true);
 
@@ -255,37 +262,49 @@ public class ShopManager : MonoBehaviourPun
 
         bool isSuccess = false;
 
-        // 아이템 존재하고, 골드 사용 완료 시
-        if (targetItem != null && GameManager.Instance.TryUseGold(targetItem.price))
+        int itemType = 0; // 0 아이템, 1 열차
+
+        // 아이템 존재하면
+        if (targetItem != null )
         {
-            // 구매 성공
-            isSuccess = true;
-            // 아이템 생성
-            SpawnPurchasedItem(targetItem);
+            // 열차 타입이면
+            if (targetItem is TrainData) itemType = 1;
+
+            // 골드 사용 완료 시
+            if (GameManager.Instance.TryUseGold(targetItem.price))
+            {
+                // 구매 성공
+                isSuccess = true;
+                // 아이템 생성
+                SpawnPurchasedItem(targetItem);
+            }
         }
 
 
-        // 구매 요청자에게만 결과 RPC
-        if (player.IsLocal) RPC_PurchaseResult(isSuccess);                  // 방장 본인은 그냥 함수 호출
-        else photonView.RPC(nameof(RPC_PurchaseResult), player, isSuccess); // 아니면 결과 전송
+        // 결과 RPC
+        photonView.RPC(nameof(RPC_PurchaseResult), RpcTarget.All, player, isSuccess, itemType);
     }
 
     // 구매 결과
     [PunRPC]
-    private void RPC_PurchaseResult(bool isSuccess)
+    private void RPC_PurchaseResult(Player player, bool isSuccess, int itemType)
     {
-        // 결과 받았으니까 로딩 UI 비활성화
-        if (_loadingPopup != null) _loadingPopup.SetActive(false);
-
-        if (isSuccess)
+        // 성공이면 사운드 재생
+        if (isSuccess == true)
         {
-            Debug.Log($"구매 성공");
-            // 나중에 뭐 사운드 SoundManager.Instance.PlaySFX("BuySuccess");
+            if (itemType == 1)
+                PlaySound(_audioData.trainBuySuccess); // 열차
+            else
+                PlaySound(_audioData.itemBuySuccess);  // 아이템
         }
-        else
+
+        // 결과 받고 나서
+
+        // 내가 보낸 요청이면
+        if(player == PhotonNetwork.LocalPlayer)
         {
-            Debug.Log($"구매 실패");
-            // 나중에 UI 알림창 UIManager.Instance.ShowPopup(메세지);
+            // 로딩 팝업 끄기
+            if (_loadingPopup != null) _loadingPopup.SetActive(false);
         }
     }
 
@@ -319,6 +338,9 @@ public class ShopManager : MonoBehaviourPun
     // 업그레이드 버튼에 연결할 것
     public void TryUpgradeTrain(int index)
     {
+        // 버튼 누르는소리
+        PlayClickSound();
+
         if (TrainManager.Instance == null) return;
 
         // 현재 레벨 가져오기
@@ -341,14 +363,15 @@ public class ShopManager : MonoBehaviourPun
         // 결과 처리
         if (isSuccess)
         {
-            Debug.Log("업그레이드 완료");
+            // 로컬 업그레이드 소리
+            PlayUpgradeSound();
+
+            // 나머지들에게 전송
+            photonView.RPC(nameof(RPC_PlayUpgradeSound), RpcTarget.All);
         }
         else
         {
-            // 실패 알림 메시지 띄우기
-            // UIManager.Instance.ShowMessage(message); 
-
-            // 로딩 팝업 끄기
+            // 로딩 팝업 바로 끄기
             if (_loadingPopup != null) _loadingPopup.SetActive(false);
         }
     }
@@ -444,6 +467,44 @@ public class ShopManager : MonoBehaviourPun
         if (_trainInfoUI != null) _trainInfoUI.UpdateUIState(currentGold);
         if (_trainUpgradeInfoUI != null) _trainUpgradeInfoUI.UpdateUIState(currentGold);
     }
+
+
+    #region 사운드
+
+    // 랜덤 클릭 사운드
+    public void PlayClickSound()
+    {
+        if (_audioData == null) return;
+
+        AudioClip clip = _audioData.GetRandomClickClip();
+
+        PlaySound(clip);
+    }
+
+    // 랜덤 업그레이드 사운드
+
+    private void PlayUpgradeSound()
+    {
+        AudioClip clip = _audioData.GetRandomUpgradeClip();
+
+        PlaySound(clip);
+    }
+
+    // 소리 재생
+    private void PlaySound(AudioClip clip)
+    {
+        if (_audioSource == null || SoundManager.Instance == null) return;
+
+        SoundManager.Instance.PlayOneShot3D(_audioSource, clip);
+    }
+
+    // 전달 받은 업그레이드 소리 
+    [PunRPC]
+    private void RPC_PlayUpgradeSound()
+    {
+        PlayUpgradeSound();
+    }
+    #endregion
 }
 
 

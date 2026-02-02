@@ -33,5 +33,6 @@ MonoBehaviour:
   itemSwapClips:
   - {fileID: 8300000, guid: 4e4e55c5ece833f44b1c848009c45c38, type: 3}
   - {fileID: 8300000, guid: 2ea29b0080149484f827c059369cca9d, type: 3}
-  hitClips: []
+  hitClips:
+  - {fileID: 8300000, guid: 990d83f4eeca4f8479b130ae90e7a95e, type: 3}
   dieClip: {fileID: 8300000, guid: 954b24f0e5c0ec8439437b14dff731f5, type: 3}
