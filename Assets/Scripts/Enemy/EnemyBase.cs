@@ -7,7 +7,7 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
 {
     [Header("적 스탯")]
     [SerializeField] protected int _maxHp = 100;        // 최대 체력
-    protected int _currentHp;                           // 현재 체력
+    protected int _currentHp;                           // 현재 체력 (동기화)
 
     [Header("공격 설정")]
     [SerializeField] protected int _damage = 10;        // 공격력
@@ -38,7 +38,8 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     protected Transform _target;        // 타겟 (플레이어나 열차임)
     protected float _lastAttackTime;    // 공격 쿨타임
     protected PoolableObject _currentDeadParticle;  // 사망 파티클
-        
+    protected bool _isVisualDead = false;         // 사망 비주얼 처리 플래그
+
     // 네트워크 트랜스폼
     private Vector3 _networkPos;
     private Quaternion _networkRot;
@@ -53,6 +54,7 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     {
         _currentHp = _maxHp;
         IsDead = false;
+        _isVisualDead = false;
         if (_collider != null) _collider.enabled = true;
 
         // 비주얼 활성화
@@ -127,6 +129,12 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
         // 이펙트, 사운드 로컬 즉시 실행 (예측)
         PlayHitEffect();
 
+        // 그냥 예측으로 사망처리
+        if (_currentHp - dmg <= 0)
+        {
+            VisualDeath();
+        }
+
         // 방장은
         if (PhotonNetwork.IsMasterClient)
         {
@@ -139,6 +147,25 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
             // 요청
             photonView.RPC(nameof(RPC_TakeDamage), RpcTarget.MasterClient, dmg);
         }
+    }
+
+    // 비주얼 사망 처리
+    private void VisualDeath()
+    {
+        // 비주얼 사망처리 되어있으면 무시
+        if (_isVisualDead == true) return;
+
+        // 비주얼 사망처리
+        _isVisualDead = true;
+
+        // 사망 로직
+        OnDeath();
+
+        // 모델 끄기
+        if (_animator != null) _animator.gameObject.SetActive(false);
+
+        // 콜라이더 끄기
+        if (_collider != null) _collider.enabled = false;
     }
 
     // 타격 이펙트
@@ -179,16 +206,11 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     [PunRPC]
     protected virtual void RPC_Die()
     {
+        // 진짜 사망
         IsDead = true;
 
-        // 자식 클래스 사망
-        OnDeath();
-
-        // 다른 공격 판정 받지 않도록 콜라이더 끄기
-        if (_collider != null) _collider.enabled = false;
-
-        // 비주얼 비활성화
-        if (_animator != null) _animator.gameObject.SetActive(false);
+        // 한 번 더 호출
+        VisualDeath();
 
         // 방장이 반납 시작
         if (PhotonNetwork.IsMasterClient == true)
@@ -230,12 +252,18 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
             // 트랜스폼
             stream.SendNext(transform.position);
             stream.SendNext(transform.rotation);
+
+            // 체력
+            stream.SendNext(_currentHp);
         }
         else
         {
             // 트랜스폼
             _networkPos = (Vector3)stream.ReceiveNext();
             _networkRot = (Quaternion)stream.ReceiveNext();
+
+            // 체력
+            _currentHp = (int)stream.ReceiveNext();
         }
     }
 }
