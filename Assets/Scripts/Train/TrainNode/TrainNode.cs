@@ -398,12 +398,6 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         // 날려버리기
         BlowAway();
 
-        // 연출 딜레이
-        yield return new WaitForSeconds(0.3f);
-
-        // 뒷차 연쇄 작용
-        if (_nextTrain != null) _nextTrain.Explode();
-
         // 폭발 범위 내 오브젝트 처리
         ExplosionHit();
 
@@ -413,6 +407,12 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
 
         // UI 파괴
         OnExplode?.Invoke();
+
+        // 연출 딜레이
+        yield return new WaitForSeconds(0.3f);
+
+        // 뒷차 연쇄 작용
+        if (_nextTrain != null) _nextTrain.Explode();
 
         // 삭제 딜레이
         yield return new WaitForSeconds(5f);
