@@ -156,26 +156,6 @@ public class PlayerInteractHandler : MonoBehaviour
     }
 
 
-    // 모든 아이템 드랍 (사망 시)
-    public void DropAllItems()
-    {
-        if (QuickSlotManager.Instance == null) return;
-
-        // 퀵슬롯 만큼 순회
-        for (int i = 0; i < QuickSlotManager.Instance.QuickSlot.Length; i++)
-        {
-            // 매니저한테 i번째 아이템 요구
-            string itemName = QuickSlotManager.Instance.PopItem(i);
-
-            // 아이템이 있다면 바닥에 생성
-            if (string.IsNullOrEmpty(itemName) == false)
-            {
-                SpawnItemNetwork(itemName);
-            }
-        }
-    }
-
-
     // 네트워크 아이템 생성
     private void SpawnItemNetwork(string itemName)
     {

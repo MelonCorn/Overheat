@@ -3590,7 +3590,6 @@ MonoBehaviour:
   - {fileID: 948295875}
   - {fileID: 1323851218}
   - {fileID: 921386619}
-  interval: 1.5
 --- !u!4 &1269745765
 Transform:
   m_ObjectHideFlags: 0
@@ -5239,6 +5238,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eef1ce83a88684d449beebcb11f389ec, type: 2}
   - {fileID: 11400000, guid: 74cc070558fee4f458b918de2d5bc067, type: 2}
   _trainGroup: {fileID: 292440072}
+  _shopBlockPrefab: {fileID: 0}
 --- !u!4 &1820175776
 Transform:
   m_ObjectHideFlags: 0

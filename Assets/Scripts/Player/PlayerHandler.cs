@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -30,6 +31,11 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     [Header("모델 애니메이터")]
     [SerializeField] Animator _animator;
 
+    [Header("사망 설정")]
+    [SerializeField] Transform _deathParticlePoint;           // 사망 파티클 재생 포인트
+    [SerializeField] PoolableObject _deathParticle;           // 사망 파티클
+    [SerializeField] private float _spectatorDelay = 2.5f;    // 사망 후 관전 대기 시간
+
     [Header("플레이어 에임")]
     [SerializeField] GameObject _aimObj;        // 에임
 
@@ -40,6 +46,8 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     private float _remoteInputY;           // Y 인풋
     private bool _remoteIsJump;            // 점프 상태
 
+    private PoolableObject _currentDeathParticle;   // 사망 파티클 캐싱
+
     public Transform CameraHolderTrans => _cameraHolder.transform;          // 홀더 트랜스폼
     public Transform CameraTrans => _cameraHandler.LocalCamera.transform;   // 진짜 카메라 트랜스폼
     public GameObject LocalAim => _aimObj;
@@ -47,6 +55,7 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     public string CurrentItem = "";
 
     public bool IsDead { get; private set; }
+    private bool _isDying;  // 사망 연출 중
 
     private void Awake()
     {
@@ -81,6 +90,9 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         if(photonView.IsMine == true)
             // 메인 카메라 오디오 리스너 켜기 
             SetMainCameraAudioListener(true);
+
+        // 파티클 반납
+        if(_currentDeathParticle != null) _currentDeathParticle.Release();
 
         if (GameManager.Instance == null) return;
 
@@ -261,10 +273,11 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     // 사망
     public void Die()
     {
-        Debug.Log("으앙 죽음");
+        // 이미 죽었거나, 사망 연출 중이라면 무시
+        if (IsDead == true || _isDying == true) return;
 
-        // 템 뿌려요
-        _interactHandler?.DropAllItems();
+        // 아니면 사망 연출 시작
+        _isDying = true;
 
         // 퀵슬롯 비활성화
         if (QuickSlotManager.Instance != null)
@@ -277,47 +290,90 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
             QuickSlotManager.Instance.SelectSlot(0);
         }
 
-        // 사망 애니메이션 혹은 랙돌
+        // 플레이어 비활성화
+        DisablePlayer();
 
-        // 테스트용 임시 차단
+        // 사망 연출 시작
+        StartCoroutine(DeathSequence());
+    }
+
+    // 플레이어 비활성화
+    private void DisablePlayer()
+    {
         var input = GetComponent<PlayerInputHandler>();
         var move = GetComponent<PlayerMovementHandler>();
         var cam = GetComponent<PlayerCameraHandler>();
         var playerInput = GetComponent<PlayerInput>();
 
-        if (input != null) input.enabled = false;            // 키보드 입력 차단
-        if (move != null) move.enabled = false;              // 이동 차단
-        if (cam != null)  cam.enabled = false;               // 카메라 차단
-        if (playerInput != null) playerInput.enabled = false;// 플레이어 인풋 차단
-
-        // 플레이어 로컬 카메라 끄기
-        _cameraHolder?.gameObject.SetActive(false);
-        _canvas?.gameObject.SetActive(false);
-
-        if (GameManager.Instance != null)
-        {
-            // 게임 데이터에 일단 로컬 플레이어 사망 기록 (스테이지 클리어 후 상점에서 체력 낮은 상태로 부활)
-            GameManager.Instance.LocalPlayerDead(true);
-            // 관전 카메라 활성화
-            GameManager.Instance.SpectatorMode();
-        }
-
-        // 방장에게 사망 알림
-        photonView.RPC(nameof(RPC_Die), RpcTarget.MasterClient);
+        if (input != null) input.enabled = false;               // 키보드 입력 차단
+        if (move != null) move.enabled = false;                 // 이동 차단
+        if (cam != null) cam.enabled = false;                   // 카메라 차단
+        if (playerInput != null) playerInput.enabled = false;   // 플레이어 인풋 차단
     }
 
-
-    // 방장에게 사망 알림
-    [PunRPC]
-    private void RPC_Die()
+    // 사망 연출
+    private IEnumerator DeathSequence()
     {
-        if (PhotonNetwork.IsMasterClient == false) return;
+        // 사망 처리, 효과
+        DeathEffect();
 
-        // 사망 체크
+        // 데이터 기록 (상점 부활용)
+        if (GameManager.Instance != null)
+            GameManager.Instance.LocalPlayerDead(true);
+
+        // 방장이 죽었을 시 바로 체크
+        if (PhotonNetwork.IsMasterClient == true)
+            GameManager.Instance.CheckAllPlayersDead();
+
+        // 다른 플레이어들에게 신체 폭발 명령
+        photonView.RPC(nameof(RPC_ExplodeBody), RpcTarget.Others);
+
+        // 죽음 여운 딜레이
+        yield return new WaitForSeconds(_spectatorDelay);
+
+        // 로컬 카메라, UI 끄기
+        if (_cameraHolder != null) _cameraHolder.gameObject.SetActive(false);
+        if (_canvas != null) _canvas.gameObject.SetActive(false);
+
+        // 관전 카메라 활성화
+        if (GameManager.Instance != null)
+            GameManager.Instance.SpectatorMode();
+    }
+
+    // 사망 효과
+    private void DeathEffect()
+    { 
+        // 사망 확정
         IsDead = true;
 
-        // 사망한 플레이어 체크
-        GameManager.Instance.CheckAllPlayersDead();
+        // 사망 파티클
+        if (_deathParticle != null && _deathParticlePoint != null && PoolManager.Instance != null)
+        {
+            _currentDeathParticle = PoolManager.Instance.Spawn(_deathParticle, _deathParticlePoint.position, Quaternion.identity);
+        }
+
+        // 사망 사운드 재생
+        if(_soundHandler != null) _soundHandler.PlayDieSound();
+
+        // 애니메이터의 모델 끄기
+        if (_animator != null) _animator.gameObject.SetActive(false);
+
+        // 콜라이더도 끄기
+        Collider collider = GetComponent<Collider>();
+        if (collider != null) collider.enabled = false;
+    }
+    
+    // 신체 폭발 알림
+    [PunRPC]
+    private void RPC_ExplodeBody()
+    {
+        // 리모트 사망 처리, 효과
+        DeathEffect();
+
+        // 여기서부턴 방장이 체크
+        if (PhotonNetwork.IsMasterClient == true)
+            // 사망한 플레이어 체크
+            GameManager.Instance.CheckAllPlayersDead();
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

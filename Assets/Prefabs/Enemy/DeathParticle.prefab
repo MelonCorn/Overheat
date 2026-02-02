@@ -9527,7 +9527,7 @@ GameObject:
   - component: {fileID: 6678523991440361097}
   - component: {fileID: 6251223014550451203}
   m_Layer: 0
-  m_Name: EnemyDie
+  m_Name: DeathParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
