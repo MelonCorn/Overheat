@@ -187,8 +187,13 @@ public class Boiler : MonoBehaviour, IInteractable
 
                 QuickSlotManager.Instance.RemoveItem(slotIndex, handItem);
             }
-        }
 
-        return clip;
+            return clip;
+        }
+        // 석탄 아니면 소리 없음
+        else
+        {
+            return null;
+        }
     }
 }
