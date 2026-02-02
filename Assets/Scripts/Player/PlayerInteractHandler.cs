@@ -123,6 +123,12 @@ public class PlayerInteractHandler : MonoBehaviour
                 // 상호작용 사운드 재생
                 _soundHandler.PlayInteractSound(clip);
             }
+
+            // 장착 사운드 스킵 초기화
+            if(_itemHandler != null)
+            {
+                _itemHandler.ResetSkipEquipSound();
+            }
         }
     }
 

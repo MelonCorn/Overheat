@@ -43,9 +43,7 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
 
     private Coroutine _equipCoroutine; // 로컬 장착 코루틴
 
-
-    private bool _skipEquipSound = false;   // 장착 사운드
-
+    private bool _skipEquipSound = true;   // 장착 사운드 스킵용 (태어날때, 아이템 집으면서 동시에 들 때)
     public float AimAngle => _aimAngle;
     public float TargetWeight => _targetWeight;
     public WeaponData CurrentWeaponData => _currentWeaponData;
@@ -317,10 +315,15 @@ public class PlayerItemHandler : MonoBehaviourPun, IPunObservable
         }
     }
 
-    // 장착 사운드 스킵
+    // 장착 사운드 스킵 (아이템 주우면서 동시에 드는 소리 처리)
     public void SkipEquipSound()
     {
         _skipEquipSound = true;
+    }
+    // 장착 사운드 스킵 초기화 (아이템 들고있는데 템 새로 주웠을 때 처리)
+    public void ResetSkipEquipSound()
+    {
+        _skipEquipSound = false;
     }
 
     // 아이템 생성
