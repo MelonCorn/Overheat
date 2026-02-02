@@ -880,8 +880,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.8386952, z: 0.9999999}
+  m_Center: {x: 0, y: -0.08065299, z: 0}
 --- !u!1 &5082969223508784338
 GameObject:
   m_ObjectHideFlags: 0
@@ -1468,7 +1468,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.1
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 40b79d11a8c50c744b676e7d54136ae3, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: f7aae95449b8d6f4a8908c6fb5db82dd, type: 2}
   m_BuildHeightMesh: 0
 --- !u!54 &4277079657692009366
 Rigidbody:
@@ -1854,9 +1854,17 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 809942460750970271, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1035455243347581492, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
       propertyPath: m_Layer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1080766092248644115, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2037347798528709653, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
       propertyPath: m_Name
@@ -1869,6 +1877,18 @@ PrefabInstance:
     - target: {fileID: 2037347798528709653, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2042286740057627836, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4068070137145360521, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4855562595180810993, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5210494895826291912, guid: f27e94b5b4e2e2742bc9ea51a848b05e, type: 3}
       propertyPath: m_Layer

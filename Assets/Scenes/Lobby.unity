@@ -3006,13 +3006,13 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: e903a6c78e466d642b65d15c601186e3, type: 3}
   - name: Shop
     type: 6
-    clip: {fileID: 8300000, guid: d3b6d886ce9bc0e4b881c507448c0d56, type: 3}
+    clip: {fileID: 8300000, guid: 53b5bb8a9889e354389d23b9dc8cffa9, type: 3}
   - name: GameOver
     type: 4
     clip: {fileID: 8300000, guid: d3b6d886ce9bc0e4b881c507448c0d56, type: 3}
   - name: GameClear
     type: 5
-    clip: {fileID: 8300000, guid: d3b6d886ce9bc0e4b881c507448c0d56, type: 3}
+    clip: {fileID: 8300000, guid: 89e6298b0bbb755409f511fd07beea73, type: 3}
   _sfxList: []
   _sfxCoolDown: 0.05
 --- !u!82 &1038055662

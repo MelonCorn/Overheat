@@ -37,6 +37,9 @@ public class EnemySpawner : MonoBehaviourPun
         // 방장만 스폰 관리
         if (PhotonNetwork.IsMasterClient == false) return;
 
+        // 시작 안했으면 스폰 안 함
+        if (GameManager.Instance == null || GameManager.Instance.IsGameStart == false) return;
+
         // 기차 준비 전엔 스폰 안 함
         if (TrainManager.Instance == null || !TrainManager.Instance.IsTrainReady) return;
 

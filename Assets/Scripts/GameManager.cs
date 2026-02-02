@@ -52,9 +52,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
 
     private bool _isLocalLoad = false;      // 로컬 로딩 체크용
-    private bool _isGameStart = false;      // 게임 시작 확인용
     public bool IsShop => _isShop;
     public bool IsWaitingRoom => _isWaitingRoom;
+    public bool IsGameStart { get; private set; }      // 게임 시작 확인용
     public bool IsGameOver { get; private set; }
 
     public event Action<int> OnGoldChanged; // 골드 변화 알림
@@ -204,7 +204,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private void CheckAllPlayersReady()
     {
         // 게임 시작했으면 체크 패스
-        if (_isGameStart == true) return;
+        if (IsGameStart == true) return;
 
         Debug.Log($"[로딩 체크] {_loadedActorNumbers.Count} / {PhotonNetwork.CurrentRoom.PlayerCount} 명 완료");
 
@@ -221,10 +221,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private void RPC_AllPlayersReady()
     {
         // 중복 콜 무시
-        if (_isGameStart == true) return;
+        if (IsGameStart == true) return;
 
         // 게임 시작 상태로 변경
-        _isGameStart = true;
+        IsGameStart = true;
 
         // 씬 시작
         StartCoroutine(SceneStart());
@@ -345,11 +345,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             // 엔진 ui 비활성화
             if (_engineUI != null) _engineUI.SetActive(false);
 
-            // 상점도 아닐 때 (인게임 )
+            // 상점도 아닐 때 (인게임)
             if(_isShop == false)
             {
                 // 환경 오브젝트 끌어당기기
                 if (_environmentSpawner) _environmentSpawner.Repositon();
+
+                // 브금 끄기
+                if (SoundManager.Instance) SoundManager.Instance.PlayBGM(BGMType.None);
             }
         }
         else
@@ -626,8 +629,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private IEnumerator GameOverCoroutine()
     {
-        Debug.Log("게임 오버 ! 대기실로 이동");
-
         // 게임오버 상태 변경
         IsGameOver = true;
 
@@ -650,6 +651,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         // 환경 오브젝트 끌어당기기
         if (_environmentSpawner) _environmentSpawner.Repositon();
+
+        // 브금 끄기
+        if (SoundManager.Instance) SoundManager.Instance.PlayBGM(BGMType.None);
 
         // 레이더 초기화
         RadarNode.ResetRadarCount();
@@ -740,6 +744,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // 타임라인 재생 코루틴
     private IEnumerator PlayTimeline(TimelineType type)
     {
+        Debug.Log($"타임라인 재생 : {type}");
         if (QuickSlotManager.Instance != null)
         {
             // 퀵슬롯 UI 비활성화
@@ -920,7 +925,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         // 로컬 로딩이 끝났고, 게임 시작 안했을 때
-        if (_isLocalLoad == true && _isGameStart == false)
+        if (_isLocalLoad == true && IsGameStart == false)
         {
             // 새로운 방장에게 준비 됐다고 다시 보내기
             photonView.RPC(nameof(RPC_SceneLoaded), RpcTarget.MasterClient);

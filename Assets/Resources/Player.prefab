@@ -381,7 +381,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementHandler
   _walkSpeed: 5
   _runSpeed: 8
-  _jumpPower: 2
+  _jumpPower: 1.5
   _gravity: -25
   _jumpStamina: 10
   _runStamina: 15
