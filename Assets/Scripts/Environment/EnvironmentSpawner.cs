@@ -24,6 +24,13 @@ public class EnvironmentSpawner : MonoBehaviour
     private float _totalDistance;               // 누적 이동 거리
     private Transform _target;                  // 타겟
 
+
+    private void Start()
+    {
+        // 초반에 좀 심어두기
+        Repositon();
+    }
+
     private void Update()
     {
         // 타겟 없으면 실행 안함
@@ -65,7 +72,7 @@ public class EnvironmentSpawner : MonoBehaviour
     {
         // 타겟 재설정 (카메라가 0,0,0으로 갔으면 거기가 기준)
         if (Camera.main != null) _target = Camera.main.transform;
-        if (_target == null) return;
+        else _target = transform;
 
         // 역순 반납
         for (int i = _activeEnvironments.Count - 1; i >= 0; i--)

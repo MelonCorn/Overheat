@@ -29,7 +29,7 @@ MonoBehaviour:
   isAuto: 1
   hitLayer:
     serializedVersion: 2
-    m_Bits: 544960
+    m_Bits: 544961
   type: 5
   recoilX: 0
   recoilY: 0

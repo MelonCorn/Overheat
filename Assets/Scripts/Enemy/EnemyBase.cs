@@ -21,16 +21,23 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     [Header("애니메이터")]
     [SerializeField] protected Animator _animator;      // 애니메이터
 
+    [Header("사망 파티클")]
+    [SerializeField] protected Transform _dieParticlePoint;
+    [SerializeField] protected PoolableObject _dieParticle;
+
     [Header("네트워크 동기화 설정")]
     [SerializeField] float _moveSmoothSpeed = 10f;  // 이동 
     [SerializeField] float _rotSmoothSpeed = 10f;   // 회전
     [SerializeField] float _teleportDistance = 5f;  // 텔포
 
+    public AudioSource GetAudioSource => _audioSource; // 오디오 소스
     public bool IsDead { get; protected set; }  // 사망 상태
     protected Collider _collider;       // 콜라이더
+    protected AudioSource _audioSource; // 오디오 소스
     
     protected Transform _target;        // 타겟 (플레이어나 열차임)
     protected float _lastAttackTime;    // 공격 쿨타임
+    protected PoolableObject _currentDeadParticle;  // 사망 파티클
         
     // 네트워크 트랜스폼
     private Vector3 _networkPos;
@@ -39,6 +46,7 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     protected virtual void Awake()
     {
         _collider = GetComponent<Collider>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     protected virtual void OnEnable()
@@ -46,6 +54,9 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
         _currentHp = _maxHp;
         IsDead = false;
         if (_collider != null) _collider.enabled = true;
+
+        // 비주얼 활성화
+        if (_animator != null) _animator.gameObject.SetActive(true);
 
         // 개체 수 증가
         EnemySpawner.ActiveCount++;
@@ -79,6 +90,7 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
 
             // AI 로직
             Think();
+
         }
         else
         {
@@ -111,8 +123,6 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     {
         // 체력없으면 중단
         if (_currentHp <= 0) return;
-
-        Debug.Log($"[적] {dmg}의 고통을 맛봤습니다.");
 
         // 이펙트, 사운드 로컬 즉시 실행 (예측)
         PlayHitEffect();
@@ -167,17 +177,18 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
 
     // 사망 처리
     [PunRPC]
-    protected void RPC_Die()
+    protected virtual void RPC_Die()
     {
         IsDead = true;
 
         // 자식 클래스 사망
         OnDeath();
 
-        // 사망 파티클
-
         // 다른 공격 판정 받지 않도록 콜라이더 끄기
         if (_collider != null) _collider.enabled = false;
+
+        // 비주얼 비활성화
+        if (_animator != null) _animator.gameObject.SetActive(false);
 
         // 방장이 반납 시작
         if (PhotonNetwork.IsMasterClient == true)
@@ -202,11 +213,11 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     // 디스폰 코루티 
     IEnumerator Despawn()
     {
-        // 사망 애니메이션 시간 대기
-        // yield return new WaitForSeconds(1.0f);
+        // 사망 시간 대기 (사운드, 파티클)
+        yield return new WaitForSeconds(1.0f);
 
-        // 일단 테스트용으로 바로 사라지게
-        yield return null;
+        // 사망 파티클 반납
+        _currentDeadParticle.Release();
 
         // 풀 반납
         PhotonNetwork.Destroy(gameObject);

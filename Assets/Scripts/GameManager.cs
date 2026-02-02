@@ -328,7 +328,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if(_isWaitingRoom == false)
         {
             // 利 没家
-            //CleanupEnemy();
+            CleanupEnemy();
 
             // 蜡角拱 没家
             CleanupLostItems();
@@ -640,7 +640,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
 
         // 利 没家
-        //CleanupEnemy();
+        CleanupEnemy();
 
         // 酒捞袍 没家
         CleanupLostItems();

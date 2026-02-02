@@ -7,7 +7,6 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject _playerPrefab;
     [SerializeField] Transform[] _spawnPoints;
-    [SerializeField] float interval = 1.5f; // 간격
 
     // 플레이어 스폰
     public void PlayerSpawn()

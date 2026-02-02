@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 512c0e3a717a61d43870b0e288b4c8ce, type: 3}
+  m_Name: RangeAudioData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAudioData
+  attackClips:
+  - {fileID: 8300000, guid: e2cc3dd515298c04085f2fe33311ba05, type: 3}
+  - {fileID: 8300000, guid: ad66d4c4a6aa9434292ae459df35d845, type: 3}
+  dieClips:
+  - {fileID: 8300000, guid: 954b24f0e5c0ec8439437b14dff731f5, type: 3}
+  - {fileID: 8300000, guid: 92373ba3c92c47448834ae894abec966, type: 3}
+  - {fileID: 8300000, guid: 2726c4301c7c2ff429b65ae2e73432d6, type: 3}
+  - {fileID: 8300000, guid: db0e97ef55e5e354cb8b2988f3c6f5f8, type: 3}

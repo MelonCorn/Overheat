@@ -27,6 +27,14 @@ public class EnemyMelee : EnemyBase
     [SerializeField] float _retargetInterval = 0.5f;// 타겟 재탐색 간격
     [SerializeField] float _wayWidth = 2f;          // 통로 너비
 
+    [Header("공격 행동 설정")]
+    [SerializeField] float _attackDelay = 1f;       // 공격 딜레이 (모션 대기용)
+
+    [Header("오디오 데이터")]
+    [SerializeField] EnemyMeleeAudioData _audioData;
+
+    public EnemyMeleeAudioData AudioData => _audioData;
+
     private NavMeshAgent _agent;
 
     private State _state = State.Approach;  // 현재 상태
@@ -119,6 +127,16 @@ public class EnemyMelee : EnemyBase
                 // 코루틴 동작 중
                 break;
         }
+
+        // 애니메이터 이동 파라미터
+        if (_agent != null && _animator != null)
+        {
+            // 에이전트 속도 0 ~ 1 로 정규화 해서 적용
+            float speed = _agent.velocity.magnitude / _agent.speed;
+
+            // 부드럽게
+            _animator.SetFloat("Speed", speed, 0.1f, Time.deltaTime);
+        }
     }
 
     // 가까운 열차에 접근
@@ -162,9 +180,8 @@ public class EnemyMelee : EnemyBase
         _state = State.Climb;
 
         // 기어오르는 애니메이션 재생
-        // anim.SetTrigger("Climb");
+        if(_animator != null) _animator.SetTrigger("Climb");
 
-        
         // 바닥 -> 창문
 
         // 바닥
@@ -210,6 +227,9 @@ public class EnemyMelee : EnemyBase
         Vector3 ledgePos = transform.position; // 창문 위치
         time = 0f;
 
+        // 창문에서 뛰어 내리는 애니메이션 (view 로 트리거 해봣는데 얘만 유독 씹힘)
+        photonView.RPC(nameof(RPC_PlayJump), RpcTarget.All);
+
         // 열차 바닥 이동 시간
         while (time < _vaultDuration)
         {
@@ -240,6 +260,16 @@ public class EnemyMelee : EnemyBase
             _agent.isStopped = false; // 정지
         }
         _state = State.Chase;
+    }
+
+    // 뛰어내리는 애니메이션 
+    [PunRPC]
+    private void RPC_PlayJump()
+    {
+        if (_animator != null)
+        {
+            _animator.SetTrigger("Jump");
+        }
     }
 
 
@@ -399,7 +429,6 @@ public class EnemyMelee : EnemyBase
         _state = State.Chase; 
     }
 
-
     // 가까운 플레이어 탐지
     private void FindClosestPlayer()
     {
@@ -474,7 +503,7 @@ public class EnemyMelee : EnemyBase
         _lastAttackTime = Time.time;
 
         // 공격 애니메이션 재생
-        // anim.SetTrigger("Attack");
+        if (_animator != null) _animator.SetTrigger("Attack");
 
         // 타겟이 컴포넌트면
         if (target is Component comp)
@@ -484,15 +513,47 @@ public class EnemyMelee : EnemyBase
             transform.LookAt(lookPos);
         }
 
-        // 데미지
-        target.TakeDamage(_damage);
+        // 딜레이 공격 시전
+        StartCoroutine(DelayAttack(target));
     }
 
+    // 모션 대기 후 공격
+    private IEnumerator DelayAttack(IDamageable target)
+    {
+        // 공격 모션 대기
+        yield return new WaitForSeconds(_attackDelay);
+
+        // 대기중 내가 사망 시 취소
+        if (IsDead == true) yield break;
+
+        // 대기하는 동안 타겟 사라지거나 죽었을 수도 있으니 체크
+        if (target != null && (target as MonoBehaviour).gameObject.activeInHierarchy)
+        {
+            // 거리 체크 (공격 모션 도중 멀어졌을 경우)
+            float distance = Vector3.Distance(transform.position, (target as Component).transform.position);
+
+            // 그래도 범위 안이라면 데미지 적용
+            if (distance <= _attackRange + 0.5f) 
+                target.TakeDamage(_damage);
+        }
+    }
 
     // 사망 시
     protected override void OnDeath()
     {
         base.OnDeath();
+
+        // 사망 파티클
+        if (_dieParticle != null && PoolManager.Instance != null)
+        {
+            // 받아두었다가 비활성화될 때 릴리즈
+            _currentDeadParticle = PoolManager.Instance.Spawn(_dieParticle, _dieParticlePoint.position, Quaternion.identity);
+        }
+        // 사망 사운드
+        if (_audioSource != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayOneShot3D(_audioSource, _audioData.GetDieClip());
+        }
 
         // 진행 중인 코루틴 강제 종료
         // 창문 넘기, 링크 건너기

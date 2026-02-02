@@ -53,7 +53,7 @@ public class EnemyProjectile : MonoBehaviour
         // 기본적으로 열차 타겟인데 플레이어도 혹시나 뭐 맞을 수 있음
         if (other.CompareTag("Train") || other.CompareTag("Player"))
         {
-            IDamageable target = other.GetComponent<IDamageable>();
+            IDamageable target = other.GetComponentInParent<IDamageable>();
 
             // 데미지줄 수 있으면
             if (target != null)

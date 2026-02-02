@@ -21,10 +21,15 @@ public class EnemyRange : EnemyBase
     [SerializeField] float _movingSpeed = 1f;      // 사격 중 움직임 속도
     [SerializeField] float _movingChance = 0.3f;   // 사격 후 무빙 확률
 
-
     [Header("공격 설정")]
     [SerializeField] PoolableObject _projectilePrefab; // 투사체 프리팹
     [SerializeField] Transform _firePoint;             // 발사 위치
+    [SerializeField] float _attackDelay = 0.08f;       // 공격 딜레이 (모션 대기용)
+
+    [Header("오디오 데이터")]
+    [SerializeField] EnemyAudioData _audioData;
+
+    public EnemyAudioData AudioData => _audioData;
 
     // 타겟
     private TrainNode _targetTrain;                // 목표 열차
@@ -37,6 +42,8 @@ public class EnemyRange : EnemyBase
     private bool _isAnchored = false;              // 사격 자리 잡았는지 체크
     private Vector3 _anchorPosition;               // 사격 개시 기준 위치
     private Vector3 _movingTargetPos;             // 현재 무빙 목표 지점
+
+    private Vector3 _prevPos;   // 애니메이션 속도용
 
     protected override void OnEnable()
     {
@@ -115,6 +122,20 @@ public class EnemyRange : EnemyBase
                 Fire();
             }
         }
+
+        // 애니메이터 이동 파라미터 값 갱신
+        UpdateAnimator();
+    }
+
+    private void UpdateAnimator()
+    {
+        if (_animator == null) return;
+
+        // 좌표 차이로 속도 계산
+        float currentSpeed = Vector3.Distance(transform.position, _prevPos) / Time.deltaTime;
+        _prevPos = transform.position;
+
+        _animator.SetFloat("Speed", currentSpeed);
     }
 
 
@@ -249,6 +270,21 @@ public class EnemyRange : EnemyBase
         // 공격 쿨타임 갱신
         _lastAttackTime = Time.time;
 
+        // 공격 애니메이션 선 재생
+        _animator.SetTrigger("Attack");
+
+        // 조금 딜레이 뒤에 발사
+        StartCoroutine(DelayFire());
+    }
+
+    private IEnumerator DelayFire()
+    {
+        // 공격 모션 대기
+        yield return new WaitForSeconds(_attackDelay);
+
+        // 대기중 사망해버리면 취소
+        if (IsDead == true || _targetTrain == null || _targetTrain.CurrentHp <= 0) yield break;
+
         // 몸은 다 안돌아갔을 수 있으니까 투사체 방향 바로 해주기
         Vector3 fireDir = (_randomPoint - _firePoint.position).normalized;
         Quaternion fireRot = Quaternion.LookRotation(fireDir);
@@ -257,7 +293,7 @@ public class EnemyRange : EnemyBase
         photonView.RPC(nameof(RPC_Fire), RpcTarget.All, _firePoint.position, fireRot);
 
         // 확률로 무빙
-        if(Random.value > _movingChance)
+        if (Random.value > _movingChance)
             NewMovingPoint();
 
         // 공격 후 열차의 랜덤 위치 리타겟
@@ -287,8 +323,21 @@ public class EnemyRange : EnemyBase
     {
         // 로컬로 투사체 생성
         PoolableObject projectile = PoolManager.Instance.Spawn(_projectilePrefab, pos, rot);
+    }
 
-        // 공격 애니메이션 재생
-        _animator.SetTrigger("Attack");
+    protected override void OnDeath()
+    {
+        // 사망 파티클
+        if (_dieParticle != null && PoolManager.Instance != null)
+        {
+            // 받아두었다가 비활성화될 때 릴리즈
+            _currentDeadParticle = PoolManager.Instance.Spawn(_dieParticle, _dieParticlePoint.position, Quaternion.identity);
+        }
+        
+        // 사운드
+        if (_audioSource != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayOneShot3D(_audioSource, _audioData.GetDieClip());
+        }
     }
 }

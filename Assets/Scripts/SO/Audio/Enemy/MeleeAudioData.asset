@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26471571cd757c744a2b904e63aa3d57, type: 3}
+  m_Name: MeleeAudioData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyMeleeAudioData
+  attackClips:
+  - {fileID: 8300000, guid: 049c95b370886fa41a3d3ee638ef8fe6, type: 3}
+  - {fileID: 8300000, guid: 97566af88a0a3ae42b6970ac04ee2317, type: 3}
+  - {fileID: 8300000, guid: a8d71255e1bf81d4bacbb94c64e9a701, type: 3}
+  dieClips:
+  - {fileID: 8300000, guid: 954b24f0e5c0ec8439437b14dff731f5, type: 3}
+  - {fileID: 8300000, guid: 92373ba3c92c47448834ae894abec966, type: 3}
+  - {fileID: 8300000, guid: 2726c4301c7c2ff429b65ae2e73432d6, type: 3}
+  - {fileID: 8300000, guid: db0e97ef55e5e354cb8b2988f3c6f5f8, type: 3}
+  approachFootStepClips:
+  - {fileID: 8300000, guid: 08f311efe14f2d34ab4139ddb566bee6, type: 3}
+  - {fileID: 8300000, guid: c8797a8a457651e49a3cf5394928d7b8, type: 3}
+  - {fileID: 8300000, guid: 733cd88c8d917624c9cbac31f6e491e0, type: 3}
+  - {fileID: 8300000, guid: 60f330876e64e22488e238c79387413d, type: 3}
+  - {fileID: 8300000, guid: 1fd85d4474ef254419f6e6790952e278, type: 3}
+  chaseFootStepClips:
+  - {fileID: 8300000, guid: bdb0196030243da43b2817f7aa291d24, type: 3}
+  - {fileID: 8300000, guid: c65d0fa9e56dc51419c3c61815b492b8, type: 3}
+  - {fileID: 8300000, guid: 26b7eff521f0c7047b1d1f66afa7a244, type: 3}
+  - {fileID: 8300000, guid: 499dae1bf9b43a344a3526c0f36688c8, type: 3}
+  climbClips:
+  - {fileID: 8300000, guid: 21a323eda272c3c47888319df586868d, type: 3}
+  - {fileID: 8300000, guid: 5e63b0810dc736b41b3348a565a76821, type: 3}
+  - {fileID: 8300000, guid: cc7ccfe32bab90446bd0cc4bbb931bb2, type: 3}
+  landClips:
+  - {fileID: 8300000, guid: 40f9595cd9690fd4c83de1f15a3cb100, type: 3}
+  - {fileID: 8300000, guid: dc70029a3e3bb514a9caa2b2743613eb, type: 3}
