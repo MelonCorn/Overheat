@@ -124,8 +124,15 @@ public class EnemyMelee : EnemyBase
     // 가까운 열차에 접근
     private void UpdateApproach()
     {
-        // 타겟 창문 없으면 무시
-        if (_targetWindow == null) return;
+        // 타겟 창문 없으면
+        if (_targetWindow == null)
+        {
+            // 새로운 열차의 창문 찾기
+            FindTargetWindow();
+
+            // 그래도 없으면 게임오버 상태
+            if (_targetWindow == null) return;
+        }
 
         // 목표 창문의 X, Z
         // 자신의 Y

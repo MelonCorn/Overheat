@@ -18,13 +18,15 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
     [SerializeField] protected int _minGold = 5;        // 최소 골드
     [SerializeField] protected int _maxGold = 20;       // 최대 골드
 
+    [Header("애니메이터")]
+    [SerializeField] protected Animator _animator;      // 애니메이터
+
     [Header("네트워크 동기화 설정")]
-    [SerializeField] float _moveSmoothSpeed = 10f;
-    [SerializeField] float _rotSmoothSpeed = 10f;
-    [SerializeField] float _teleportDistance = 5f;
+    [SerializeField] float _moveSmoothSpeed = 10f;  // 이동 
+    [SerializeField] float _rotSmoothSpeed = 10f;   // 회전
+    [SerializeField] float _teleportDistance = 5f;  // 텔포
 
     public bool IsDead { get; protected set; }  // 사망 상태
-
     protected Collider _collider;       // 콜라이더
     
     protected Transform _target;        // 타겟 (플레이어나 열차임)
@@ -172,8 +174,7 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
         // 자식 클래스 사망
         OnDeath();
 
-        // 사망 애니메이션 재생
-        // 
+        // 사망 파티클
 
         // 다른 공격 판정 받지 않도록 콜라이더 끄기
         if (_collider != null) _collider.enabled = false;

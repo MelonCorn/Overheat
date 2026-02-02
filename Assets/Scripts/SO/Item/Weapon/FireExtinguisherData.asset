@@ -18,10 +18,10 @@ MonoBehaviour:
   price: 50
   icon: {fileID: 21300000, guid: 56bbc6b42271d4177ac313247f47ac1f, type: 3}
   prefab: {fileID: 1428801387747951406, guid: e1682da5dfc9ee64a854c1573dfac4ef, type: 3}
-  handPosOffset: {x: 0, y: -0.31, z: 0}
-  handRotOffset: {x: 0, y: 0, z: 0}
-  tpsHandPosOffset: {x: -0.415, y: 0.114, z: -0.309}
-  tpsHandRotOffset: {x: 273.80075, y: 118.97429, z: 123.60977}
+  handPosOffset: {x: 0, y: -0.38, z: -0.12}
+  handRotOffset: {x: 9.059997, y: 4.9900036, z: 0.0000000270175}
+  tpsHandPosOffset: {x: -0.459, y: 0.068, z: -0.322}
+  tpsHandRotOffset: {x: 273.56458, y: 162.20293, z: 80.45059}
   damage: 10
   range: 3
   fireRate: 0.1
@@ -43,7 +43,7 @@ MonoBehaviour:
   _upMultiplier: 0.79
   _downMultiplier: 1.27
   spineYawOffset: 10.8
-  spinePitchOffset: 0
+  spinePitchOffset: 2
   fireClips: []
   impactEnemyEffect: {fileID: 0}
   impactTrainFloorEffect: {fileID: 0}

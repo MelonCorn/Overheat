@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: CargoContoller
+  m_Controller: {fileID: 9100000, guid: 10381b2a0e90d8742b8438fd0ca213db, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 9c6b925e448c56545a47623e0579d1c2, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 554bd19bbb4e2c049b1a2e601d5dad2b, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 22007fd350177a844bc02900e4343b87, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 3aa88fe967fdec54c9485203a8b1494c, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 56eae5840d396c044895b31c2a43e570, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 8230e5657953b624899c7bd146a2836b, type: 2}

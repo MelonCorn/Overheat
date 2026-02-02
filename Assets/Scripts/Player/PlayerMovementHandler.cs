@@ -181,8 +181,8 @@ public class PlayerMovementHandler : MonoBehaviour
             // 점프 상태는 항상 갱신
             IsJump = false;
 
-            // 생성된지 0.5초 지난 후 속도 빠를 때만
-            if (Time.time > _enableTime + 0.5f && _verticalVelocity.y < -3.0f)
+            // 생성된지 0.6초 지난 후 속도 빠를 때만
+            if (Time.time > _enableTime + 0.6f && _verticalVelocity.y < -3.0f)
             {
                 if (_soundHandler != null)
                     _soundHandler.PlayLand();

@@ -287,5 +287,8 @@ public class EnemyRange : EnemyBase
     {
         // 로컬로 투사체 생성
         PoolableObject projectile = PoolManager.Instance.Spawn(_projectilePrefab, pos, rot);
+
+        // 공격 애니메이션 재생
+        _animator.SetTrigger("Attack");
     }
 }
