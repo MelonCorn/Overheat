@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -26,6 +27,7 @@ public class ShopTerminal : MonoBehaviour, IInteractable
     [SerializeField] CanvasGroup _terminalCanvasGroup;      // 사용 상태 아니면 레이캐스트 블록 상태 off
 
     public static bool IsUsing = false;             // 사용 상태
+    public bool _isTransition = false;              // 전환 중 상태
 
     private PlayerInputHandler _localPlayerInputHandler;
     private PlayerMovementHandler _localPlayerMovementHandler;
@@ -66,7 +68,7 @@ public class ShopTerminal : MonoBehaviour, IInteractable
 
     public AudioClip OnInteract()
     {
-        if (IsUsing) return null;
+        if (IsUsing || _isTransition) return null;
 
         // 사용 상태로 전환
         IsUsing = true;
@@ -127,6 +129,9 @@ public class ShopTerminal : MonoBehaviour, IInteractable
         // 사용 해제
         IsUsing = false;
 
+        // 카메라 되돌아가는 전환 중 다 이동되면 상태 변환
+        StartCoroutine(TransitionDelay(_moveDuration));
+
         // 단말기 UI 상호작용 불가능
         _terminalCanvasGroup.blocksRaycasts = false;
 
@@ -154,8 +159,22 @@ public class ShopTerminal : MonoBehaviour, IInteractable
 
         // 퀵슬롯 켜기
         QuickSlotManager.Instance.SetUIActive(true);
+
+        // 버튼 선택되는거 바로 풀기
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
+    private IEnumerator TransitionDelay(float delay)
+    {   
+        // 락 걸기
+        _isTransition = true;
+
+        // 카메라 이동 시간만큼 대기
+        yield return new WaitForSeconds(delay);
+
+        // 락 풀기
+        _isTransition = false; 
+    }
 
     // 단말기 나오는동안 반동 금지
     private IEnumerator EnableRecoilDelay(float delay)
@@ -178,11 +197,14 @@ public class ShopTerminal : MonoBehaviour, IInteractable
     public string GetInteractText(out bool canInteract)
     {
         // 사용 반대
-        canInteract = !IsUsing;
+        canInteract = !IsUsing && !_isTransition;
 
         if (canInteract)
             return $"상점 이용";
         else
             return "";
     }
+
+
+    
 }

@@ -140,7 +140,8 @@ public class PlayerCameraHandler : MonoBehaviour
             _camera.transform.position = Vector3.Lerp(startPos, target.position, t);
             _camera.transform.rotation = Quaternion.Slerp(startRot, target.rotation, t);
 
-            yield return null;
+            // 마지막 프레임에 계속 갱신
+            yield return GameManager.Instance.EndOfFrame;
         }
 
         // 최종 보정
@@ -174,7 +175,7 @@ public class PlayerCameraHandler : MonoBehaviour
             _camera.transform.position = Vector3.Lerp(startPos, targetPos, t);
             _camera.transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
 
-            yield return null;
+            yield return GameManager.Instance.EndOfFrame;
         }
 
         // 복귀 완료 후
