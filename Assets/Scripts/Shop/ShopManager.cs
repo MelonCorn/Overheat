@@ -28,6 +28,9 @@ public class ShopManager : MonoBehaviourPun
     [SerializeField] ShopUpgradeData _upgradePrefab;    // 열차 업그레이드 리스트용 프리팹
     [SerializeField] Transform _trainUpgradeParent;     // 열차 리스트 부모
 
+    [Header("열차 수 UI")]
+    [SerializeField] TextMeshProUGUI _trainCountText;
+
     [Header("상점 오디오 설정")]
     [SerializeField] ShopAudioData _audioData;
     [SerializeField] AudioSource _audioSource;
@@ -48,8 +51,12 @@ public class ShopManager : MonoBehaviourPun
 
             // 열차 룸 프로퍼티 변경될 때마다 실행
             TrainManager.Instance.OnTrainListUpdated += RefreshTrainList;
+            // 열차 개수 확인을 위한 갱신
+            TrainManager.Instance.OnTrainListUpdated += UpdateAllShopSlots;
             // 업그레이드 결과 이벤트
             TrainManager.Instance.OnUpgradeResult += UpgradeResult;
+            // 삭제 결과 이벤트
+            TrainManager.Instance.OnDeleteResult += DeleteResult;
         }
 
         if(GameManager.Instance != null)
@@ -68,7 +75,9 @@ public class ShopManager : MonoBehaviourPun
         if (TrainManager.Instance != null)
         {
             TrainManager.Instance.OnTrainListUpdated -= RefreshTrainList;
+            TrainManager.Instance.OnTrainListUpdated -= UpdateAllShopSlots;
             TrainManager.Instance.OnUpgradeResult -= UpgradeResult;
+            TrainManager.Instance.OnDeleteResult -= DeleteResult;
         }
         if (GameManager.Instance != null)
         {
@@ -268,7 +277,17 @@ public class ShopManager : MonoBehaviourPun
         if (targetItem != null )
         {
             // 열차 타입이면
-            if (targetItem is TrainData) itemType = 1;
+            if (targetItem is TrainData) 
+            {
+                itemType = 1;
+                // 근데 열차가 꽉 찼으면
+                if (TrainManager.Instance.IsTrainFull == true)
+                {
+                    // 실패 처리
+                    photonView.RPC(nameof(RPC_PurchaseResult), RpcTarget.All, player, false, itemType);
+                    return;
+                }
+            }
 
             // 골드 사용 완료 시
             if (GameManager.Instance.TryUseGold(targetItem.price))
@@ -338,6 +357,9 @@ public class ShopManager : MonoBehaviourPun
         }
     }
 
+    #region 열차 업그레이드
+
+
     // 업그레이드 버튼에 연결할 것
     public void TryUpgradeTrain(int index)
     {
@@ -379,10 +401,58 @@ public class ShopManager : MonoBehaviourPun
         }
     }
 
+    #endregion
+
+    #region 열차 삭제
+    public void TryDeleteTrain(int index)
+    {
+        // 버튼 소리
+        PlayClickSound();
+
+        // 0번 엔진 또 한 번 보호
+        if (index <= 0) return;
+        if (TrainManager.Instance == null) return;
+
+        // 혹시나 범위 넘진 않았는지 확인
+        var trains = TrainManager.Instance.CurrentTrains;
+        if (index >= trains.Count) return;
+
+        // uid 가져오기
+        string targetGUID = trains[index].guid;
+
+        // 로딩 팝업 켜기
+        if (_loadingPopup != null) _loadingPopup.SetActive(true);
+
+        // TrainManager에게 삭제 요청
+        TrainManager.Instance.RequestDeleteTrain(index, targetGUID);
+    }
+
+
+    // 각종 처리를 거쳐 온 삭제 결과
+    private void DeleteResult(bool isSuccess, string message)
+    {
+        if (isSuccess)
+        {
+            // 로컬 먼저 삭제 성공 소리
+            PlayUpgradeSound();
+
+            // 나머지들에게 전송
+            photonView.RPC(nameof(RPC_PlayUpgradeSound), RpcTarget.All);
+        }
+
+        // 로딩 팝업 끄기
+        if (_loadingPopup != null) _loadingPopup.SetActive(false);
+    }
+
+
+    #endregion
 
     // 열차 갱신 시 리스트 버튼 새로고침
     public void RefreshTrainList()
     {
+        // 열차 수 텍스트 갱신
+        UpdateTrainCount();
+
         if (_trainUpgradeParent == null || TrainManager.Instance == null) return;
 
         // 기존 프리팹 싹 밀기 (혹시 몰라서 역순)
@@ -447,6 +517,32 @@ public class ShopManager : MonoBehaviourPun
     }
 
 
+    // 모든 상점 아이템 슬롯 갱신 (열차 개수 제한으로 인한 구매 불가를 위함)
+    private void UpdateAllShopSlots()
+    {
+        foreach (var slot in _activeShopSlots)
+        {
+            if (slot != null) slot.UpdatePriceState(GameData.Gold);
+        }
+    }
+
+
+    // 열차 수 텍스트 갱신
+    private void UpdateTrainCount()
+    {
+        if (_trainCountText == null || TrainManager.Instance == null) return;
+
+        // 현재 개수
+        int current = TrainManager.Instance.TrainNodes.Count;
+        // 최대 개수
+        int max = TrainManager.Instance.MaxTrainCount;
+
+        // 텍스트 설정
+        _trainCountText.SetText($"{current} / {max}");
+
+        // 꽉 찼으면 빨간색 아니면 흰색
+        _trainCountText.color = (current >= max) ? Color.red : Color.white;
+    }
 
     // 골드 변화
     private void GoldChanged(int currentGold)
@@ -492,6 +588,15 @@ public class ShopManager : MonoBehaviourPun
 
         PlaySound(clip);
     }
+    
+    // 랜덤 삭제 사운드
+
+    private void PlayDeleteSound()
+    {
+        AudioClip clip = _audioData.GetRandomDeleteClip();
+
+        PlaySound(clip);
+    }
 
     // 소리 재생
     private void PlaySound(AudioClip clip)
@@ -506,6 +611,13 @@ public class ShopManager : MonoBehaviourPun
     private void RPC_PlayUpgradeSound()
     {
         PlayUpgradeSound();
+    }
+    
+    // 전달 받은 삭제 소리 
+    [PunRPC]
+    private void RPC_PlayDeleteSound()
+    {
+        PlayDeleteSound();
     }
 
     // 도착 증기 소리

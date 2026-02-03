@@ -86,9 +86,9 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         gameObject.name = Data.itemName;
 
         // UI 생성
-        if (TestTrainUIManager.Instance != null)
+        if (TrainUIManager.Instance != null)
         {
-            TestTrainUIManager.Instance.CreateUI(this);
+            TrainUIManager.Instance.CreateUI(this);
         }
 
         // 폭발 대상 레이어 수동 정리
@@ -578,6 +578,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         int level = (int)data[1];            // 레벨
         TrainType type = (TrainType)data[2]; // 타입
         string content = (string)data[3];    // 화물내용
+        string guid = (string)data[4];       // GUID
 
         // 열차 번호
         TrainIndex = index;
@@ -585,7 +586,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         // 매니저에 등록, Init 요청
         if (TrainManager.Instance != null)
         {
-            TrainManager.Instance.RegisterNetworkTrain(this, index, type, level, content);
+            TrainManager.Instance.RegisterNetworkTrain(this, index, type, level, content, guid);
         }
     }
 

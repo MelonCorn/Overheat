@@ -50,8 +50,28 @@ public class ShopSlotData : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         if (_data == null || _priceText == null) return;
 
-        // 가격보다 돈이 많으면 흰색, 적으면 빨간색
-        _priceText.color = (currentGold >= _data.price) ? Color.white : Color.red;
+        // 열차 인지 확인
+        // 그리고 열차가 가득찼으면
+        if(_data is TrainData && TrainManager.Instance != null && TrainManager.Instance.IsTrainFull)
+        {
+            // 꽉 찼으면
+            _priceText.SetText("구매 불가"); // 텍스트 변경
+            _priceText.color = Color.red;   // 빨간색
+            _button.interactable = false;   // 버튼 비활성화
+        }
+        // 열차 아니거나 열차 꽉 안찼으면
+        else
+        {
+            // 가격 표시
+            _priceText.SetText($"{_data.price:N0}");
+
+            // 가격 색
+            bool canBuy = currentGold >= _data.price;
+            _priceText.color = canBuy ? Color.white : Color.red;
+
+            // 버튼 온오프
+            _button.interactable = canBuy;
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)

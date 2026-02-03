@@ -10,6 +10,7 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] TextMeshProUGUI _nameText;     // 이름
     [SerializeField] TextMeshProUGUI _levelText;    // 레벨
     [SerializeField] Button _upgradeButton;         // 업그레이드 버튼
+    [SerializeField] Button _deleteButton;          // 삭제 버튼
 
     private ShopManager _shopManager;    // 상점 매니저
     private TrainData _data;             // 열차 데이터
@@ -31,11 +32,34 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
         // 버튼 기능: 클릭 시 업그레이드 팝업 열기
         if (_upgradeButton != null)
         {
+            //_upgradeButton.interactable = true;
+            //_upgradeButton.enabled = false;
+            //_upgradeButton.enabled = true;
             // 풀링 오브젝트라 싹 비우기
             _upgradeButton.onClick.RemoveAllListeners();
             _upgradeButton.onClick.AddListener(OnClickSlot);
         }
-        
+
+        // 버튼 기능 : 클릭 시 열차 파괴
+        if (_deleteButton != null)
+        {
+            // 엔진은 삭제 불가
+            bool canDelete = (index != 0);
+
+            // 엔진 아니면 다 활성화
+            _deleteButton.gameObject.SetActive(canDelete);
+
+            // 삭제 가능하면 버튼에 기능 추가
+            if (canDelete)
+            {
+                //_deleteButton.interactable = true;
+                //_deleteButton.enabled = false;
+                //_deleteButton.enabled = true;
+                _deleteButton.onClick.RemoveAllListeners();
+                _deleteButton.onClick.AddListener(OnClickDelete);
+            }
+        }
+
         // 최대 레벨 캐싱
         _isMaxLevel = data.IsMaxLevel(currentLevel);
         if (_isMaxLevel == false)
@@ -50,9 +74,20 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private void OnClickSlot()
     {
         // 열차 업그레이드 시도
-        _shopManager?.TryUpgradeTrain(_trainIndex);
+        if(_shopManager != null) _shopManager.TryUpgradeTrain(_trainIndex);
 
         // 버튼 선택되는거 바로 풀기
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+    private void OnClickDelete()
+    {
+        // 혹시 뚫리면 0번은 방어
+        if (_trainIndex == 0) return;
+
+        // 매니저에게 삭제 요청
+        if (_shopManager != null) _shopManager?.TryDeleteTrain(_trainIndex);
+
+        // 선택 풀기
         EventSystem.current.SetSelectedGameObject(null);
     }
 
@@ -68,8 +103,22 @@ public class ShopUpgradeData : MonoBehaviour, IPointerEnterHandler, IPointerExit
             return;
         }
 
-        // 돈이 충분하면 버튼 활성화
-        _upgradeButton.interactable = (currentGold >= _upgradePrice);
+        // 업글 가능한가
+        bool canBuy = (currentGold >= _upgradePrice);
+
+        // 상태 다르면
+        if (_upgradeButton.interactable != canBuy)
+        {
+            // 전환 후 
+            _upgradeButton.interactable = canBuy;
+
+            // 강제 갱신
+            if (!canBuy)
+            {
+                _upgradeButton.enabled = false;
+                _upgradeButton.enabled = true;
+            }
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
