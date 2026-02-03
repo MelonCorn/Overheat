@@ -39,6 +39,7 @@ public class EnemyMelee : EnemyBase
 
     private State _state = State.Approach;  // 현재 상태
     private Transform _targetWindow;        // 침투할 창문
+    private TrainNode _targetNode;          // 타겟 열차
     private PlayerHandler _targetPlayerHandler; // 타겟 플레이어의 플레이어 핸들러
 
     private float _lastRetargetTime;        // 마지막 리타겟 시간
@@ -101,6 +102,10 @@ public class EnemyMelee : EnemyBase
         // 가장 가까운 창문 위치 할당
         if (targetNode != null)
         {
+            // 타겟 열차
+            _targetNode = targetNode;
+
+            // 타겟 창문
             _targetWindow = targetNode.GetClosestWindow(transform.position);
         }
     }
@@ -148,7 +153,14 @@ public class EnemyMelee : EnemyBase
     // 가까운 열차에 접근
     private void UpdateApproach()
     {
-        // 타겟 창문 없으면
+        // 타겟 창문없거나 열차 체력 0이면
+        if (_targetWindow == null || _targetNode.CurrentHp <= 0)
+        {
+            _targetWindow = null;
+            _targetNode = null;
+        }
+
+        // 사라졌는지 체크
         if (_targetWindow == null)
         {
             // 새로운 열차의 창문 찾기
