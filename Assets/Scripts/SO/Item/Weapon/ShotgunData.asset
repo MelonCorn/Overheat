@@ -18,7 +18,7 @@ MonoBehaviour:
     \uB300\uD654 \uC218\uB2E8\uC774 \uC5C6\uC8E0.\n\n\n\uADF8\uB0E5 \uD31D\uCF58\uCC98\uB7FC
     \uD280\uACA8\uBC84\uB824\uC694."
   price: 450
-  icon: {fileID: 21300000, guid: 3f07e121dff858b46be11c81416b617b, type: 3}
+  icon: {fileID: 21300000, guid: 757f0e03d0cef2e4f94db47cf14b7970, type: 3}
   prefab: {fileID: 8110935573528757067, guid: 4fd453b82a5f3444189c46262d10ef19, type: 3}
   handPosOffset: {x: -0.051, y: 0.102, z: -0.244}
   handRotOffset: {x: 0, y: 0, z: 0}

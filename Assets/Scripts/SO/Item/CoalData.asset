@@ -16,7 +16,7 @@ MonoBehaviour:
   itemName: Coal
   desc: 
   price: 0
-  icon: {fileID: 21300000, guid: 66efb24ed46044ab8a039599cbc47d7b, type: 3}
+  icon: {fileID: 21300000, guid: ec6f5a4c450a7e04f914ec8bcb5240a0, type: 3}
   prefab: {fileID: 8808426797613977201, guid: f09dcfd7b95861a4fa5c4f86a76cbadf, type: 3}
   handPosOffset: {x: 0.02, y: -0.1, z: 0}
   handRotOffset: {x: 0, y: 0, z: 0}

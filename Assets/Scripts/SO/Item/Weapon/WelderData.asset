@@ -19,7 +19,7 @@ MonoBehaviour:
     \uC5C6\uC5B4\uC694.\n\n\n\uC800\uD76C\uB294 \uADF8\uC800 \uC55E\uC73C\uB85C \uB098\uC544\uAC08\n\n\uC5F4\uCC28\uB9CC
     \uC788\uC73C\uBA74 \uB418\uC796\uC544\uC694?"
   price: 300
-  icon: {fileID: 21300000, guid: 56bbc6b42271d4177ac313247f47ac1f, type: 3}
+  icon: {fileID: 21300000, guid: c9053aa7af4d5db4f924b9300e2ad2e9, type: 3}
   prefab: {fileID: 9183523427240285185, guid: d4e35d10e6a39624b8e78a5d863ba00e, type: 3}
   handPosOffset: {x: 0.136, y: -0.132, z: -0.12}
   handRotOffset: {x: 65.261, y: 0.0000048367006, z: 0.0000011552689}
@@ -48,8 +48,8 @@ MonoBehaviour:
   spineYawOffset: 13.43
   spinePitchOffset: 8.33
   fireClips: []
-  impactEnemyEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
-  impactTrainFloorEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
-  impactGroundEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
-  impactDefaultEffect: {fileID: 2136724915190109225, guid: 339204ab31db4e64195f264bb590a071, type: 3}
+  impactEnemyEffect: {fileID: 6251223014550451203, guid: 2d04f4343cbbafe4eb0491d8ecc157b3, type: 3}
+  impactTrainFloorEffect: {fileID: 2136724915190109225, guid: e8270166cd27f61458e997bfff01ae63, type: 3}
+  impactGroundEffect: {fileID: 4188122126429829134, guid: 575336a9b971b3d49b2ccf792233cbfa, type: 3}
+  impactDefaultEffect: {fileID: 2136724915190109225, guid: e8270166cd27f61458e997bfff01ae63, type: 3}
   isRepairTool: 1

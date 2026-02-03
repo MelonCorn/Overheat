@@ -13,6 +13,9 @@ public class ShopAudioData : ScriptableObject
     [Header("업그레이드")]
     public AudioClip[] upgradeClips;    // 업그레이드 완료
 
+    [Header("삭제")]
+    public AudioClip[] deleteClips;     // 삭제 완료
+
     [Header("도착")]
     public AudioClip steamClip;         // 도착 증기
 
@@ -39,5 +42,11 @@ public class ShopAudioData : ScriptableObject
     {
         if (upgradeClips == null || upgradeClips.Length == 0) return null;
         return upgradeClips[Random.Range(0, upgradeClips.Length)];
+    }
+    // 삭제
+    public AudioClip GetRandomDeleteClip()
+    {
+        if (deleteClips == null || deleteClips.Length == 0) return null;
+        return deleteClips[Random.Range(0, deleteClips.Length)];
     }
 }

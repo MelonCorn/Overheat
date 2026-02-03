@@ -19,7 +19,7 @@ MonoBehaviour:
     \uC2EB\uB2E4\uBA74\n\n\uB2F9\uC7A5 \uBC30\uCE58\uD558\uC138\uC694 !\n\n\n<color=#808080>\uC801
     \uD55C\uD14C \uC3DC\uB2E4\uACE0\n\n\uC801\uC774 \uAEBC\uC9C0\uC9C4 \uC54A\uC2B5\uB2C8\uB2E4.</color>\n\n"
   price: 75
-  icon: {fileID: 21300000, guid: 56bbc6b42271d4177ac313247f47ac1f, type: 3}
+  icon: {fileID: 21300000, guid: 89e6f75d7f6dc8e45b2f544a0556feaa, type: 3}
   prefab: {fileID: 1428801387747951406, guid: e1682da5dfc9ee64a854c1573dfac4ef, type: 3}
   handPosOffset: {x: 0, y: -0.38, z: -0.12}
   handRotOffset: {x: 9.059997, y: 4.9900036, z: 0.0000000270175}

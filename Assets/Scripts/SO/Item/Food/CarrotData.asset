@@ -18,7 +18,7 @@ MonoBehaviour:
     \uC8FD\uB294 \uAC83\uBCF4\uB2E4 \uB0AB\uC796\uC544\uC694 ?\n\n\n\uADF8\uB798\uB3C4
     \uCCB4\uB825\uC740 \uCC44\uC6CC\uC8FC\uAC70\uB4E0\uC694."
   price: 50
-  icon: {fileID: 21300000, guid: 7377013011b4c3348809ff574abe799e, type: 3}
+  icon: {fileID: 21300000, guid: 3a3d79ca9671db445b2b27e2784771ee, type: 3}
   prefab: {fileID: 429471891331199967, guid: 9e677d803ca3fa34d9dc52ef41c17141, type: 3}
   handPosOffset: {x: -0.119, y: 0.158, z: -0.11}
   handRotOffset: {x: 355.51147, y: 340.72073, z: 6.343904}

@@ -19,7 +19,7 @@ MonoBehaviour:
     \uBC1C \uC815\uC131\uC2A4\uB7FD\uAC8C \uC3D8\uC138\uC694.\n\n\n\uBE57\uB098\uAC00\uBA74
     \uAE30\uB3C4\uB098 \uD558\uC8E0 ?"
   price: 500
-  icon: {fileID: 21300000, guid: 3f07e121dff858b46be11c81416b617b, type: 3}
+  icon: {fileID: 21300000, guid: a2ad27624d027a14981d8d39c6b316fd, type: 3}
   prefab: {fileID: 4701079223056545360, guid: b4388e63f7eac554eb0679dca1d5e8b1, type: 3}
   handPosOffset: {x: -0.013, y: 0.019, z: -0.192}
   handRotOffset: {x: 0, y: 0, z: 0}
@@ -27,7 +27,7 @@ MonoBehaviour:
   tpsHandRotOffset: {x: 279.8782, y: 271.8654, z: 355.45944}
   damage: 200
   range: 200
-  fireRate: 2.5
+  fireRate: 2
   isAuto: 0
   hitLayer:
     serializedVersion: 2
@@ -48,7 +48,7 @@ MonoBehaviour:
   spineYawOffset: 45
   spinePitchOffset: -7
   fireClips:
-  - {fileID: 8300000, guid: d697ba2b2ed7a8246b9e8332357f6e48, type: 3}
+  - {fileID: 8300000, guid: 3417fc1975072894a9246ff7a6a964b7, type: 3}
   impactEnemyEffect: {fileID: 6251223014550451203, guid: 2d04f4343cbbafe4eb0491d8ecc157b3, type: 3}
   impactTrainFloorEffect: {fileID: 7811907600394004435, guid: 33c21a26d83bd2a42865fd002cf80575, type: 3}
   impactGroundEffect: {fileID: 4188122126429829134, guid: 3ed7daa5449ecb14bbb08a249443ac71, type: 3}

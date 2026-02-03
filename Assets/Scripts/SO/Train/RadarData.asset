@@ -19,7 +19,7 @@ MonoBehaviour:
     \uC788\uC73C\uBA74 \uB429\uB2C8\uB2E4.\n\n\n\uB450 \uAC1C \uB2E8\uB2E4\uACE0\n\n\uC801\uC774
     4K\uB85C \uBCF4\uC774\uC9C4 \uC54A\uC544\uC694."
   price: 500
-  icon: {fileID: 21300000, guid: 815030f9b8247c24cb0bba7c405e6b7c, type: 3}
+  icon: {fileID: 21300000, guid: 0e4b4792ecc5f24408297742425b7074, type: 3}
   type: 4
   prefab: {fileID: 1662029028200433979, guid: 7eba71cd512f67a4892cf29cbe4532ec, type: 3}
   levelDatas:
