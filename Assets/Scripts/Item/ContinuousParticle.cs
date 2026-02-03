@@ -14,12 +14,6 @@ public class ContinuousParticle : MonoBehaviour
         _particle = GetComponent<ParticleSystem>();
         _poolObj = GetComponent<PoolableObject>();
     }
-
-    private void OnEnable()
-    {
-        // 켜질 때 파티클 재생
-        _particle.Play();
-    }
     public void Play(Transform muzzle)
     {
         _targetMuzzle = muzzle;

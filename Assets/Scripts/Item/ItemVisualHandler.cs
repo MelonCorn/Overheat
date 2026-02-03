@@ -70,17 +70,6 @@ public class ItemVisualHandler : MonoBehaviour
                 tracerScript.InitAndShoot(_muzzlePoint.position, hitPoint, hitNormal, impactPrefab);
             }
         }
-        //StartCoroutine(Fire(hitPoint, hitNormal, impactPrefab));
-    }
-
-    private IEnumerator Fire(Vector3 hitPoint, Vector3 hitNormal, PoolableObject impactPrefab)
-    {
-        // 이번 프레임 끝까지 대기
-        // 애니메이션 위치 보정을 LateUpdate에서 하기 떄문에
-        // 파티클의 위치가 이상할 수 있음
-        yield return GameManager.Instance.EndOfFrame;
-
-       
     }
 
     // 연사 루프 연출

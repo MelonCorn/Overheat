@@ -4,11 +4,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public struct Train         // 소유 열차 정보
 {
     public TrainType type;
     public int level;
+    public string guid;
 }
 
 public class TrainManager : MonoBehaviourPunCallbacks
@@ -17,6 +19,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
     public const string KEY_TRAIN_TYPES = "TrainTypes";        // 타입
     public const string KEY_TRAIN_LEVELS = "TrainLevels";      // 레벨
     public const string KEY_TRAIN_CONTENTS = "TrainContents";  // 화물 정보
+    public const string KEY_TRAIN_GUIDS = "TrainGUIDs";          // 열차 고유 번호
 
     private static TrainManager _instance;
     public static TrainManager Instance
@@ -47,11 +50,15 @@ public class TrainManager : MonoBehaviourPunCallbacks
     [Header("열차 부모")]
     [SerializeField] Transform _trainGroup;
 
+    [Header("열차 제한 설정")]
+    [SerializeField] int _maxTrainCount = 10; // 최대 열차 개수 (엔진 포함)
+
     [Header("상점용 판떼기")]
     [SerializeField] GameObject _shopBlockPrefab;
 
 
     public event Action<bool, string> OnUpgradeResult; // 열차 업그레이드 결과 알림
+    public event Action<bool, string> OnDeleteResult; // 열차 판매 결과 알림
     public event Action OnTrainListUpdated; // 열차 새로고침 알림
 
     // 검색용 열차 목록
@@ -88,6 +95,8 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
     public List<TrainNode> TrainNodes => _currentTrainNodes;    // 외부 참조용 열차 노드들
     public List<Train> CurrentTrains => _currentTrains;         // 외부 참조용 열차 타입,레벨
+    public bool IsTrainFull => _currentTrainNodes.Count >= _maxTrainCount;  // 꽉찼는지
+    public int MaxTrainCount => _maxTrainCount;     // 최대 열차 개수
 
 
     // 열차 준비 상태
@@ -165,6 +174,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         int[] types = null;
         int[] levels = null;
         string[] contents = null;
+        string[] uids = null;
 
         // 현재 방의 커스텀 프로퍼티 키값 KEY_TRAIN_TYPES이 있을 때
         if (PhotonNetwork.CurrentRoom != null &&
@@ -173,6 +183,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
             types = (int[])PhotonNetwork.CurrentRoom.CustomProperties[KEY_TRAIN_TYPES];
             levels = (int[])PhotonNetwork.CurrentRoom.CustomProperties[KEY_TRAIN_LEVELS];
             contents = (string[])PhotonNetwork.CurrentRoom.CustomProperties[KEY_TRAIN_CONTENTS];
+            uids = (string[])PhotonNetwork.CurrentRoom.CustomProperties[KEY_TRAIN_GUIDS];
         }
 
         // 룸 데이터 없으면
@@ -197,7 +208,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         {
             for (int i = 0; i < targetCount; i++)
             {
-                SpawnTrain((TrainType)types[i], levels[i], contents[i]);
+                SpawnTrain((TrainType)types[i], levels[i], contents[i], uids[i]);
             }
 
             // 열차 다 소환하고 마지막 열차 뒤에 판떼기로 막기  
@@ -217,7 +228,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
             // 목표 생성 수만큼 생성
             for (int i = 0; i < targetCount; i++)
             {
-                SpawnTrain((TrainType)types[i], levels[i], contents[i]);
+                SpawnTrain((TrainType)types[i], levels[i], contents[i], uids[i]);
             }
         }
         // 일반 클라이언트
@@ -237,6 +248,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         List<TrainType> initTypes = new List<TrainType>();
         List<int> initLevels = new List<int>();
         List<string> initContents = new List<string>();
+        List<string> initGUIDs = new List<string>();
 
         // 초기 열차 리스트
         foreach (var type in _trainInitList)
@@ -244,19 +256,20 @@ public class TrainManager : MonoBehaviourPunCallbacks
             initTypes.Add(type);
             initLevels.Add(1); // 기본 1레벨
             initContents.Add(""); // 화물 비어있음
+            initGUIDs.Add(Guid.NewGuid().ToString());  // GUID 생성
         }
 
         // 룸 프로퍼티 저장
-        SaveRoomTrainData(initTypes, initLevels, initContents);
+        SaveRoomTrainData(initTypes, initLevels, initContents, initGUIDs);
 
-        foreach (TrainType type in _trainInitList)
+        for(int i = 0; i < _trainInitList.Count; i++)
         {
-            SpawnTrain(type, 1, "");
+            SpawnTrain(_trainInitList[i], 1, "", initGUIDs[i]);
         }
     }
 
     // 열차 생성
-    private void SpawnTrain(TrainType type, int level, string content)
+    private void SpawnTrain(TrainType type, int level, string content, string guid)
     {
         // 열차 딕셔너리에 타입 있는지 확인
         if (TrainDict.TryGetValue(type, out TrainData trainData))
@@ -278,8 +291,10 @@ public class TrainManager : MonoBehaviourPunCallbacks
                 if (pv) Destroy(pv);
 
                 // 프로퍼티 기반 새로운 열차 데이터 생성
-                Train newTrain = new Train { type = type, level = level };
+                Train newTrain = new Train { type = type, level = level, guid = guid };
                 _currentTrains.Add(newTrain);
+
+                _currentContents.Add(content);
 
                 // 노드 초기화
                 newTrainNode.Init(trainData, level);
@@ -309,11 +324,12 @@ public class TrainManager : MonoBehaviourPunCallbacks
                 if (PhotonNetwork.IsMasterClient == true)
                 {
                     // 네트워크 객체 생성 시 넘길 데이터
-                    object[] initData = new object[4];
+                    object[] initData = new object[5];
                     initData[0] = _currentTrainNodes.Count;
                     initData[1] = level;
                     initData[2] = (int)type; // Enum -> int로
-                    initData[3] = content; 
+                    initData[3] = content;
+                    initData[4] = guid;
 
 
                     // 네트워크 객체 생성
@@ -336,7 +352,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
     }
 
     // 생성된 네트워크 열차 객체 동기화용
-    public void RegisterNetworkTrain(TrainNode node, int index, TrainType type, int level, string content)
+    public void RegisterNetworkTrain(TrainNode node, int index, TrainType type, int level, string content, string guid)
     {
         // 클라이언트도 열차 생성 시 그룹의 하위 객체로
         if (_trainGroup != null) node.transform.SetParent(_trainGroup);
@@ -363,7 +379,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         _currentTrainNodes[index] = node;
 
         // 현재 데이터 리스트에 등록
-        Train trainInfo = new Train { type = type, level = level };
+        Train trainInfo = new Train { type = type, level = level , guid = guid };
         _currentTrains[index] = trainInfo;
 
         // 현재 화물 정보 리스트에 등록
@@ -601,6 +617,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         List<TrainType> types = new List<TrainType>();
         List<int> levels = new List<int>();
         List<string> contents = new List<string>();
+        List<string> guids = new List<string>();
 
         // 기존 열차 리스트
         foreach (var trainNode in _currentTrainNodes)
@@ -608,10 +625,13 @@ public class TrainManager : MonoBehaviourPunCallbacks
             // 혹시나 비어있으면 스킵
             if (trainNode == null) continue;
 
-            // 타입, 레벨 저장
-            types.Add(trainNode.Data.type);
             int index = _currentTrainNodes.IndexOf(trainNode);
-            levels.Add(_currentTrains[index].level);
+            Train info = _currentTrains[index];
+
+            // 타입, 레벨 저장
+            types.Add(info.type);
+            levels.Add(info.level);
+            guids.Add(info.guid);
 
             // 화물칸이면 데이터 불러오기
             if (trainNode is CargoNode cargo)
@@ -628,11 +648,11 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
 
         // 룸 프로퍼티 저장
-        SaveRoomTrainData(types, levels, contents);
+        SaveRoomTrainData(types, levels, contents, guids);
     }
 
     // 룸 프로퍼티 저장
-    private void SaveRoomTrainData(List<TrainType> types, List<int> levels, List<string> contents)
+    private void SaveRoomTrainData(List<TrainType> types, List<int> levels, List<string> contents, List<string> guids)
     {
         if (PhotonNetwork.IsMasterClient == false) return;
 
@@ -649,6 +669,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
             { KEY_TRAIN_TYPES, typeArr },
             { KEY_TRAIN_LEVELS, levels.ToArray() },
             { KEY_TRAIN_CONTENTS, contents.ToArray() },
+            { KEY_TRAIN_GUIDS, guids.ToArray() },
         };
 
         // 실제 룸 프로퍼티 갱신
@@ -711,7 +732,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
 
         // Type 열차 1레벨로 생성
-        SpawnTrain(type, 1, "");
+        SpawnTrain(type, 1, "", Guid.NewGuid().ToString());
 
         // 룸 프로퍼티 갱신
         UpdateRoomProperties();
@@ -750,6 +771,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
         }
         _currentTrainNodes.Clear();
         _currentTrains.Clear();
+        _currentContents.Clear();
 
         // 열차 생성
         StartCoroutine(SpawnTrainCoroutine());
@@ -911,5 +933,96 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 결과 이벤트 발생
         OnUpgradeResult?.Invoke(isSuccess, message);
     }
+
+
+
+    // 열차 삭제 요청
+    public void RequestDeleteTrain(int index, string guid)
+    {
+        // 인덱스 검사 엔진 또 또 또 검사
+        if (index <= 0 || index >= _currentTrains.Count) return;
+
+        // 방장이면 바로 실행
+        if (PhotonNetwork.IsMasterClient == true)
+        {
+            DeleteTrain(index, guid, PhotonNetwork.LocalPlayer);
+        }
+       else
+        {
+            // 방장에게 요청
+            photonView.RPC(nameof(RPC_DeleteTrain), RpcTarget.MasterClient, index, guid);
+        }
+    }
+    [PunRPC]
+    private void RPC_DeleteTrain(int index, string guid, PhotonMessageInfo info)
+    {
+        if (PhotonNetwork.IsMasterClient == false) return;
+        DeleteTrain(index, guid, info.Sender);
+    }
+
+    // 실제 열차 삭제 후 룸프로퍼티 갱신
+    private void DeleteTrain(int index, string guid, Player player)
+    {
+        if (index <= 0 || index >= _currentTrains.Count)
+        {
+            DeleteResult(player, false, "존재하지 않는 열차입니다.");
+            return;
+        }
+
+        // UID 일치하는지 확인
+        if (_currentTrains[index].guid != guid)
+        {
+            DeleteResult(player, false, "열차 정보가 변경되었습니다.");
+            return;
+        }
+
+        // 갱신할 리스트 새로 만듬
+        List<TrainType> newTypes = new List<TrainType>();
+        List<int> newLevels = new List<int>();
+        List<string> newContents = new List<string>();
+        List<string> newGUIDs = new List<string>();
+
+        for (int i = 0; i < _currentTrains.Count; i++)
+        {
+            // 삭제할 인덱스만 빼고 담기
+            if (i == index) continue;
+
+            newTypes.Add(_currentTrains[i].type);
+            newLevels.Add(_currentTrains[i].level);
+            newContents.Add(_currentContents[i]);
+            newGUIDs.Add(_currentTrains[i].guid);
+        }
+
+        // 데이터 저장 -> 룸 프로퍼티 갱신 -> 새로고침 순으로 실행됨
+        SaveRoomTrainData(newTypes, newLevels, newContents, newGUIDs);
+
+        // 결과 전송
+        DeleteResult(player, true, "판매 완료");
+    }
+
+    // 삭제 결과
+    private void DeleteResult(Player targetPlayer, bool isSuccess, string message)
+    {
+        // 방장이 시도했으면 바로 실행
+        if (targetPlayer.IsLocal)
+        {
+            RPC_DeleteResult(isSuccess, message);
+        }
+        else
+        {
+            // 다른 사람이면 결과 발송
+            photonView.RPC(nameof(RPC_DeleteResult), targetPlayer, isSuccess, message);
+        }
+    }
+
+    // 클라이언트가 받는 삭제 결과
+    [PunRPC]
+    private void RPC_DeleteResult(bool isSuccess, string message)
+    {
+        Debug.Log($"[삭제 결과] {isSuccess} : {message}");
+
+        OnDeleteResult?.Invoke(isSuccess, message);
+    }
+
     #endregion
 }
