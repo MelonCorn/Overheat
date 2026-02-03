@@ -158,6 +158,12 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
         // 비주얼 사망처리
         _isVisualDead = true;
 
+        // 미니맵에서 즉시 제거 요청
+        if (MiniMapHandler.Instance != null)
+        {
+            MiniMapHandler.Instance.Unregister(transform);
+        }
+
         // 사망 로직
         OnDeath();
 
@@ -244,6 +250,7 @@ public class EnemyBase : MonoBehaviourPun, IPunObservable, IDamageable
         // 풀 반납
         PhotonNetwork.Destroy(gameObject);
     }
+
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {

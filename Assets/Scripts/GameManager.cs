@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public bool IsGameOver { get; private set; }
 
     public event Action<int> OnGoldChanged; // 골드 변화 알림
+    public event Action<int> OnDayChanged;  // 날짜 변화 알림
 
     // 무기 파티클 재생 전용
     public readonly WaitForEndOfFrame EndOfFrame = new WaitForEndOfFrame();
@@ -147,6 +148,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         UpdateGold();
         UpdateDay();
 
+        // 생존일 변경 알림
+        OnDayChanged?.Invoke(GameData.SurviveDay);
+        Debug.Log("날 변경 알림");
+
         // 유실물 복구 시작
         if (PhotonNetwork.IsMasterClient == true)
         {
@@ -167,6 +172,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             GameData.HasMasterStarterItem = true;
         }
+
+        // 모든 플레이어 등록
+        MiniMapHandler.Instance.RegisterAllPlayer();
     }
 
     // 스타터 아이템 바닥에 떨구기

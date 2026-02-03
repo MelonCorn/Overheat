@@ -24,6 +24,23 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
         Instance = this;
     }
 
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnDayChanged -= SetStageLength;
+        }
+    }
+
+    // 생존일에 따른 스테이지 길이 변동
+    private void SetStageLength(int currentDay)
+    {
+        // 이동해야할 총 거리  기본 + (생존일 * 추가 거리)
+        _totalDistance = _baseDistance + ((currentDay - 1) * _distancePerLevel);
+
+        Debug.Log($"[BattleManager] {currentDay}일차 목표: {_totalDistance} 설정");
+    }
+
     private void OnDestroy()
     {
         if(Instance == this)
@@ -34,9 +51,10 @@ public class BattleManager : MonoBehaviourPun, IPunObservable
 
     private void Start()
     {
-        // 스테이지 목표 설정 (테스트용 1레벨)
-        int stageLevel = 1;
-        _totalDistance = _baseDistance + ((stageLevel - 1) * _distancePerLevel);
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnDayChanged += SetStageLength;
+        }
 
         // 이동 거리 초기화
         _currentDistance = 0f;
