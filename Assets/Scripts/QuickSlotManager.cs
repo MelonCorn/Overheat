@@ -310,24 +310,15 @@ public class QuickSlotManager : MonoBehaviour
         }
     }
 
-    // 사망시 아이템 드랍용
-    public string PopItem(int index)
+    // 모두 초기화
+    public void ClearAllSlots()
     {
-        // 범위, 널 체크
-        if (index < 0 || index >= QuickSlot.Length) return null;
-        if (string.IsNullOrEmpty(QuickSlot[index])) return null;
-
-        // 아이템 이름 백업
-        string itemName = QuickSlot[index];
-
-        // 데이터 삭제
-        QuickSlot[index] = null;
-        IsPredicting[index] = false;
-
-        // UI 갱신
+        for (int i = 0; i < QuickSlot.Length; i++)
+        {
+            QuickSlot[i] = null;
+            _isPredicting[i] = false;
+        }
+        CurrentSlotIndex = 0;
         UpdateUI();
-
-        // 뱉기
-        return itemName;
     }
 }
