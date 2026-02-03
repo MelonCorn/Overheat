@@ -18,9 +18,10 @@ public class MinimapDot : MonoBehaviour
     }
 
     // √ ±‚»≠
-    public void Init(Transform target, Color color)
+    public void Init(Transform target, Sprite sprite, Color color)
     {
         Target = target;
+        _icon.sprite = sprite;
         _icon.color = color;
     }
 

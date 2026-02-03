@@ -26,6 +26,14 @@ public class RadarNode : TrainNode
 
         // 레이더 체크
         UpdateRadarUI();
+
+        // 폭발 구독
+        OnExplode += RadeExplosion;
+    }
+
+    private void OnDisable()
+    {
+        OnExplode -= RadeExplosion;
     }
 
     private void UpdateRadarUI()
@@ -45,16 +53,16 @@ public class RadarNode : TrainNode
         _activeRadarCount = 0;
         OnRadarStateChanged?.Invoke(false);
     }
+   
 
-    // 터질 때 감소
-    // 오버라이드 RPC
-    [PunRPC]
-    public override void ExplodeRPC()
+    // 등록해뒀다가 터질 때 호출
+    private void RadeExplosion()
     {
-        base.ExplodeRPC();
-
-        // 레이더회전 OFF
-        _radar.enabled = false;
+        if (_radar != null)
+        {
+            // 레이더회전 OFF
+            _radar.enabled = false;
+        }
 
         // 감소
         if (_activeRadarCount > 0)
@@ -64,12 +72,13 @@ public class RadarNode : TrainNode
             // 레이더 체크
             UpdateRadarUI();
         }
+
     }
 
     private void OnDestroy()
     {
         // CutTail로 잘렸는데 ExplodeRPC전에 씬 넘어가버리는 경우
-        if (_radar.enabled == true)
+        if (_radar != null && _radar.enabled == true)
         {
             if (_activeRadarCount > 0)
             {

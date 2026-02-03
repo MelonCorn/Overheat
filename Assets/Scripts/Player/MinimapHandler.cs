@@ -9,6 +9,14 @@ public class MiniMapHandler : MonoBehaviour
     [SerializeField] GameObject _minimapUI;        // 미니맵 UI
     [SerializeField] RectTransform _dotsContainer; // 점 찍힐 패널
 
+    [Header("아이콘")]
+    [SerializeField] Sprite _enemySprite;
+    [SerializeField] Sprite _allySprite;
+
+    [Header("색상")]
+    [SerializeField] Color _enemyColor = Color.red;
+    [SerializeField] Color _allyColor = Color.green;
+
     [Header("프리팹")]
     [SerializeField] PoolableObject _dotPrefab;  // 점 프리팹
 
@@ -38,6 +46,19 @@ public class MiniMapHandler : MonoBehaviour
         RadarNode.OnRadarStateChanged -= SetActive;
     }
 
+    // 로컬 제외 모든 플레이어 등록
+    public void RegisterAllPlayer()
+    {
+        foreach (var player in GameManager.Instance.ActivePlayers)
+        {
+            // 로컬 플레이어는 제외
+            if (player == PlayerHandler.localPlayer) continue;
+
+            // 이미 등록된 플레이어인지 확인하고 없으면 등록
+            RegisterPlayer(player.transform);
+        }
+    }
+
     private void Update()
     {
         // 미니맵 꺼져있거나 로컬 플레이어 없으면 무시
@@ -52,7 +73,7 @@ public class MiniMapHandler : MonoBehaviour
         // 모든 점 위치 갱신 (역순)
         for (int i = _activeDots.Count - 1; i >= 0; i--)
         {
-            if (_activeDots[i] == null || _activeDots[i].Target == null)
+            if (_activeDots[i] == null || _activeDots[i].Target == null || _activeDots[i].Target.gameObject.activeInHierarchy == false)
             {
                 // 타겟 죽었으면 반납
                 if (_activeDots[i] != null) _activeDots[i].PoolObj.Release();
@@ -77,17 +98,47 @@ public class MiniMapHandler : MonoBehaviour
     // 적 등록 (EnemyBase 에서 호출)
     public void RegisterEnemy(Transform enemy)
     {
-        CreateDot(enemy, Color.red);
+        // 중복 조사
+        foreach (var dot in _activeDots)
+        {
+            if (dot.Target == enemy) return;
+        }
+
+        CreateDot(enemy, _enemySprite, _enemyColor);
     }
 
     // 다른 플레이어 등록 (PlayerHandler 에서 호출)
     public void RegisterPlayer(Transform player)
     {
-        CreateDot(player, Color.green);
+        // 중복 조사
+        foreach (var dot in _activeDots)
+        {
+            if (dot.Target == player) return;
+        }
+
+        CreateDot(player, _allySprite, _allyColor);
+    }
+
+
+    // 타겟 도트 즉시 제거 
+    public void Unregister(Transform target)
+    {
+        for (int i = _activeDots.Count - 1; i >= 0; i--)
+        {
+            if (_activeDots[i].Target == target)
+            {
+                // 풀 반납
+                if (_activeDots[i].PoolObj != null)
+                    _activeDots[i].PoolObj.Release();
+
+                // 리스트에서 제거
+                _activeDots.RemoveAt(i);
+            }
+        }
     }
 
     // 점 생성
-    private void CreateDot(Transform target, Color color)
+    private void CreateDot(Transform target, Sprite sprite, Color color)
     {
         if(PoolManager.Instance != null)
         {
@@ -95,7 +146,7 @@ public class MiniMapHandler : MonoBehaviour
             var poolObj = PoolManager.Instance.Spawn(_dotPrefab, _dotsContainer);
             MinimapDot dot = poolObj.GetComponent<MinimapDot>();
             // 초기화
-            dot.Init(target, color);
+            dot.Init(target, sprite, color);
             // 등록
             _activeDots.Add(dot);
         }

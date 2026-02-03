@@ -283,11 +283,13 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
         if (QuickSlotManager.Instance != null)
         {
             // UI 비활성화
-            // 손 새로고침
+            // 퀵슬롯 올 초기화
             // 1번 슬롯 들게
             QuickSlotManager.Instance.SetUIActive(false);
-            QuickSlotManager.Instance.RefreshHand();
+            QuickSlotManager.Instance.ClearAllSlots();
             QuickSlotManager.Instance.SelectSlot(0);
+            // 손 비우기
+            ChangeQuickSlot("");
         }
 
         // 플레이어 비활성화
@@ -345,6 +347,13 @@ public class PlayerHandler : MonoBehaviourPun, IPunObservable, IDamageable
     { 
         // 사망 확정
         IsDead = true;
+
+        // 미니맵에서 제거 요청
+        if (MiniMapHandler.Instance != null)
+        {
+            // 내꺼라면 안에서 무시됨
+            MiniMapHandler.Instance.Unregister(transform);
+        }
 
         // 사망 파티클
         if (_deathParticle != null && _deathParticlePoint != null && PoolManager.Instance != null)

@@ -175,7 +175,7 @@ MonoBehaviour:
   _rotSpeed: 5
   _smoothTime: 0.5
   _minHeight: 0
-  _maxHeight: 15
+  _maxHeight: 5
   _minShots: 3
   _maxShots: 6
   _moveRadius: 5

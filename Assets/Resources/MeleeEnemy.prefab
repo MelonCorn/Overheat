@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMelee
   _maxHp: 100
-  _damage: 8
+  _damage: 16
   _attackRange: 2
   _attackRate: 1
   _minGold: 10
