@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8115658088704980927}
   - component: {fileID: 5770570593083141265}
   - component: {fileID: 341638349153834403}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Mist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4863,7 +4863,7 @@ GameObject:
   - component: {fileID: 1410282535908938146}
   - component: {fileID: 5815886215861980765}
   - component: {fileID: 1133739797575998722}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Streaks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9528,7 +9528,7 @@ GameObject:
   - component: {fileID: 6251223014550451203}
   - component: {fileID: 3536050246806750227}
   - component: {fileID: 2646029433134226424}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: EnemyImpact
   m_TagString: Untagged
   m_Icon: {fileID: 0}

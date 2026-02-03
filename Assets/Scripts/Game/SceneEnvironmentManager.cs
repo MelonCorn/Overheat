@@ -27,9 +27,13 @@ public class SceneEnvironmentManager : MonoBehaviour
     [SerializeField] EnvironmentData _daySettings;   // 圈荐老 (撤)
     [SerializeField] EnvironmentData _nightSettings; // 娄荐老 (广)
 
+    private AudioSource _audioSource;
+
     private void Awake()
     {
         Instance = this;
+
+        _audioSource = GetComponent<AudioSource>();
     }
 
     public void SetEnvironmentTime()                
@@ -40,6 +44,9 @@ public class SceneEnvironmentManager : MonoBehaviour
         {
             // 娄荐老 广
             ApplySettings(_nightSettings);
+
+            // 国饭 家府
+            if(_audioSource != null) _audioSource.Play();
         }
         else
         {

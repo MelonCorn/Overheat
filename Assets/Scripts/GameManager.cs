@@ -42,6 +42,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("유실물 생성 포인트 (인게임/상점)")]
     [SerializeField] Transform _lostItemSpawnPoint;
 
+    [Header("레일 오디오 소스")]
+    [SerializeField] AudioSource _audioSource;
+    [SerializeField] AudioClip _steamClip;
+
     [Header("텍스트")]
     [SerializeField] TextMeshProUGUI _goldText;            // 골드
     [SerializeField] TextMeshProUGUI _SurviveDayText;      // 생존일
@@ -64,7 +68,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private PlayerSpawner _spawner;         // 플레이어 스포너
     private TimelineManager _timelineManager;// 타임라인 매니저
-    private AudioSource _audioSource;
 
     private HashSet<int> _loadedActorNumbers = new HashSet<int>();  // 준비 완료된 플레이어
 
@@ -78,8 +81,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             Destroy(gameObject);
         }
-
-        _audioSource = GetComponent<AudioSource>();
 
         // 네트워크 풀 사용
         NetworkPool customPool = GetComponent<NetworkPool>();
@@ -857,6 +858,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
+
     // 바퀴 브레이크 시그널
     public void BreakTrainWheel()
     {
@@ -872,6 +874,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 }
             }
         }
+    }
+
+    // 정지 소리
+    public void PlayBreakSteam()
+    {
+        if (_audioSource == null || _steamClip == null || SoundManager.Instance == null) return;
+
+        SoundManager.Instance.PlayOneShot3D(_audioSource, _steamClip);
     }
 
     // 롤링 루프 중지 시그널

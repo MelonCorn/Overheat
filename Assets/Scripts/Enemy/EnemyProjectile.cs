@@ -8,6 +8,9 @@ public class EnemyProjectile : MonoBehaviour
     [SerializeField] int _damage = 10;          // 공격력
     [SerializeField] float _lifeTime = 3f;      // 지속 시간
 
+    [Header("이펙트")]
+    [SerializeField] PoolableObject _impactPrefab;
+
     private bool _isReleased = false;   // 중복 반납 방지
     private PoolableObject _poolable;   // 자신의 풀 관리자
 
@@ -49,6 +52,9 @@ public class EnemyProjectile : MonoBehaviour
         // 반납 상태면 추가 충돌 금지
         if (_isReleased == true) return;
 
+        // 맞았는지
+        bool isHit = false;
+
         // 데미지 줄 열차
         // 기본적으로 열차 타겟인데 플레이어도 혹시나 뭐 맞을 수 있음
         if (other.CompareTag("Train") || other.CompareTag("Player"))
@@ -64,12 +70,36 @@ public class EnemyProjectile : MonoBehaviour
                     target.TakeDamage(_damage);
             }
 
-            Despawn();
+            // 맞음
+            isHit = true;
         }
         else if (other.CompareTag("Ground") || other.CompareTag("Wall"))
         {
+            // 맞음
+            isHit = true;
+        }
+
+        // 맞았으면
+        if (isHit)
+        {
+            // 이펙트 생성
+            SpawnImpact(other);
+
+            // 반납
             Despawn();
         }
+    }
+
+    // 이펙트 생성
+    private void SpawnImpact(Collider other)
+    {
+        if (_impactPrefab == null || PoolManager.Instance == null) return;
+
+        // 상대 콜라이더랑 가장 가까운 지점
+        Vector3 hitPoint = other.ClosestPoint(transform.position);
+
+        // 이펙트 생성
+        PoolManager.Instance.Spawn(_impactPrefab, hitPoint, Quaternion.identity);
     }
 
     // 풀 반납

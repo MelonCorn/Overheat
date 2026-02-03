@@ -12,7 +12,7 @@ public class EnemyRange : EnemyBase
 
     [Header("비행 높이 제한")]
     [SerializeField] float _minHeight = 0f;
-    [SerializeField] float _maxHeight = 15f;
+    [SerializeField] float _maxHeight = 10f;
 
     [Header("무빙 설정")]
     [SerializeField] int _minShots = 3;            // 최소 발사 수

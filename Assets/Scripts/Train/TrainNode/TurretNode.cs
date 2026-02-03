@@ -211,6 +211,15 @@ public class TurretNode : TrainNode
         // ÃÑ±¸ È­¿°
         if (_muzzleFlash != null) _muzzleFlash.Play();
 
+        // ¹ßÆ÷ ¼Ò¸®
+        if (_audioSource != null && SoundManager.Instance != null)
+        {
+            if((_audioData != null && _audioData is TurretAudioData turret))
+            {
+                SoundManager.Instance.PlayOneShot3D(_audioSource, turret.GetRandomFireClip());
+            }
+        }
+
         // ÃÑ¾Ë ±ËÀû
         if (_tracerPrefab != null && PoolManager.Instance != null)
         {

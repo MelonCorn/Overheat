@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4927897008216921201}
   - component: {fileID: 2437987523187357018}
   - component: {fileID: 7032150948022624536}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Decal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4926,7 +4926,7 @@ GameObject:
   - component: {fileID: 6572184285734024323}
   - component: {fileID: 8150715052205137154}
   - component: {fileID: 3165216446234858180}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: WoodSplinters
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9523,7 +9523,7 @@ GameObject:
   - component: {fileID: 7811907600394004435}
   - component: {fileID: 4828732769823723261}
   - component: {fileID: 8298956619861681818}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: WoodImpact
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9681,7 +9681,7 @@ GameObject:
   - component: {fileID: 1655202296217493009}
   - component: {fileID: 3214544204478626190}
   - component: {fileID: 8880496295057986036}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Dust
   m_TagString: Untagged
   m_Icon: {fileID: 0}

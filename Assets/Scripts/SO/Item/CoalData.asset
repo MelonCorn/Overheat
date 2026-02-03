@@ -22,4 +22,4 @@ MonoBehaviour:
   handRotOffset: {x: 0, y: 0, z: 0}
   tpsHandPosOffset: {x: 0, y: 0, z: 0}
   tpsHandRotOffset: {x: 0, y: 0, z: 0}
-  _fuelAddAmount: 5
+  _fuelAddAmount: 8

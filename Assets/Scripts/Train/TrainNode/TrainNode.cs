@@ -37,7 +37,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
     [SerializeField] float _torqueForce = 5f;     // 회전하는 힘 (굴리기)
 
     [Header("오디오 설정")]
-    [SerializeField] ObjectAudioData _audioData;
+    [SerializeField] protected TrainAudioData _audioData;
 
     // 파괴 타겟 레이어
     protected LayerMask _localPlayerLayer;   // 로컬플레이어
@@ -392,7 +392,7 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         // 폭발 사운드 재생
         if(TrainIndex != 0 && _audioSource != null && _audioData != null && SoundManager.Instance != null)
         {
-            SoundManager.Instance.PlayOneShot3D(_audioSource, _audioData.GetRandomClip());
+            SoundManager.Instance.PlayOneShot3D(_audioSource, _audioData.GetRandomExplodeClip());
         }
 
         // 날려버리기

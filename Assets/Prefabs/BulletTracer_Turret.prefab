@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletTracer
   _speed: 300
-  _length: 4
+  _length: 6
   _minDistance: 2
 --- !u!120 &1608608914291132976
 LineRenderer:
@@ -108,7 +108,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.1
         inSlope: 0.14527188
         outSlope: 0
         tangentMode: 69
@@ -117,7 +117,7 @@ LineRenderer:
         outWeight: 0.87430155
       - serializedVersion: 3
         time: 1
-        value: 1
+        value: 0.1
         inSlope: -0
         outSlope: 0
         tangentMode: 69

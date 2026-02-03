@@ -15,10 +15,18 @@ MonoBehaviour:
   clickClips:
   - {fileID: 8300000, guid: 5ae58c28017c22841a9c193f579855e1, type: 3}
   - {fileID: 8300000, guid: 5debb88318d3a3247a3574764682525a, type: 3}
-  itemBuySuccess: {fileID: 8300000, guid: 02ab47b35468d5d4da7edd52a438508b, type: 3}
-  trainBuySuccess: {fileID: 8300000, guid: 9477e16525d79a042a81cad75c3dbe97, type: 3}
+  itemBuyClips:
+  - {fileID: 8300000, guid: 02ab47b35468d5d4da7edd52a438508b, type: 3}
+  - {fileID: 8300000, guid: b9c0a0dafaad1074f984b22d4c0520b7, type: 3}
+  - {fileID: 8300000, guid: 0dd6d03cb603c69439a8b7b9f6636fec, type: 3}
+  trainBuyClips:
+  - {fileID: 8300000, guid: 9477e16525d79a042a81cad75c3dbe97, type: 3}
+  - {fileID: 8300000, guid: 6a521f8f5e6eab746a0004371d0d4020, type: 3}
+  - {fileID: 8300000, guid: 2a1fb41c3ec8a994686243d00e27e32f, type: 3}
   upgradeClips:
-  - {fileID: 8300000, guid: 0741dd357b719bb4b91076c7514b3f8f, type: 3}
-  - {fileID: 8300000, guid: 665014b7ea624e940b80e34e663cd77a, type: 3}
-  - {fileID: 8300000, guid: e601863b9b8e31e469392f58cf45e22f, type: 3}
+  - {fileID: 8300000, guid: 36d18afe94b6c2d41a65003b5118740c, type: 3}
+  - {fileID: 8300000, guid: 8656f4fe15ae5524c9f20bace4f47347, type: 3}
+  - {fileID: 8300000, guid: e1fd5a8f1cb419646bf15d72dd8ed536, type: 3}
+  - {fileID: 8300000, guid: 2efa52ecc39cabd499a25934d5006e04, type: 3}
+  - {fileID: 8300000, guid: 45b77ebafda09df4c9713617f7fff115, type: 3}
   steamClip: {fileID: 8300000, guid: 41eea4368fbdc7e4a847a913bd1f6e05, type: 3}

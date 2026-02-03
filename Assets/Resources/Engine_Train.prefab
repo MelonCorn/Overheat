@@ -530,7 +530,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1625051881338355133}
   - component: {fileID: 4958158219208306227}
-  m_Layer: 19
+  m_Layer: 7
   m_Name: Floor
   m_TagString: Train
   m_Icon: {fileID: 0}

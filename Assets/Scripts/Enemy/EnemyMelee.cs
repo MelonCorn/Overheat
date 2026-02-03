@@ -131,8 +131,14 @@ public class EnemyMelee : EnemyBase
         // 애니메이터 이동 파라미터
         if (_agent != null && _animator != null)
         {
-            // 에이전트 속도 0 ~ 1 로 정규화 해서 적용
-            float speed = _agent.velocity.magnitude / _agent.speed;
+            float speed = 0f;
+
+            // 링크 타는 중이면 항상 1
+            if (_state == State.Cross)
+                speed = 1f;
+            // 평상시 에이전트 속도 0 ~ 1 로 정규화 해서 적용
+            else
+                speed = _agent.velocity.magnitude / _agent.speed;
 
             // 부드럽게
             _animator.SetFloat("Speed", speed, 0.1f, Time.deltaTime);

@@ -9,17 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fcd39477c616a64ea46a73933a31ed3, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b469cecce12afe4585b656a77b70f15, type: 3}
   m_Name: TurretAudioData
-  m_EditorClassIdentifier: Assembly-CSharp::ObjectAudioData
-  objectClips:
-  - {fileID: 8300000, guid: 05c8501767b51354ca4059481b74c1fc, type: 3}
-  - {fileID: 8300000, guid: 302baa2a7a5144f4492148bb51883987, type: 3}
-  - {fileID: 8300000, guid: 678a5e68234aeec4e97dac20743fb294, type: 3}
-  - {fileID: 8300000, guid: 130a38811391648448db6ac0a8275f72, type: 3}
-  - {fileID: 8300000, guid: fdf15ed5beff9cf42b0f04c2d1909a6c, type: 3}
-  - {fileID: 8300000, guid: f59e7136fcee8a1439c753b33c55e315, type: 3}
-  - {fileID: 8300000, guid: 44c3cda92eee69b448d25080abb87881, type: 3}
-  - {fileID: 8300000, guid: 6567f48a69f7032469d0e1360237f3a3, type: 3}
-  - {fileID: 8300000, guid: 304fb285b46268f479d86713ad79da34, type: 3}
-  - {fileID: 8300000, guid: c3f7fe76816dfb94facac04572ec75cb, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::TurretAudioData
+  explodeClips:
+  - {fileID: 8300000, guid: 757d3fc5a66e040408f41af3b697facf, type: 3}
+  - {fileID: 8300000, guid: e49015a7df227b9489e5d91f91924bc3, type: 3}
+  - {fileID: 8300000, guid: c775fb43a55b2b941a33d7a340f09371, type: 3}
+  - {fileID: 8300000, guid: 0f0a2e4425903c24188e75fbccbc0109, type: 3}
+  - {fileID: 8300000, guid: efabc1818023c0f47b2ca6cf5e244c59, type: 3}
+  - {fileID: 8300000, guid: 6b1f89bfbe42e524dbb30b7bdb4a32fb, type: 3}
+  - {fileID: 8300000, guid: 9293708fcbef6054594c2d8a5d757cb9, type: 3}
+  - {fileID: 8300000, guid: 8a6ee175f5b29f64e8921420e987f223, type: 3}
+  - {fileID: 8300000, guid: 4f29f2a64f7660943be28019de505712, type: 3}
+  - {fileID: 8300000, guid: 7ac7e002559bd294dae3d4cf61959fef, type: 3}
+  FireClips:
+  - {fileID: 8300000, guid: c5cb6cffc6958b24097d5e1da1555c19, type: 3}
+  - {fileID: 8300000, guid: 75121d19800ebcf4b914db801bffcc44, type: 3}

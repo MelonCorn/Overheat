@@ -293,9 +293,9 @@ public class ShopManager : MonoBehaviourPun
         if (isSuccess == true)
         {
             if (itemType == 1)
-                PlaySound(_audioData.trainBuySuccess); // 열차
+                PlaySound(_audioData.GetRandomTrainClip()); // 열차
             else
-                PlaySound(_audioData.itemBuySuccess);  // 아이템
+                PlaySound(_audioData.GetRandomItemClip());  // 아이템
         }
 
         // 결과 받고 나서
@@ -327,11 +327,14 @@ public class ShopManager : MonoBehaviourPun
             // 좀 흩뿌리기
             Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0f, Random.Range(-0.5f, 0.5f));
 
+            // Y 축 360도 랜덤
+            Quaternion randomRot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+
             // itemName 포장
             object[] initData = new object[] { playerItem.itemName };
 
             // 네트워크 객체 생성
-            PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos + randomOffset, Quaternion.identity, 0, initData);
+            PhotonNetwork.Instantiate(playerItem.prefab.name, spawnPos + randomOffset, randomRot, 0, initData);
         }
     }
 
