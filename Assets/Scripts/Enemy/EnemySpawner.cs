@@ -13,12 +13,17 @@ public class EnemySpawner : MonoBehaviourPun
     [SerializeField] float _spawnInterval = 5f;  // 생성 주기
     [SerializeField] int _maxEnemyCount = 15;    // 최대 적 수
 
+    [Header("난이도 설정")]
+    [SerializeField] float _minInterval = 1.5f;  // 최소 생성 주기
+    [SerializeField] float _decreaseTime = 0.1f; // 날마다 내려갈 시간
+
     [Header("범위 설정")]
     [SerializeField] float _spawnWidth = 20f;    // 적 생성 시 좌우 거리
     [SerializeField] float _flyMinHeight = 0f;   // 파괴형 적 최소 높이
     [SerializeField] float _flyMaxHeight = 15f;   // 파괴형 적 최대 높이
 
-    private float _timer;
+    private float _timer;               // 생성 타이머
+    private float _currentInterval;     // 생성 주기
 
     private void Awake()
     {
@@ -26,8 +31,33 @@ public class EnemySpawner : MonoBehaviourPun
         ActiveCount = 0;
     }
 
+
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnDayChanged -= SetSpawnInterval;
+        }
+    }
+
+    // 생존일에 따라 적 생성 주기 변동
+    private void SetSpawnInterval(int currentDay)
+    {
+        // 적 생성 주기   기본 생성 주기 - ((생존일 - 1) * 절감 시간)
+        float reduction = (currentDay - 1) * _decreaseTime;
+
+        // 최소 시간 정해져있음
+        _currentInterval = Mathf.Max(_minInterval, _spawnInterval - reduction);
+    }
+
+
     private void Start()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnDayChanged += SetSpawnInterval;
+        }
+
         // 테스트용 즉시 스폰
         Invoke(nameof(TrySpawnEnemy), 2.0f);
     }
@@ -47,10 +77,10 @@ public class EnemySpawner : MonoBehaviourPun
         _timer += Time.deltaTime;
 
         // 생성 주기보다 이상이면
-        if (_timer >= _spawnInterval)
+        if (_timer >= _currentInterval)
         {
             // 0 할당보다 빼주기
-            _timer -= _spawnInterval;
+            _timer -= _currentInterval;
 
             // 적 생성 시도
             TrySpawnEnemy();
