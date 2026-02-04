@@ -457,6 +457,9 @@ public class SettingManager : MonoBehaviourPunCallbacks
         // 네트워크 객체 파괴되는거 보이기 싫으니까 가림
         _settingUi.SetExitBlind(true);
 
+        // 데이터 초기화
+        GameData.Reset();
+
         // 바로 창 닫아버리기
         ToggleSettingPanel();
 

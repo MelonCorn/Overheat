@@ -249,6 +249,12 @@ public class QuickSlotManager : MonoBehaviour
         {
             QuickSlot[slotIndex] = itemName;
             UpdateUI();
+            
+            // 롤백된 슬롯이 현재 손 번호라면 새로고침
+            if (slotIndex == CurrentSlotIndex)
+            {
+                RefreshHand();
+            }
         }
         else
         {

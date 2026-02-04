@@ -111,7 +111,7 @@ MonoBehaviour:
   _attackRange: 2
   _attackRate: 1
   _minGold: 10
-  _maxGold: 20
+  _maxGold: 25
   _animator: {fileID: 4471579843888006819}
   _dieParticlePoint: {fileID: 4891312552746078065}
   _dieParticle: {fileID: 6251223014550451203, guid: c1275d15164459f44baa5f5ba0171d0a, type: 3}

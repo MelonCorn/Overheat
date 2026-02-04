@@ -19,7 +19,7 @@ public class TrainManager : MonoBehaviourPunCallbacks
     public const string KEY_TRAIN_TYPES = "TrainTypes";        // 타입
     public const string KEY_TRAIN_LEVELS = "TrainLevels";      // 레벨
     public const string KEY_TRAIN_CONTENTS = "TrainContents";  // 화물 정보
-    public const string KEY_TRAIN_GUIDS = "TrainGUIDs";          // 열차 고유 번호
+    public const string KEY_TRAIN_GUIDS = "TrainGUIDs";        // 열차 고유 번호
 
     private static TrainManager _instance;
     public static TrainManager Instance
@@ -333,7 +333,8 @@ public class TrainManager : MonoBehaviourPunCallbacks
 
 
                     // 네트워크 객체 생성
-                    GameObject newTrainObj = PhotonNetwork.InstantiateRoomObject(trainData.prefab.name, Vector3.zero, Quaternion.identity, 0, initData);
+                    GameObject newTrainObj = PhotonNetwork.InstantiateRoomObject
+                        (trainData.prefab.name, Vector3.zero, Quaternion.identity, 0, initData);
 
                     // 열차 그룹 하위 객체로
                     if (_trainGroup != null) newTrainObj.transform.SetParent(_trainGroup);
@@ -424,8 +425,13 @@ public class TrainManager : MonoBehaviourPunCallbacks
         // 시체 노드에 추가
         _deadTrains.AddRange(cutNodes);
 
+
+
         // 데이터 리스트에서 즉시 삭제해서 잘라버림
         _currentTrainNodes.RemoveRange(index, count);   // 열차 노드 리스트
+
+
+
         _currentTrains.RemoveRange(index, count);       // 열차 데이터 리스트 (Train)
         _currentContents.RemoveRange(index, count);     // 화물 데이터
 

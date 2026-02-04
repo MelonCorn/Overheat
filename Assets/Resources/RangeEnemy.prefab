@@ -159,11 +159,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyRange
   _maxHp: 100
-  _damage: 5
+  _damage: 4
   _attackRange: 2
   _attackRate: 1
   _minGold: 5
-  _maxGold: 20
+  _maxGold: 25
   _animator: {fileID: 883683832451742161}
   _dieParticlePoint: {fileID: 1140166136824890610}
   _dieParticle: {fileID: 6251223014550451203, guid: c1275d15164459f44baa5f5ba0171d0a, type: 3}

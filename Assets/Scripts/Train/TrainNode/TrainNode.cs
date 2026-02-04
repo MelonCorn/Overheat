@@ -263,19 +263,41 @@ public class TrainNode : MonoBehaviourPun, IPunObservable, IPunInstantiateMagicC
         OnHpChanged?.Invoke(_currentHp, _maxHp);
     }
 
+
     // 수리
     public void TakeRepair(int amount)
     {
+        if (PhotonNetwork.IsMasterClient == true)
+        {
+            // 즉시 수리
+            RPC_Repair(amount);
+        }
+        else
+        {
+            // 수리 요청
+            photonView.RPC(nameof(RPC_Repair), RpcTarget.MasterClient, amount);
+        }
+    }
+
+
+    [PunRPC]
+    private void RPC_Repair(int amount)
+    {
+        // 방장 아니면 무시
+        if (PhotonNetwork.IsMasterClient == false) return;
+
+        // 체력 가득 찼으면 무시
         if (_currentHp >= _maxHp) return;
 
+        // 체력 증가
         _currentHp += amount;
 
         if (_currentHp > _maxHp)
             _currentHp = _maxHp;
 
+        // UI 갱신
         OnHpChanged?.Invoke(_currentHp, _maxHp);
     }
-
 
     // 열차 화재 체크
     public void CheckFireSpawn()
