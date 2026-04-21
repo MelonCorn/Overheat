@@ -40,8 +40,8 @@
   - [적 AI](#6-적-ai--navmesh-surface--link)
   - [사운드 시스템](#7-사운드-시스템)
   - [관전 카메라](#8-관전-카메라)
-- [LinkedList vs List](#-LinkedList-vs-List)
-- [정적 클래스 GameData](#-GameData-정적-클래스)
+- [LinkedList vs List](#linkedlist-vs-list)
+- [정적 클래스 GameData](#gamedata-정적-클래스)
 - [트러블슈팅](#-트러블슈팅)
 
 <br>
